@@ -1,0 +1,42 @@
+
+---
+- hosts: '{{target}}'
+  become: true
+  gather_facts: no
+  tasks:
+    
+    - name: create vms 
+      virt: name=vm1-srv-01 
+            command=create
+      cpu: 1
+            mem=1024
+      virt_type: kvm
+      virt_hypervisor: hvm
+      os:
+          type: linux
+          variant: Ubuntu 14.04 LTS (Trusty Tahr)
+      disk:
+          size: 8
+          path: /var/lib/libvirt/images
+    - name: vm2-srv-02
+      cpu: 1
+            mem=1024
+      virt_type: kvm
+      virt_hypervisor: hvm
+      os:
+          type: linux
+          variant: Ubuntu 14.04 LTS (Trusty Tahr)
+      disk:
+          size: 8
+          path: /var/lib/libvirt/images
+    - name: vm3-srv-03
+      cpu: 1
+            mem=1024
+      virt_type: kvm
+      virt_hypervisor: hvm
+      os:
+          type: linux
+          variant: Ubuntu 14.04 LTS (Trusty Tahr)
+      disk:
+          size: 8
+          path: /var/lib/libvirt/images
