@@ -1,0 +1,12 @@
+#Bring stack down
+- hosts: '{{ target }}'
+  become: true
+  tasks:
+    - service: name=nginx state=stopped
+
+#Bring stack up
+- hosts: '{{ target }}'
+  become: true
+  tasks:
+    - service: name=nginx state=started
+

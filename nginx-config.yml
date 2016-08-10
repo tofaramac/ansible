@@ -1,0 +1,62 @@
+---
+
+    - name: Create the directories for site specific configurations
+      file: path=/etc/nginx/{{ item }} state=directory owner=root group=root mode=0755
+      with_items:
+        - "sites-available"
+        - "sites-enabled"
+
+#    - name: Checkout H5BP repo
+#      when: nginx_installed|success
+#      git: |
+##        repo={{ h5bp_repo_url }}
+##        dest={{ h5bp_repo_checkout_path }}
+#      register: h5bp_cloned
+#
+#    - name: Add H5BP Config files
+#      when: (nginx_installed|success and h5bp_cloned|success)
+#      copy: |
+#        remote_src=True
+#        force=true
+#        src={{ item.src }}
+#        dest={{ item.dest }}
+#        owner=root group=root
+#      with_items:
+#        - { src: "{{ h5bp_repo_checkout_path }}/mime.types", dest: '/etc/nginx/mime.types' }
+#
+#    - name: Add H5BP Config folders
+#      # copy module can't mode folder when remote_src=True
+#      when: (nginx_installed|success and h5bp_cloned|success)
+#      command: mv creates="{{ item.dest }}" {{ item.src }} {{ item.dest }}
+#      with_items:
+#        - { src: "{{ h5bp_repo_checkout_path }}/h5bp",     dest: '/etc/nginx/h5bp' }
+
+    - name: Place configuration files
+      template: >
+        src={{ item.src }}
+        dest={{ item.dest }}
+        owner=root group=root mode=0600
+      with_items:
+        - { src: 'htpasswd.j2',          dest: '/etc/nginx/htpasswd' }
+        - { src: 'nginx.conf.j2',        dest: '/etc/nginx/nginx.conf' }
+        - { src: 'nginx_status.conf.j2', dest: '/etc/nginx/conf.d/nginx_status.conf' }
+      register: placed_default_site
+      notify: restart nginx
+
+    # Optional, set nginx_install_default=no to skip
+#    - name: Place configuration files
+#      when: nginx_install_default
+#      template: >
+#        src={{ item.src }}
+#        dest={{ item.dest }}
+#        owner=root group=root mode=0600
+#      with_items:
+#        - { src: 'default.conf.j2', dest: '/etc/nginx/conf.d/default.conf' }
+#      notify: restart nginx
+
+    - name: Create the link for site enabled specific configurations
+      file: path=/etc/nginx/sites-enabled/{{ item | basename }} state=link src=/etc/nginx/sites-available/{{ item | basename }}
+      with_fileglob:
+        - h5bp-server-configs-nginx/sites-available/*
+      notify:
+        - reload nginx   

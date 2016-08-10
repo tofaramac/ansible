@@ -1,0 +1,59 @@
+---
+- hosts: loadbalancer
+  become: true
+  tasks:
+
+     nginx_official_repo: True
+     keep_only_specified: True
+
+     vdomain: ppmtestsrv.com
+
+     nginx_sites:
+     www.ppmtestsrv.com:
+      - listen *:80
+      - server_name www.{{ vdomain }}
+      - return 301 http://{{ vdomain }}$request_uri
+     ppmtestsrv.com:
+      - listen *:80
+      - server_name {{ vdomain }}
+      - index index.html index.htm index.php
+      - access_log /var/log/nginx/{{ vdomain }}.access.log combined
+      - error_log /var/log/nginx/{{ vdomain }}.error.log
+      - root /srv/www/{{ vdomain }}/
+      - location /server-status {
+              stub_status on;
+              access_log false;
+              allow 127.0.0.1;
+              deny all; }
+      - location /php-status {
+              fastcgi_param SCRIPT_FILENAME /srv/www/{{ vdomain }}$fastcgi_script_name;
+              fastcgi_pass php;
+              include fastcgi_params;
+              access_log false;
+              allow 127.0.0.1;
+              deny all; }
+      - location / { try_files $uri $uri/ /index.php$is_args$args; }
+      - location ~ .php$ { 
+          try_files $uri /index.php =404;
+          fastcgi_buffer_size 128k;
+          fastcgi_buffers 4 256k;
+          fastcgi_busy_buffers_size 256k;
+          fastcgi_connect_timeout 60;
+          fastcgi_ignore_client_abort off;
+          fastcgi_index index.php;
+          fastcgi_intercept_errors on;
+          fastcgi_param CONTENT_LENGTH $content_length;
+          fastcgi_param CONTENT_TYPE $content_type;
+          fastcgi_param QUERY_STRING $query_string;
+          fastcgi_param REQUEST_METHOD $request_method;
+          fastcgi_param SCRIPT_FILENAME /srv/www/{{ vdomain }}$fastcgi_script_name;
+          fastcgi_pass php;
+          fastcgi_read_timeout 180;
+          fastcgi_send_timeout 180;
+          fastcgi_split_path_info ^(.+\.php)(.*)$;
+          fastcgi_temp_file_write_size 256k;
+          include fastcgi_params; }
+
+     nginx_configs:
+     upstream:
+      - upstream php { server unix:/var/run/php5-fpm.sock fail_timeout=10s; }

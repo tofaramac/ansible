@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: true
+  tasks:
+
+    - name: start vms
+      virt: name={{item}} state=running
+      with_items:
+        - "{{vmlist.list_vms}}"
+

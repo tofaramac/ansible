@@ -1,0 +1,43 @@
+---
+- hosts: loadbalancer
+  become: true
+  tasks:
+    - name: install tools
+      apt: name={{item}} state=present update_cache=yes
+      with_items:
+        - python-httplib2
+
+    - name: install nginx 
+      apt: name=nginx state=present update_cache=yes
+ 
+    - name: ensure nginx started
+      service: name=nginx state=started enabled=yes
+
+    - name: change hostname
+      hostname: name=ubuntu-testsvr-01
+
+    - name: Add nginx stable repository from PPA and install its signing key
+      apt_repository: repo='ppa:nginx/stable'
+      notify: restart nginx
+
+    - name: Update apt-cache 
+      apt: update_cache=yes
+
+    - name: Install Vim
+      apt: name=vim state=latest
+     
+   - name: configure nginx site
+      template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/ppmtestsrv.com mode=0644
+      notify: restart nginx
+
+   - name: de-activate default nginx site
+     file: path=/etc/nginx/sites-enabled/default state=absent
+     notify: restart nginx
+
+   - name: activate ippmtestsrv.com nginx site
+     file: src=/etc/nginx/sites-available/ppmtestsrv.com dest=/etc/nginx/sites-enabled/ppmtessvr.com state=link
+     notify: restart nginx
+ 
+  handlers:
+   - name: restart nginx
+     service: name=nginx state=restarted

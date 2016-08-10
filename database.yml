@@ -1,0 +1,8 @@
+---
+- hosts: database
+  become: true
+  tasks:
+  roles:
+    - mysql
+
+  

@@ -1,0 +1,46 @@
+---
+- name: manage vmlist vms
+  hosts: '{{target}}' 
+  become: true 
+  vars_files:
+      - host_vars/vms.yml
+
+  tasks:
+      - name: start vms
+        service: name=vmlist state=started enabled=yes
+        register: vmlist
+
+      - name: wait for vmlist to get up
+        pause: seconds=30
+        when: vmlist.changed
+
+      - name: get list of vms
+        virt: command=list_vms
+        register: vmlist
+
+      - name: create vm
+        command: virt-install -n {{item.name}}
+                 -r {{ item.mem }}
+                 --vcpus {{ item.cpu }}
+                 --location {{ item.url }}
+                 --os-type {{ item.os.type }}
+                 --os-variant {{ item.os.variant }}
+                 --network network=default
+                 --graphics vnc
+                 --{{item.virt_hypervisor}}
+                 --virt-type {{ item.virt_type }}
+                 --disk size={{item.disk.size}},path={{item.disk.path}}/{{item.name}}.img
+                 --noautoconsole
+        when: item.name not in vmlist.list_vms
+        with_items: vms
+
+      - name: get vms info
+        virt: command=info
+        register: vms_info
+
+      - name: make sure all vms are running
+        virt: name={{item.name}} command=start
+        when: virt_info[item.name]['state'] != 'running'
+        with_items: 
+          - "{{vmlist.list_vms}}"
+

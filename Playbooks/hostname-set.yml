@@ -1,0 +1,24 @@
+---
+- hosts: '{{ target }}'
+  gather_facts: no
+  become: true
+  tasks:
+
+    - name: Assign names to the loadbalancer
+      hostname: name=template-ubuntu-1404-lts-srv
+
+- hosts: webserver
+  gather_facts: no
+  become: true
+  tasks:
+
+    - name: Assign names to the webserver
+      hostname: name=ubuntu-testsvr-01  
+
+- hosts: database
+  gather_facts: no
+  become: true
+  tasks:
+  
+    - name: Assign names to the database
+      hostname: name=ubuntu-testsrv-02

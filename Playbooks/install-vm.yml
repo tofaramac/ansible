@@ -1,0 +1,61 @@
+---
+    - name: install-vm
+      hosts: "{{ target }}"
+      vars_files:
+        - "vars/distros/{{ distro }}.yml"
+      gather_facts: no
+      sudo: yes
+      pre_tasks:
+          
+    - name: get new vm private key file
+      local_action: slurp src={{ ansible_ssh_private_key_file }}.pub
+      sudo: no
+      register: sshpubkey
+      
+    - name: create the qemu disk images
+      action: qemu-img dest={{ item.path }} size={{ item.size }} format="qcow2" options="preallocation=metadata"
+      with_items: disks
+      delegate_to: "{{ hyper }}"
+      
+    - name: create and copy the template file for the machine
+      action: template src="templates/{{ installconfigfile }}"  dest="{{ virtualfilespath }}{{ injectfile }}.cfg"
+      delegate_to: "{{ hyper }}"
+      
+    - name: create and copy the install script
+      action: template src="templates/common/install-vm.sh"  dest="{{ virtualfilespath }}{{ inventory_hostname }}-create-vm.sh" owner=root group=root mode=770
+      delegate_to: "{{ hyper }}"
+      
+    - name: execute install script
+      action: command /bin/bash {{ virtualfilespath }}{{ inventory_hostname }}-create-vm.sh
+      delegate_to: "{{ hyper }}"
+      register: createdvm
+      
+    - name: wait for vm to install
+      local_action: pause minutes={{ vmwaittime }}
+      
+    - name: copy minimal ram script
+      action: template src="templates/common/minram.sh"  dest="{{ virtualfilespath }}{{ inventory_hostname }}-minram.sh" owner=root group=root mode=770
+      delegate_to: "{{ hyper }}"
+      when: ramsize < minram
+    - name: execute minimal ram script
+      action: command /bin/bash {{ virtualfilespath }}{{ inventory_hostname }}-minram.sh
+      delegate_to: "{{ hyper }}"
+      when: ramsize < minram
+    - name: start the vm
+      action: virt guest={{ inventory_hostname }} command=start
+      delegate_to: "{{ hyper }}"
+      ignore_errors: yes
+    - name: clean up files
+      action: file path={{ item }} state=absent
+      delegate_to: "{{ hyper }}"
+      with_items:
+        - "{{ virtualfilespath }}{{ inventory_hostname }}-create-vm.sh"
+        - "{{ virtualfilespath }}{{ inventory_hostname }}.cfg"
+        - "{{ virtualfilespath }}{{ inventory_hostname }}-minram.sh"
+    - name: wait for vm to become available
+      local_action: wait_for host={{ ansible_ssh_host }} port={{ ansible_ssh_port }} delay=5 state=started timeout=300
+      sudo: no
+    - name: gather facts
+      action: setup
+      roles:
+    - users

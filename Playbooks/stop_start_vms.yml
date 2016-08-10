@@ -1,0 +1,24 @@
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: no
+  tasks:
+    - name: get vm list
+      virt: command=list_vms
+      register: vmlist
+    
+    - name: stop vms
+      virt: name={{item}} state=shutdown
+      with_items:
+        - "{{vmlist.list_vms}}"
+
+    - name: copy in backed up image files 
+      copy: src=/home/netadmin/virtimgbackup/{{item}}.img dest=/var/lib/libvirt/images/
+        remote_src=True
+      with_items: 
+        - "{{vmlist.list_vms}}"
+    
+    - name: start vms
+      virt: name={{item}} state=running
+      with_items:
+        - "{{vmlist.list_vms}}"

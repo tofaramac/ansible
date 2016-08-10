@@ -1,0 +1,6 @@
+#Restart mysql
+- hosts: '{{ target }}'
+  become: true
+  tasks:
+    - service: name=mysql state=restarted
+
