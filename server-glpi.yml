@@ -1,0 +1,13 @@
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: True
+  vars:
+    glpi_download_url: https://github.com/glpi-project/glpi/releases/download/0.90.5/glpi-0.90.5.tar.gz
+    glpi_local_path: /root/glpi-0.90.5.tar.gz
+    httpd_document_root: /var/www/html
+    mysql_glpi_password: 12345678
+  
+
+  roles:
+    - glpi 

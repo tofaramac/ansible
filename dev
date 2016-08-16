@@ -1,11 +1,11 @@
 [webservers]
-webserver ansible_ssh_host=192.168.122.118
+webserver ansible_ssh_host=192.168.122.119
 
 [database]
 database ansible_ssh_host=192.168.122.143
 
 [loadbalancer]
-loadbalancer ansible_ssh_host=192.168.122.119
+loadbalancer ansible_ssh_host=192.168.122.118
 
 [workstations]
 ppm-jhb-wks-188 ansible_ssh_host=192.168.1.188

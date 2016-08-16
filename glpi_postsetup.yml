@@ -1,0 +1,14 @@
+---
+  - name: Remove install/install.php from glpi
+    hosts: '{{ target }}'
+    become: true
+ 
+    vars:
+      httpd_document_root: /var/www/html/
+
+    tasks:
+    - name: Remove install/install.php file
+      file: path="{{ httpd_document_root }}"glpi/install/install.php state=absent
+       
+    - name: restart apache2
+      service: name=apache2 state=restarted
