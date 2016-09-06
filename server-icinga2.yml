@@ -1,0 +1,13 @@
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: True
+  tasks: 
+
+  roles:
+    - icinga2/icinga2-ansible-add-hosts
+    - icinga2/icinga2-ansible-classic-ui
+    - icinga2/icinga2-ansible-no-ui 
+    - icinga2/icinga2-ansible-web-ui 
+    - icinga2/icinga2-ansible-web2-ui 
+    - icinga2/icinga2-nrpe-agent 

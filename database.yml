@@ -4,5 +4,6 @@
   tasks:
   roles:
     - mysql
+    - unzip
 
   

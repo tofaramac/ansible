@@ -1,0 +1,8 @@
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: True
+  tasks: 
+
+  roles:
+    - itop

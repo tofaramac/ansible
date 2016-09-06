@@ -1,0 +1,12 @@
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: True
+  vars:
+    snmpv3user: Snmpv3Admin
+    snmpv3authpass: L3tmein3
+    snmpv3privpass: L3tmein3
+
+
+  roles:
+    - snmp
