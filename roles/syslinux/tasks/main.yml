@@ -1,0 +1,4 @@
+---
+# tasks file for syslinux
+- name: syslinux install
+  apt: name=syslinux state=present update_cache=yes

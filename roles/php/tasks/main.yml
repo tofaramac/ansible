@@ -1,0 +1,83 @@
+---
+# tasks file for php
+- name: php7 install
+  apt: name={{ item }} state=present
+  with_items:
+    - php7.0
+    - php-fpm
+    - php-cli
+    - php-common
+    - php-curl
+    - php-gd
+    - php-gmp
+    - php-imagick
+    - php-intl
+    - php-json
+    - php-ldap
+    - php-mcrypt
+    - php-memcache
+    - php-memcached
+    - php-redis
+    - php-mysql
+    - php-mbstring
+    - php-xdebug
+    - php-sqlite3
+    - php-mbstring
+    - php-zip
+    - php-soap
+    - php-apcu
+    - php-pear
+    - php-geoip
+    - php-imap
+  tags: [ 'packages' ]
+  
+#- name: adjust php.ini
+#  template: src=php.ini.j2 dest=/etc/php5/fpm/php.ini backup=yes
+
+#- name: enable listen.allowed_clients
+#  lineinfile: dest=/etc/php5/fpm/pool.d/www.conf 
+#    regexp="^;listen.allowed_clients" line="listen.allowed_clients = 127.0.0.1" state=present
+#  notify: php-fpm restart
+
+#- name: enable listen.mode
+#  lineinfile: dest=/etc/php5/fpm/pool.d/www.conf 
+#    regexp="^;listen.mode" line="listen.mode = 0660" state=present
+#  notify: php-fpm restart
+ 
+#- name: enable pm.status_path
+#  lineinfile: dest=/etc/php5/fpm/pool.d/www.conf 
+#    regexp="^;pm.status_path" line="pm.status_path = /php-status" state=present
+#  notify: php-fpm restart
+    
+#- name: enable slowlog
+#  lineinfile: dest=/etc/php5/fpm/pool.d/www.conf 
+#    regexp="^;slowlog" line="slowlog = log/$pool.log.slow" state=present
+#  notify: php-fpm restart
+    
+#- name: increase pm.max_children
+#  lineinfile: dest=/etc/php5/fpm/pool.d/www.conf 
+#    regexp="^pm.max_children" line="pm.max_children = 50" state=present
+#  notify: php-fpm restart
+    
+#- name: increase pm.start_servers
+#  lineinfile: dest=/etc/php5/fpm/pool.d/www.conf 
+#    regexp="^pm.start_servers" line="pm.start_servers = 25" state=present
+#  notify: php-fpm restart
+
+#- name: increase pm.min_spare_servers
+#  lineinfile: dest=/etc/php5/fpm/pool.d/www.conf 
+#    regexp="^pm.min_spare_servers" line="pm.min_spare_servers = 5" state=present
+#  notify: php-fpm restart
+    
+#- name: increase pm.max_spare_servers
+#  lineinfile: dest=/etc/php5/fpm/pool.d/www.conf 
+#    regexp="^pm.max_spare_servers" line="pm.max_spare_servers = 35" state=present
+#  notify: php-fpm restart
+
+#- name: increase pm.max_requests
+#  lineinfile: dest=/etc/php5/fpm/pool.d/www.conf 
+#    regexp="^pm.max_requests" line="pm.max_requests = 2500" state=present
+#  notify: php-fpm restart
+
+#- name: php-fpm status
+#  service: name=php5-fpm state=started enabled=true

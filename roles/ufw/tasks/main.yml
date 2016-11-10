@@ -1,0 +1,108 @@
+---
+# tasks file for ufw
+# failing on 16.04
+#- name: reset to install defaults
+#  ufw: state=enabled policy=allow
+
+- name: allow all access from RFC1918 networks to this host
+  ufw: rule=allow src={{ item }}
+  with_items:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+
+- name: allow everything and enable
+  ufw: state=enabled policy=allow
+  
+- name: set logging
+  ufw: logging=on
+
+- name: tell sender when traffic denied, log rejected connections
+  ufw: rule=reject port=auth log=yes
+
+- name: ufw open port 631 cups (IPP)
+  ufw: rule=allow port=631
+  when: "'{{ inventory_hostname_short }}' in groups['cups-servers']"
+  notify: ufw restart
+
+- name: ufw open port 67 DHCP TCP 68 UDP
+  ufw: rule=allow port={{item}}
+  with_items:
+    - 67
+    - 68
+  when: "'{{ inventory_hostname_short }}' in groups['dhcp-servers']"
+  notify: ufw restart
+
+- name: ufw open port 53 DNS
+  ufw: rule=allow port=53
+  when: "'{{ inventory_hostname_short }}' in groups['bind-servers']"
+  notify: ufw restart
+  
+- name: ufw open port 8345 enbayasts
+  ufw: rule=allow port=8345
+  notify: ufw restart
+  
+- name: ufw open port 201 ssh
+  ufw: rule=allow port=201
+  notify: ufw restart
+
+- name: ufw open port 80 http
+  ufw: rule=allow port=80
+  notify: ufw restart
+  when: "'{{ inventory_hostname_short }}' in groups['apache2-servers'] or 
+    groups['apache2-servers']"
+  tags: [ 'apache2,haproxy' ]
+
+- name: ufw open port 443 https
+  ufw: rule=allow port=443
+  notify: ufw restart
+  when: "'{{ inventory_hostname_short }}' in groups['apache2-servers'] or 
+    groups['apache2-servers']"
+  tags: [ 'apache2,haproxy' ]
+  
+#  563 NNTPS
+
+- name: ufw open port 514 rsyslog
+  ufw: rule=allow port=514
+  when: "'{{ inventory_hostname_short }}' in groups['rsyslog-client-servers']"
+  notify: ufw restart
+
+- name: ufw open port 3306 mysqld
+  ufw: rule=allow port=3306
+  notify: ufw restart
+  when: "'{{ inventory_hostname_short }}' in groups['percona-xtradb-servers'] or
+    groups['mysqld-servers']"
+  tags: [ 'mysql' ]
+
+- name: ufw open port 4444 sst
+  ufw: rule=allow port=4444
+  notify: ufw restart
+  when: "'{{ inventory_hostname_short }}' in groups['percona-xtradb-servers']"
+  tags:  [ 'percona' ]
+
+- name: ufw open port 4567 gmcast
+  ufw: rule=allow port=4567
+  notify: ufw restart
+  when: "'{{ inventory_hostname_short }}' in groups['percona-xtradb-servers']"
+  tags: [ 'percona' ]
+
+- name: ufw open port 4568 ist
+  ufw: rule=allow port=4568
+  notify: ufw restart
+  when: "'{{ inventory_hostname_short }}' in groups['percona-xtradb-servers']"
+  tags: [ 'percona' ]
+
+- name: ufw open port 3493 nut
+  ufw: rule=allow port=3493
+  notify: ufw restart
+  when: "'{{ inventory_hostname_short }}' in groups['nut-servers']"
+  tags: [ 'nut-server' ]
+
+- name: ufw disable on startup
+  command: ufw disable
+#  when: "'{{ inventory_hostname_short }}' in groups['infra-servers-farm'] or 
+#     groups['infra-servers-production']"
+
+- name: install gufw if desktop
+  apt: name=gufw state=present update_cache=yes cache_valid_time=86400
+  when: "'{{ inventory_hostname_short }}' in groups['workstations']"

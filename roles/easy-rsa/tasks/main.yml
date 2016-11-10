@@ -1,0 +1,68 @@
+---
+- name: easy-rsa install
+  apt: name=easy-rsa  state=present update_cache=true cache_valid_time=86400
+  
+- name: create CA directory
+  command: make-cadir {{ easy_rsa_ca_dir }}
+  args:
+    creates: "{{ easy_rsa_ca_dir }}"
+
+- name: create keys directory
+  file: path={{ easy_rsa_key_dir }} state=directory owner=root group=root 
+    mode=0700
+
+- name: create vars configuration file
+  template: src=vars.j2 dest="{{ easy_rsa_ca_dir }}/vars" owner=root group=root 
+    mode=0644
+
+- name: prepare keys directory
+  shell: ". ./vars; ./clean-all >/dev/null"
+  args:
+    chdir: "{{ easy_rsa_ca_dir }}"
+    creates: "{{ easy_rsa_key_dir }}/index.txt"
+
+- name: generate Diffie-Hellman parameters
+  shell: ". ./vars; ./build-dh >/dev/null"
+  args:
+    chdir: "{{ easy_rsa_ca_dir }}"
+    creates: "{{ easy_rsa_key_dir }}/dh{{ easy_rsa_key_size }}.pem"
+
+- name: build CA
+  shell: ". ./vars; ./pkitool --initca >/dev/null"
+  args:
+    chdir: "{{ easy_rsa_ca_dir }}"
+    creates: "{{ easy_rsa_key_dir }}/ca.key"
+
+- name: generate server certificate and key
+  shell: ". ./vars; ./pkitool --server {{ easy_rsa_key_name }} >/dev/null"
+  args:
+    chdir: "{{ easy_rsa_ca_dir }}"
+    creates: "{{ easy_rsa_key_dir }}/{{ easy_rsa_key_name }}.key"
+
+- name: generate CRL file
+  shell: '. ./vars; $OPENSSL ca -gencrl -out {{ easy_rsa_key_dir }}/crl.pem -config "$KEY_CONFIG"'
+  environment:
+    KEY_CN: ""
+    KEY_OU: ""
+    KEY_NAME: ""
+    KEY_ALTNAMES: ""
+  args:
+    chdir: "{{ easy_rsa_ca_dir }}"
+    creates: "{{ easy_rsa_key_dir }}/crl.pem"
+
+- name: generate client certificates and keys
+  shell: ". ./vars; ./pkitool {{ item }} >/dev/null"
+  args:
+    chdir: "{{ easy_rsa_ca_dir }}"
+    creates: "{{ easy_rsa_key_dir }}/{{ item }}.key"
+  with_items:
+    - "{{ list_openvpn_clients }}"
+
+- name: revoke client certificates and keys
+  shell: ". ./vars; ./revoke-full {{ item }} >/dev/null"
+  args:
+    chdir: "{{ easy_rsa_ca_dir }}"
+    creates: "{{ easy_rsa_key_dir }}/{{ item }}.pem"
+  with_items:
+    - "{{ list_openvpn_clients_revoke }}"
+

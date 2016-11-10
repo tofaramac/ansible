@@ -1,0 +1,36 @@
+---
+# tasks file for snmp
+- name: snmp manager install
+  apt: name={{item}} state=present update_cache=true cache_valid_time=86400
+  with_items:
+    - snmp
+    - snmp-mibs-downloader
+  when: "'{{ inventory_hostname_short }}' in groups['snmp-servers']"
+  notify: snmpd restart
+  
+- name: snmp client install
+  apt: name=snmpd state=present update_cache=true cache_valid_time=86400
+  notify: snmpd restart
+
+- name: snmpd listen external
+  template: src=default-snmpd.j2 dest=/etc/default/snmpd owner=root group=root 
+    mode=0644 backup=yes
+  notify: snmpd restart
+  
+- name: deploy manager snmp.conf
+  template: src=snmp.conf.j2 dest=/etc/snmp/snmp.conf owner=root group=root 
+    mode=0644 backup=yes
+  when: "'{{ inventory_hostname_short }}' in groups['snmp-servers']"
+  notify: snmp restart
+
+- name: download the mibs
+  command: download-mibs
+  notify: snmp restart
+
+- name: deploy client snmpd.conf
+  template: src=snmpd.conf.j2 dest=/etc/snmp/snmpd.conf owner=root group=root 
+    mode=0644 backup=yes
+  notify: snmpd restart
+  
+- name: check service
+  service: name=snmpd state=running enabled=true 

@@ -1,0 +1,10 @@
+---
+# tasks file for cssh
+- name: talk to hosts gather facts
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: create cssh cluster file
+  template: src=clusters dest=/etc/clusters
+  delegate_to: 127.0.0.1
+  
+ 

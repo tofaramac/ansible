@@ -1,0 +1,17 @@
+---
+# tasks file for nfs
+- name: install nfs-kernel-server
+  apt: name=nfs-kernel-server state=present update_cache=yes cache_valid_time=86400
+  notify: nfs-kernel-server restart
+  
+- name: create folder for consolidate export point
+  file: path={{nfs_export_point}} state=directory owner=nobody group=nogroup mode=777
+
+- name: configure export folder
+  template: src=exports.j2 dest=/etc/exports
+  notify: export filesystem
+
+- name: install nfs-common (idmapd)
+  apt: name=nfs-common state=present update_cache=yes cache_valid_time=86400
+  when: "'{{inventory_hostname_short}}' in groups['workstations']"
+  notify: idmapd restart

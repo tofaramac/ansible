@@ -1,0 +1,65 @@
+---
+# tasks file for java (Ubuntu specific)
+
+- name: Add OpenJDK-R Java PPA
+  apt_repository: >
+    repo='ppa:openjdk-r/ppa'
+    state=present
+  when: java_implementation == "openjdk" and java_openjdk_use_ppa
+  tags: java
+
+- name: Install OpenJDK Java
+  apt: >
+    name=openjdk-{{ java_openjdk_version }}-jdk
+    update_cache=true
+    state=present
+  when: java_implementation == "openjdk" and not java_openjdk_jre_only|bool
+  tags: java
+
+- name: Install OpenJDK Java Runtime Environment only
+  apt: >
+    name=openjdk-{{ java_openjdk_version }}-jre{{ java_openjdk_headless|bool|ternary('-headless','') }}
+    update_cache=true
+    state=present
+  when: java_implementation == "openjdk" and java_openjdk_jre_only|bool
+  tags: java
+
+- name: Add Web Upd8 Oracle Java PPA
+  apt_repository: repo='ppa:webupd8team/java' state=present
+  when: java_implementation == "oracle"
+  tags: java
+
+- name: Accept Oracle Java license
+  debconf: >
+    name=oracle-java{{ java_oracle_version }}-installer
+    question='shared/accepted-oracle-license-v1-1'
+    value='true'
+    vtype='select'
+  when: java_implementation == "oracle"
+  tags: java
+
+- name: Install Oracle Java
+  apt: >
+    name=oracle-java{{ java_oracle_version }}-installer
+    update_cache=true
+    state=present
+  when: java_implementation == "oracle"
+  tags: java
+
+- name: Install Oracle JCE Policy
+  apt: >
+    name=oracle-java{{ java_oracle_version }}-unlimited-jce-policy
+    update_cache=true
+    state=present
+  when: java_implementation == "oracle" and java_oracle_install_jce_policy
+  tags: java
+
+- name: Set OpenJDK as default Java
+  alternatives: name=java path={{ java_openjdk_path }}
+  when: java_implementation == "openjdk"
+  tags: java
+
+- name: Set Oracle JDK as default Java
+  alternatives: name=java path={{ java_oracle_path }}
+  when: java_implementation == "oracle"
+  tags: java

@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Bert Van Vreckem
+  description: Sets up ISC BIND on RHEL/CentOS 6/7 as an authoritative DNS server for a single domain (master and/or slave).
+  license: BSD
+  min_ansible_version: 1.7
+  platforms:
+    - name: EL
+      versions:
+        - 6
+        - 7
+  galaxy_tags:
+    - networking
+    - system
+    - dns
+dependencies: []

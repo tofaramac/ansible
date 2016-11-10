@@ -1,0 +1,34 @@
+---
+# tasks file for pxe
+
+- name: pxe install
+  apt: name={{ item }} state=present
+  with_items:
+    - tftpd-hpa
+    - inetutils-inetd
+
+- name: configure default settings
+  lineinfile: dest=/etc/default/tftpd-hpa line="{{item}}" state=present create=yes
+  with_items:
+    - 'RUN_DAEMON=\"yes\"'
+    - 'OPTIONS=\"-l -s /var/lib/tftpboot\"'
+  notify: tftpd restart
+
+- name: configure inetd
+  lineinfile: dest=/etc/inetd.conf
+    line="tftp dgram udp wait root /usr/sbin/in.tftpd /usr/sbin/in.tftpd -s /var/lib/tftpboot"
+    state=present create=yes
+  notify: tftpd restart 
+
+- name: configure dhcpd.conf on DHCP server
+  lineinfile: dest=/etc/dhcp/dhcpd.conf line="{{item}}" state=present
+  with_items:
+    - "allow booting;"
+    - "allow bootp;"
+    - "option option-128 code 128 = string;"
+    - "option option-129 code 129 = text;"
+    - "next-server 192.168.1.29;"
+    - 'filename \"pxelinux.0\";'
+  notify: isc-dhcp-server restart
+  delegate_to: "{{ dhcpd_server }}"
+  

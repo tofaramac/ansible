@@ -1,0 +1,6 @@
+---
+# tasks file for open-audit
+- name: add openaudit script
+  template: src=open_audit_linux.sh.j2 dest=/usr/local/bin/open_audit_linux.sh 
+    backup=yes state=present owner=root group=root mode=0755
+  tags: [ 'config' ]

@@ -1,0 +1,19 @@
+---
+# tasks file for apparmor
+
+- name: apparmor exists
+  stat: path=/etc/init.d/apparmor
+  register: apparmor_service
+#  when: "'{{inventory_hostname_short}}' in groups['percona-xtradb-servers']"
+
+#- name: apparmor stop
+#  service: name=apparmor state=stopped
+#  when: "apparmor_service.stat.exists and '{{inventory_hostname_short}}' in groups['percona-xtradb-servers']"
+  
+- name: apparmor remove
+  service: name=apparmor enabled=false
+#  when: "apparmor_service.stat.exists and '{{inventory_hostname_short}}' in groups['percona-xtradb-servers']"
+  
+- name: apparmor uninstall
+  apt: name=apparmor state=absent purge=true
+#  when: "apparmor_service.stat.exists and '{{inventory_hostname_short}}' in groups['percona-xtradb-servers']"

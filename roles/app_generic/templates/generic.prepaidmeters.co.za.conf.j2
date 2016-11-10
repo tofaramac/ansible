@@ -1,0 +1,111 @@
+<VirtualHost *:80>
+    ServerAdmin systems@prepaidmeters.com
+# ServerAdmin fulela@prepaidmeters.com
+    ServerName generic.prepaidmeters.co.za
+# ServerName local.generic.prepaidmeters.co.za
+    ServerAlias temp.generic.prepaidmeters.co.za 
+# remove ServerAlias temp.generic.prepaidmeters.co.za 
+    ServerAlias temp1.generic.prepaidmeters.co.za
+# remove ServerAlias temp1.generic.prepaidmeters.co.za
+
+#remove    SetEnv projectname generic
+#remove    SetEnv rootpath /var/www/generic/trunk/
+#remove    SetEnv constantsfile /var/www/generic/trunk/includes/incgenericincludes.php
+
+    SetEnv projectname generic
+    SetEnv rootpath /var/www/generic/trunk/
+    SetEnv constantsfile /var/www/generic/trunk/includes/incgenericincludes.php
+
+    DocumentRoot /var/www/generic/trunk/
+
+    <Directory />
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride None
+        Order allow,deny
+        allow from all
+    </Directory>
+
+    ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+    <Directory "/usr/lib/cgi-bin">
+            AllowOverride None
+            Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+            Order allow,deny
+            Allow from all
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
+    # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+    LogLevel error
+
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    Alias /doc/ "/usr/share/doc/"
+    <Directory "/usr/share/doc/">
+        Options Indexes MultiViews FollowSymLinks
+        AllowOverride None
+        Order deny,allow
+        Deny from all
+        Allow from 127.0.0.0/255.0.0.0 ::1/128
+    </Directory>
+
+    <Files ~ "^\.ht">
+        Order allow,deny
+        Deny from all   
+    </Files>
+
+    <Files ~ "\.inc">
+        Order allow,deny
+        Deny from all   
+    </Files>
+
+    <Files ~ "\.sql">
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files ~ "\.sh">
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files ~ "\.pl">
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files ~ "\.zip">
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files ~ "\.gz">
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files ~ "\.tar">
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files ~ "~">
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files ~ "werks">
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files ~ "git">
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files *.ini>
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files ~ "zzz">
+        Order allow,deny
+        Deny from all   
+    </Files>
+    <Files ~ "bak">
+        Order allow,deny
+        Deny from all   
+    </Files>
+</VirtualHost>
+

@@ -1,0 +1,42 @@
+---
+# tasks file for unifi
+
+- name: add openjdk-8-jre-headless repo
+  apt_repository: repo='ppa:openjdk-r/ppa'  state=present update_cache=yes
+
+- name: install openjdk-8-jre-headless
+  action: apt name='openjdk-7-jre-headless' state='present'
+  
+- name: add ppa for unifi controller
+  apt_repository: repo='deb http://www.ubnt.com/downloads/unifi/debian stable ubiquiti' state=present 
+  
+- name: add mangodb apt-key
+  apt_key: keyserver=keyserver.ubuntu.com id=EA312927 state=present
+  notify: apt-get update
+  
+- name: add repo for mangodb
+  apt_repository: repo="deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse"  state=present
+  
+- name: Install mangodb
+  apt: name={{item}} state=present 
+  with_items:
+   - mongodb-server
+   - mongodb-clients
+   - libpcrecpp0v5
+  tags: [ 'packages' ] 
+  
+  
+#- name: configure mongodb
+#  template: src=mongod.conf.j2 dest=/etc/mongod.conf
+#  tags: mongodb
+
+- name: run mongodb
+  service: name=mongodb state=started enabled=yes
+  tags: mongodb
+  
+- name: add unifi apt-key
+  apt_key: keyserver=keyserver.ubuntu.com id=C0A52C50 state=present
+ 
+
+- name: Install Unifi Controller
+  action: apt name='unifi' state='present'

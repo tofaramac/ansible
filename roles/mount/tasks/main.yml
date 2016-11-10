@@ -1,0 +1,19 @@
+---
+# tasks file for mount
+- name: make consolidated mount folder
+  file: path={{ nfsmount }} state=directory
+  when: "'{{ inventory_hostname_short }}' in groups['percona-xtradb-servers']"
+
+- name: mount from db server to file server
+  mount: name={{nfsmount}} src='{{nfsserver}}:{{nfspath}}' fstype={{nfsfstype}} 
+    opts={{nfsmountopts_db}} state=present
+  when:  "'{{ inventory_hostname_short }}' in groups['percona-xtradb-servers']"
+  
+- name: mount from apache2 server to file server
+  mount: name={{nfsmount}} src='{{nfsserver}}:{{nfspath}}' fstype={{nfsfstype}} 
+    opts={{nfsmountopts_apache2}} state=present
+  when:  "'{{ inventory_hostname_short }}' in groups['apache2-servers']"
+
+- name: create directory in mount for host
+  file: path={{ nfsmount }}/{{ inventory_hostname_short }} owner=www-data 
+    group=www-data mode=0777 state=directory

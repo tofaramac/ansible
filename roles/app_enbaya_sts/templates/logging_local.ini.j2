@@ -1,0 +1,35 @@
+; {{ ansible_managed }}
+;  ----------------------------------------------------------
+;  Local logging configuration
+;  ----------------------------------------------------------
+; 
+
+
+;  Formatters
+
+logging.local.logging.formatters.default.class = PatternFormatter
+logging.local.logging.formatters.default.pattern = [%N]: %Y%m%d%H%M%S.%F%z : %P.%I : [%q] : %t
+logging.local.logging.formatters.default.times = UTC
+
+;  Channels
+
+logging.local.logging.channels.sts.class = FileChannel
+logging.local.logging.channels.sts.formatter = default
+logging.local.logging.channels.sts.path = ${VARDIR}/log/enbayasts/${APPNAME}.log
+logging.local.logging.channels.sts.rotation = 128 M
+logging.local.logging.channels.sts.archive = timestamp
+logging.local.logging.channels.sts.times = local
+logging.local.logging.channels.sts.compress = yes
+logging.local.logging.channels.sts.purgeAge = 1 months
+logging.local.logging.channels.sts.purgeCount = 80
+
+;  Loggers
+
+logging.local.logging.loggers.root.channel = sts
+logging.local.logging.loggers.root.level = trace
+
+; 		ignore trace level here. levels are filtered inside the application
+
+
+
+

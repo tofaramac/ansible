@@ -1,0 +1,73 @@
+---
+# tasks file for aurora
+
+#- name: Make sure the known hosts file exists
+#  file: "path={{ ssh_known_hosts_file }} state=touch"
+
+#- name: Check host name availability
+#  shell: "ssh-keygen -f {{ ssh_known_hosts_file }} -F {{ item }}"
+#  with_items: ssh_known_hosts
+#  register: ssh_known_host_results
+#  ignore_errors: yes
+
+#- name: Scan the public key
+#  shell: "{{ ssh_known_hosts_command}} {{ item.item }} >> {{ ssh_known_hosts_file }}"
+#  with_items: ssh_known_host_results.results
+#  when: item.stdout == ""
+    
+#- name: git clone aurora
+#  git: repo={{ github_repo }} dest={{ clone_dest }} accept_hostkey=yes
+#  become_user: "{{ user }}"
+  
+- name: deploy prd conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['prd-apache2-servers']"
+  
+- name: enable prd sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['prd-apache2-servers']"
+
+- name: deploy stg conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - stg.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['stg-apache2-servers']"
+  
+- name: enable tst sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - stg.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['stg-apache2-servers']"
+  
+  
+- name: deploy tst conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - tst.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['tst-apache2-servers']"
+  
+- name: enable tst sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - tst.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['tst-apache2-servers']"
+
+
+- name: deploy local conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - local.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['dev']"
+  
+- name: enable local sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - local.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['dev']"
+  
+#- name: apache restart
+#  service: name=apache2 state=started enabled=yes

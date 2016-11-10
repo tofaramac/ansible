@@ -1,0 +1,37 @@
+---
+# tasks file for enbaya-sts
+
+- name: enbayasts install check
+  command: dpkg-query -W enbayasts
+  register: enbaya_sts_check_deb
+  failed_when: enbaya_sts_check_deb.rc > 1
+  changed_when: enbaya_sts_check_deb.rc == 1
+  
+- name: enbayasts install file
+  apt: deb="/var/nas/enbayasts_1.3.0-rc2_amd64.deb"
+  become: true
+  when: enbaya_sts_check_deb.rc == 1
+  
+- name: deploy *.ini
+  template: src={{ item }}.ini.j2 dest=/etc/enbayasts/{{ item }}.ini
+  with_items:
+    - amqp     
+    - logging        
+    - node  
+    - prism     
+    - stscontrol  
+    - stsif
+    - database  
+    - logging_local  
+    - stscheck  
+    - stscrypt    
+    - stswatchdog
+
+- name: ensure rabbitmq-server is running
+  service: name=rabbitmq-server enabled=true state=restarted
+    
+- name: ensure enbayasts is running 
+  service: name=enbayasts enabled=true state=restarted
+           
+- name: enbayasts check 
+  command: stscheck

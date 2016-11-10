@@ -1,0 +1,86 @@
+# {{ ansible_managed }}
+#
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+########################
+# External Firewall Mapping: {{external_map}}
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+{% if inventory_hostname_short in groups['workstations'] %}
+# The primary network interface
+auto eth0 
+iface eth0 inet dhcp
+{% endif %}
+
+{% if inventory_hostname_short in groups['infra-servers-dbn'] %}
+# The primary network interface
+auto eth0 
+iface eth0 inet static
+    address {{ansible_ssh_host}}
+    netmask {{netmask}}
+    gateway {{gateway}}
+    broadcast {{broadcast}}
+    dns-search {{ppm_local_domain_name}}
+    dns-nameservers {{dns_nameservers}}
+{% endif %}
+
+{% if inventory_hostname_short in groups['infra-servers-jhb'] %}
+# The primary network interface
+auto eth0 
+iface eth0 inet static
+    address {{ansible_ssh_host}}
+    netmask {{netmask}}
+    gateway {{gateway}}
+    broadcast {{broadcast}}
+    dns-search {{ppm_local_domain_name}}
+    dns-nameservers {{dns_nameservers}}
+{% endif %}
+
+{% if inventory_hostname_short in groups['prd'] %}
+# The primary network interface
+auto eth0 
+iface eth0 inet static
+    address {{ansible_ssh_host}}
+    netmask {{netmask}}
+    gateway {{gateway}}
+    broadcast {{broadcast}}
+    dns-search {{ppm_com_domain_name}}
+    dns-nameservers {{dns_nameservers}}
+{% endif %}
+
+{% if inventory_hostname_short in groups['stg'] %}
+# The primary network interface
+auto eth0 
+iface eth0 inet static
+    address {{ansible_ssh_host}}
+    netmask {{netmask}}
+    gateway {{gateway}}
+    broadcast {{broadcast}}
+    dns-search {{ppm_stg_domain_name}}
+    dns-nameservers {{dns_nameservers}}
+{% endif %}
+
+{% if inventory_hostname_short in groups['tst'] %}
+# The primary network interface
+auto eth0 
+iface eth0 inet static
+    address {{ansible_ssh_host}}
+    netmask {{netmask}}
+    gateway {{gateway}}
+    broadcast {{broadcast}}
+    dns-search {{ppm_tst_domain_name}}
+    dns-nameservers {{dns_nameservers}}
+{% endif %}
+
+{% if inventory_hostname_short in groups['kvm-servers'] %}
+# The bridge network interface
+auto br0 
+iface br0 inet dhcp
+bridge_ports eth0
+bridge_stp off
+bridge_fd 0
+bridge_maxwait 5
+{% endif %}

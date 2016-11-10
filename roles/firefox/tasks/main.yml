@@ -1,0 +1,16 @@
+---
+# tasks file for firefox
+
+- name: install firefox
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - firefox
+    - icedtea-plugin
+  when: "'{{ inventory_hostname_short }}' in groups['firefox-installed']"
+
+- name: remove firefox
+  apt: name={{item}} state=absent update_cache=yes cache_valid_time=86400
+  with_items:
+    - firefox
+    - icedtea-plugin
+  when: "'{{ inventory_hostname_short }}' not in groups['firefox-installed']"

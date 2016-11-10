@@ -1,0 +1,11 @@
+---
+# handlers file for squid-proxy
+- name: squid3 restart 
+  service: name=squid3 state=restarted
+  
+- name: squid3 start 
+  service: name=squid3 state=started
+  
+- name: squid3 stop 
+  service: name=squid3 state=stopped
+  

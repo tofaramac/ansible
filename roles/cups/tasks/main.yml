@@ -1,0 +1,25 @@
+---
+# tasks file for cups
+- name: cups install
+  apt: name=cups state=present update_cache=yes
+  tags: [ 'packages' ]
+  
+- name: create ppd directory
+  file: path={{ ppd_directory }} owner=root group=lp mode=0755 state=directory
+  tags: [ 'config' ]
+  
+- name: add ppd files
+  copy: src={{ item }} dest={{ cups_ppd_directory }} owner=root group=root mode=0644
+  with_items:
+    - Canon_iR1730.ppd
+    - Canon_imageRUNNER1133_series.ppd
+    - Samsung_ML-2580N.ppd
+  tags: [ 'config' ]
+  
+- name: cups conf
+  template: src=cupsd.conf.j2 dest=/etc/cups/cupsd.conf owner=root group=root mode=0644
+  notify: cups restart
+  tags: [ 'config' ]
+  
+- name: cups status
+  service: name=cups state=started enabled=true

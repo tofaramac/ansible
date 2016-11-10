@@ -1,0 +1,93 @@
+---
+# tasks file for app_pervasive
+- name: deploy default-ssl conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - default-ssl.conf
+  when: "'{{hostname}}' in groups['tst'] or groups['stg']"
+  
+- name: deploy prd conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - documentsdynamic.prepaidmeters.co.za.conf
+    - geo.prepaidmeters.co.za.conf
+    - documents.prepaidmeters.co.za.conf
+    - pdf.prepaidmeters.co.za.conf
+  when: "'{{inventory_hostname_short}}' in groups['prd-apache2-servers']"
+  
+- name: enable prd sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - documentsdynamic.prepaidmeters.co.za.conf
+    - geo.prepaidmeters.co.za.conf
+    - documents.prepaidmeters.co.za.conf
+    - pdf.prepaidmeters.co.za.conf
+  when: "'{{inventory_hostname_short}}' in groups['prd-apache2-servers']"
+
+
+- name: deploy stg conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - stg.documentsdynamic.prepaidmeters.co.za.conf
+    - stg.geo.prepaidmeters.co.za.conf
+    - stg.documents.prepaidmeters.co.za.conf
+    - stg.pdf.prepaidmeters.co.za.conf
+  when: "'{{inventory_hostname_short}}' in groups['stg-apache2-servers']"
+
+- name: enable default-ssl sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - default-ssl
+  when: "'{{inventory_hostname_short}}' in groups['tst'] or groups['stg']"
+  
+- name: enable stg sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - stg.documentsdynamic.prepaidmeters.co.za.conf
+    - stg.geo.prepaidmeters.co.za.conf
+    - stg.documents.prepaidmeters.co.za.conf
+    - stg.pdf.prepaidmeters.co.za.conf
+  when: "'{{inventory_hostname_short}}' in groups['stg-apache2-servers']"
+
+
+
+- name: deploy tst conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - tst.documentsdynamic.prepaidmeters.co.za.conf
+    - tst.geo.prepaidmeters.co.za.conf
+    - tst.documents.prepaidmeters.co.za.conf
+    - tst.pdf.prepaidmeters.co.za.conf
+  when: "'{{inventory_hostname_short}}' in groups['tst-apache2-servers']"
+  
+- name: enable tst sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - tst.documentsdynamic.prepaidmeters.co.za.conf
+    - tst.geo.prepaidmeters.co.za.conf
+    - tst.documents.prepaidmeters.co.za.conf
+    - tst.pdf.prepaidmeters.co.za.conf
+  when: "'{{inventory_hostname_short}}' in groups['tst-apache2-servers']"
+
+
+- name: deploy local conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - local.documentsdynamic.prepaidmeters.co.za.conf
+    - local.geo.prepaidmeters.co.za.conf
+    - local.documents.prepaidmeters.co.za.conf
+    - local.pdf.prepaidmeters.co.za.conf
+  when: "'{{inventory_hostname_short}}' in groups['dev']"
+  
+- name: enable local sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - local.documentsdynamic.prepaidmeters.co.za.conf
+    - local.geo.prepaidmeters.co.za.conf
+    - local.documents.prepaidmeters.co.za.conf
+    - local.pdf.prepaidmeters.co.za.conf
+  when: "'{{inventory_hostname_short}}' in groups['dev']"
+
+
+#- name: apache restart
+#  service: name=apache2 state=started enabled=yes

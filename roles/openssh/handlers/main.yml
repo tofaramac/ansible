@@ -1,0 +1,7 @@
+---
+# handlers file for ssh
+- name: sshd restart
+  service: name=ssh state=restarted
+  
+- name: sshd status
+  service: name=ssh enabled=true

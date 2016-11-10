@@ -1,0 +1,377 @@
+# {{ ansible_managed }}
+#
+ddns-updates on;
+ddns-update-style interim;
+update-static-leases on;
+key rndc-key { algorithm hmac-md5; secret "z7H9desctnyZTIQfZWzldw==";}
+allow unknown-clients;
+use-host-decl-names on;
+default-lease-time 1200;
+max-lease-time 7200;
+authoritative;
+log-facility local7;
+
+zone prepaidmeters.local. {  
+    primary 192.168.1.29; # This server is the primary DNS server for the zone
+    key rndc-key; # Use the key we defined earlier for dynamic updates
+}
+zone 1.168.192.in-addr.arpa. {  
+    primary 29.1.168.192; # This server is the primary DNS server for the zone
+    key rndc-key; # Use the key we defined earlier for dynamic updates
+}
+
+# This range has been removed due to unauthorized hosts connecting to LAN
+{% if ansible_default_ipv4.network == '192.168.1.0' %}
+subnet {{ ansible_default_ipv4.network }} netmask {{ ansible_default_ipv4.netmask }} {
+  range 192.168.1.50 192.168.1.53; 
+  option subnet-mask {{ ansible_default_ipv4.netmask }};
+  option broadcast-address {{ ansible_default_ipv4.broadcast }};
+  option routers {{ ansible_default_ipv4.gateway }};
+  option domain-name-servers {{ jhb_dns_nameserver }};
+  option domain-name "{{ ppm_local_domain_name }}";
+  option ntp-servers {{ jhb_ntp_servers }}, {{ dbn_ntp_servers }};
+  ddns-domainname "{{ppm_local_domain_name}}";
+  ddns-rev-domainname "1.168.192.in-addr.arpa";
+}
+{% else %}
+subnet {{ ansible_default_ipv4.network }} netmask {{ ansible_default_ipv4.netmask }} {
+range 192.168.3.50 192.168.3.53; 
+  option subnet-mask {{ ansible_default_ipv4.netmask }};
+  option broadcast-address {{ ansible_default_ipv4.broadcast }};
+  option routers {{ ansible_default_ipv4.gateway }};
+  option ntp-servers {{ jhb_ntp_servers }}, {{ dbn_ntp_servers }};
+  option domain-name "{{ ppm_local_domain_name }}";
+  option domain-name-servers {{ dbn_dns_nameservers }};
+}
+{% endif%}
+
+
+### IMPORTANT IMPORTANT IMPORTANT ####
+# Ranges are defined for departments. Please keep tidy. When adding or replacing hardware always update.
+
+{% if ansible_default_ipv4.network == '192.168.1.0' %}
+# DEVICES
+host ppm-jhb-wifi-1	{ hardware ethernet 04:18:d6:5a:a6:35; fixed-address 192.168.1.1; } # unifi-1 outside support
+host ppm-jhb-wifi-2	{ hardware ethernet 04:18:d6:6c:10:d8; fixed-address 192.168.1.2; } # unifi-2 sales
+host ppm-jhb-wifi-3	{ hardware ethernet 04:18:d6:6c:1d:40; fixed-address 192.168.1.3; } # unifi-3 accounts
+host ppm-jhb-wifi-4	{ hardware ethernet 04:18:d6:96:10:97; fixed-address 192.168.1.4; } # unifi-4 management
+# 5
+host ppm-jhb-prnt-6	{ hardware ethernet 18:0c:ac:d9:2c:a1; fixed-address 192.168.1.6; } # canon-ir1133 # SALES
+host ppm-jhb-prnt-7	{ hardware ethernet 88:87:17:4E:78:3E; fixed-address 192.168.1.7; } # canon-ir1730i # ACCOUNTS
+host ppm-jhb-prnt-8	{ hardware ethernet 00:15:99:69:15:FE; fixed-address 192.168.1.8; } # samsung-2580 # BARBS
+host ppm-jhb-prnt-9	{ hardware ethernet 88:87:17:B1:A1:64; fixed-address 192.168.1.9; } # canon-MG8240 # MARKETING
+host ppm-jhb-prnt-10	{ hardware ethernet 30:CD:A7:AD:84:AD; fixed-address 192.168.1.10; } # samsung-c410w-1
+host ppm-jhb-prnt-11	{ hardware ethernet 30:cd:a7:2d:b6:7b; fixed-address 192.168.1.11; } # samsung-c410w-2
+# 12
+host ppm-jhb-swch-13	{ hardware ethernet 44:D9:E7:06:25:0B; fixed-address 192.168.1.13; } # switch-ubnt-1 SERVER ROOM
+host ppm-jhb-swch-14	{ hardware ethernet 44:D9:E7:06:24:CC; fixed-address 192.168.1.14; } # switch-ubnt-2 SERVICE ROOM
+host ppm-jhb-swch-15	{ hardware ethernet 44:D9:E7:06:26:94; fixed-address 192.168.1.15; } # switch-ubnt-3 ACCOUNTS ROOM
+host ppm-jhb-nasd-16	{ hardware ethernet 00:11:32:43:C9:6F; fixed-address 192.168.1.16; } # nas-synology-1
+host ppm-jhb-swch-17	{ hardware ethernet 04:18:D6:F0:D5:F7; fixed-address 192.168.1.17; } # switch-ubnt-4 SERVER ROOM
+host ppm-jhb-swch-18	{ hardware ethernet 04:18:D6:C3:4C:F0; fixed-address 192.168.1.18; } # switch ubnt-5 SERVER ROOM
+# 19
+# SERVERS
+host ppm-jhb-infra-0	{ hardware ethernet 00:13:72:fa:26:21; fixed-address 192.168.1.20; } # THIS HOST
+host ppm-jhb-infra-1    { hardware ethernet 78:2b:cb:33:71:00; fixed-address 192.168.1.21; } # PPM-INFRA-1
+host ppm-jhb-infra-2	{ hardware ethernet 00:21:5a:f5:31:b6; fixed-address 192.168.1.22; } # PPM-INFRA-2
+host ppm-jhb-infra-3	{ hardware ethernet 00:04:23:BE:3E:4F; fixed-address 192.168.1.23; } # PPM-INFRA-3
+host prd-ppm-ha-jhb     { hardware ethernet 52:54:00:8e:ae:74; fixed-address 192.168.1.24; } # VM ON 192.168.1.22
+host prd-ppm-www-jhb    { hardware ethernet 52:54:00:49:12:3c; fixed-address 192.168.1.25; } # VM ON 192.168.1.22
+host prd-ppm-clr-jhb    { hardware ethernet 52:54:00:1e:8e:38; fixed-address 192.168.1.26; } # VM ON 192.168.1.22
+host prd-ppm-sts-jhb	{ hardware ethernet 52:54:00:5f:13:f1; fixed-address 192.168.1.27; } # VM ON 192.168.1.22
+host prd-ppm-file-jhb	{ hardware ethernet 52:54:00:fb:cc:f0; fixed-address 192.168.1.28; } # VM ON 192.168.1.22
+host ppm-jhb-infra-15	{ hardware ethernet 00:14:22:10:5a:7a; fixed-address 192.168.1.29; } # PPM-INFRA-15
+host ppm-sms-30		{ hardware ethernet 00:0d:b9:35:f9:80; fixed-address 192.168.1.30; } # smsfoxbox-dev
+host ppm-sms-31		{ hardware ethernet 00:0d:b9:36:0e:f0; fixed-address 192.168.1.31; } # smsfoxbox-1
+host ppm-sms-32		{ hardware ethernet 00:0d:b9:36:05:14; fixed-address 192.168.1.32; } # smsfoxbox-2
+# 33
+# 34
+# 35
+host ppm-jhb-infra-001  { hardware ethernet 98:90:96:AB:08:B9; fixed-address 192.168.1.36; } # KVM HOST
+host ppm-jhb-infra-002  { hardware ethernet 50:65:f3:7a:79:e4; fixed-address 192.168.1.37; } # KVM HOST
+# 38
+host ppm-jhb-infra-4	{ hardware ethernet 3c:a8:2a:4b:25:50; fixed-address 192.168.1.39; } # KVM HOST
+host ppm-jhb-infra-5	{ hardware ethernet 3c:a8:2a:4b:06:84; fixed-address 192.168.1.40; } # KVM HOST
+host ppm-jhb-infra-6	{ hardware ethernet 3C:A8:2A:4C:74:18; fixed-address 192.168.1.41; } # KVM HOST
+host ppm-jhb-infra-7	{ hardware ethernet 3C:A8:2A:4C:c1:88; fixed-address 192.168.1.42; } # KVM HOST
+host ppm-jhb-infra-8	{ hardware ethernet 3C:A8:2A:4C:72:c8; fixed-address 192.168.1.43; } # KVM HOST
+host ppm-jhb-infra-9	{ hardware ethernet 3C:A8:2A:4C:70:5c; fixed-address 192.168.1.44; } # KVM HOST
+host ppm-jhb-infra-10	{ hardware ethernet 3c:a8:2a:4c:7d:14; fixed-address 192.168.1.45; } # KVM HOST
+host ppm-jhb-infra-11	{ hardware ethernet 50:65:F3:7A:79:D4; fixed-address 192.168.1.46; } # KVM HOST
+host ppm-jhb-infra-12	{ hardware ethernet 50:65:F3:7A:73:D4; fixed-address 192.168.1.47; } # KVM HOST
+host ppm-jhb-infra-13	{ hardware ethernet 50:65:F3:7A:83:F8; fixed-address 192.168.1.48; } # KVM HOST
+# 49
+# FIELD SERVICES
+host ppm-jhb-wks-50     { hardware ethernet D0:27:88:6E:31:AE; fixed-address 192.168.1.50; } # desiree-wks
+host ppm-jhb-sip-51     { hardware ethernet 00:15:65:75:33:16; fixed-address 192.168.1.51; } # desiree-sip
+host ppm-jhb-wks-52     { hardware ethernet 4c:cc:6a:02:95:9e; fixed-address 192.168.1.52; } # jenna-wks
+host ppm-jhb-sip-53     { hardware ethernet 00:0B:82:74:5a:ea; fixed-address 192.168.1.53; } # jenna-sip
+host ppm-jhb-wks-54     { hardware ethernet D0:27:88:C3:0F:8F; fixed-address 192.168.1.54; } # ruan-wks
+host ppm-jhb-sip-55     { hardware ethernet 00:15:65:25:21:e6; fixed-address 192.168.1.55; } # ruan-sip
+# 56
+# 57
+# 58
+#host ppm-jhb-nbw-59	{ hardware ethernet E0:B9:A5:F1:FF:96; fixed-address 192.168.1.59; } # ASUS Eee PC
+# BUSINESS DEVELOPMENT
+host ppm-jhb-wks-60     { hardware ethernet a0:1d:48:d4:9e:a1; fixed-address 192.168.1.60; } # shaun-nb-eth
+host ppm-jhb-sip-61     { hardware ethernet 00:0B:82:74:5C:01; fixed-address 192.168.1.61; } # shaun-sip
+host ppm-jhb-wks-62	{ hardware ethernet 10:78:d2:d3:98:c4; fixed-address 192.168.1.62; } # errol-wks
+host ppm-jhb-sip-63     { hardware ethernet 00:15:65:75:33:42; fixed-address 192.168.1.63; } # errol-sip FAILED REGISTER
+#64
+# 65
+# MARKETING
+host ppm-jhb-wks-66    { hardware ethernet d0:27:88:56:75:17; fixed-address 192.168.1.66; } # justin-wks WINDOWS
+host ppm-jhb-sip-67    { hardware ethernet 00:15:65:75:35:66; fixed-address 192.168.1.67; } # justin-sip
+# 68
+# 69
+# SALES
+host ppm-jhb-wks-70     { hardware ethernet 98:90:96:b7:9c:34; fixed-address 192.168.1.70; } # aadil-wks
+host ppm-jhb-sip-71     { hardware ethernet 00:0B:82:74:5B:FF; fixed-address 192.168.1.71; } # aadil-sip
+host ppm-jhb-wks-72     { hardware ethernet D0:27:88:6E:2C:83; fixed-address 192.168.1.72; } # wks
+host ppm-jhb-sip-73     { hardware ethernet 00:15:65:18:8A:CB; fixed-address 192.168.1.73; } # sip
+host ppm-jhb-wks-74     { hardware ethernet D0:27:88:79:F3:FD; fixed-address 192.168.1.74; } # wks
+host ppm-jhb-sip-75	{ hardware ethernet 00:15:65:48:7B:47; fixed-address 192.168.1.75; } # sip
+# 76
+# 77
+# 78
+# 79
+# TECHNICAL SUPPORT
+host ppm-jhb-wks-80     { hardware ethernet 98:90:96:bf:12:b9; fixed-address 192.168.1.80; } # sharon-wks
+host ppm-jhb-sip-81     { hardware ethernet 00:0B:82:74:5C:02; fixed-address 192.168.1.81; } # sharon-sip
+host ppm-jhb-wks-82     { hardware ethernet 98:90:96:bf:1f:be; fixed-address 192.168.1.82; } # brandon-wks
+host ppm-jhb-sip-83     { hardware ethernet 00:0B:82:74:5B:44; fixed-address 192.168.1.83; } # brandon-sip
+host ppm-jhb-wks-84     { hardware ethernet 98:90:96:bf:18:30; fixed-address 192.168.1.84; } # tiaan-wks
+host ppm-jhb-sip-85     { hardware ethernet 00:0B:82:74:5B:45; fixed-address 192.168.1.85; } # tiaan-sip
+host ppm-jhb-wks-86     { hardware ethernet 98:90:96:af:52:62; fixed-address 192.168.1.86; } # brad-wks
+host ppm-jhb-sip-87     { hardware ethernet 00:0B:82:74:5B:43; fixed-address 192.168.1.87; } # brad-sip
+# ACCOUNTS SUPPORT
+host ppm-jhb-wks-90    { hardware ethernet 98:90:96:bf:0f:b1; fixed-address 192.168.1.90; } # merna-wks
+host ppm-jhb-sip-91    { hardware ethernet 00:0b:82:74:5a:e7; fixed-address 192.168.1.91; } # merna-sip
+host ppm-jhb-wks-92    { hardware ethernet 98:90:96:bf:37:b9; fixed-address 192.168.1.92; } # nicole-wks
+host ppm-jhb-sip-93    { hardware ethernet 00:15:65:75:31:F8; fixed-address 192.168.1.93; } # nicole-sip
+host ppm-jhb-wks-94    { hardware ethernet 4c:cc:6a:02:95:96; fixed-address 192.168.1.94; } # michelle-wks
+host ppm-jhb-sip-95    { hardware ethernet 00:15:65:75:35:f0; fixed-address 192.168.1.95; } # michelle-sip
+# 96
+# 97
+# 98
+# 99
+# 100
+# 105 reserved for HEXING DATA CONCERNTRATORS WHICH USE THE ADDRESS BY DEFAULT
+# 106
+# 107
+# 108
+# 109
+# WIFI DEVICES 
+host ppm-tv-110         { hardware ethernet 00:a5:05:00:f0:d5; fixed-address 192.168.1.110; } # ppm-tv-01
+host ppm-tv-111         { hardware ethernet 00:7c:05:01:78:38; fixed-address 192.168.1.111; } # ppm-tv-02
+host ppm-tv-112         { hardware ethernet 00:7c:05:01:78:cc; fixed-address 192.168.1.112; } # ppm-tv-03
+host ppm-tv-113         { hardware ethernet 00:8e:05:01:dd:a4; fixed-address 192.168.1.113; } # ppm-tv-04
+host ppm-tv-114         { hardware ethernet 00:a5:05:00:f0:ef; fixed-address 192.168.1.114; } # ppm-tv-05
+host ppm-tv-115         { hardware ethernet 00:7b:05:01:73:7c; fixed-address 192.168.1.115; } # ppm-tv-06
+host ppm-tv-116         { hardware ethernet 00:22:f4:e2:3c:54; fixed-address 192.168.1.116; } # ppm-tv-116
+# 117
+# 118
+# 119
+host ppm-nbw-110        { hardware ethernet 48:5a:b6:99:b0:21; fixed-address 192.168.1.120; } # sean-nb-wlan
+host ppm-gsm-111        { hardware ethernet 48:5a:3f:81:90:54; fixed-address 192.168.1.130; } # babs-android galaxy s5
+host ppm-gsm-112        { hardware ethernet 84:38:38:2f:1f:e1; fixed-address 192.168.1.132; } # sean-android galaxy s5
+host ppm-gsm-113        { hardware ethernet 48:5a:3f:31:d9:45; fixed-address 192.168.1.133; } # karen-android galaxy s5
+host ppm-gsm-114        { hardware ethernet 84:38:38:1d:93:99; fixed-address 192.168.1.134; } # wayne-android galaxy s5
+host ppm-gsm-115        { hardware ethernet 48:5A:3F:2F:88:9D; fixed-address 192.168.1.135; } # steven-android galaxy s5
+host ppm-gsm-116        { hardware ethernet 48:5A:3F:47:05:82; fixed-address 192.168.1.136; } # shaun-android galaxy s5
+host pvt-gsm-117        { hardware ethernet 34:BE:00:EC:48:25; fixed-address 192.168.1.137; } # llewellyn-android
+host ppm-gsm-118        { hardware ethernet 84:38:38:d3:95:f0; fixed-address 192.168.1.138; } # ruan-android
+host ppm-nbw-119	{ hardware ethernet B8:70:F4:09:9A:86; fixed-address 192.168.1.138; } # lenovo michelle
+host ppm-nbw-120	{ hardware ethernet A4:17:31:BA:16:25; fixed-address 192.168.1.139; } # lenovo Karen
+# 140
+# 141
+# 142
+# 143
+# 144
+# 145
+# 146
+# 147
+# 148
+# 149
+# ACCOUNTS
+host ppm-jhb-wks-150	{ hardware ethernet d0:27:88:9d:76:00; fixed-address 192.168.1.150; } # paul-wks
+host ppm-jhb-sip-151	{ hardware ethernet 00:15:65:1e:75:da; fixed-address 192.168.1.151; } # paul-sip
+host ppm-jhb-wks-152    { hardware ethernet D0:27:88:52:04:B4; fixed-address 192.168.1.152; } # adri-wks
+host ppm-jhb-sip-153	{ hardware ethernet 00:15:65:27:27:d7; fixed-address 192.168.1.153; } # adri-sip
+host ppm-jhb-wks-154	{ hardware ethernet 98:90:96:BF:3A:18; fixed-address 192.168.1.154; } # janice-wks
+host ppm-jhb-sip-155	{ hardware ethernet 00:0B:82:74:5A:E9; fixed-address 192.168.1.155; } # janice-sip
+host ppm-jhb-wks-156    { hardware ethernet D0:27:88:79:F4:E5; fixed-address 192.168.1.156; } # mariana-wks
+host ppm-jhb-sip-157	{ hardware ethernet 00:0b:82:74:5b:2e; fixed-address 192.168.1.157; } # mariana-sip
+# 158
+# 159
+# 160
+# 161
+# 162
+# 163
+# 164
+# 165
+# 166
+# 167
+# 168
+# 169
+# CUSTOMER SERVICES
+host ppm-jhb-wks-170     { hardware ethernet d0:27:88:9d:76:11; fixed-address 192.168.1.170; } # -wks
+host ppm-jhb-sip-171     { hardware ethernet 00:15:65:27:29:0f; fixed-address 192.168.1.171; } # -sip
+host ppm-jhb-wks-172     { hardware ethernet 98:90:96:BF:17:88; fixed-address 192.168.1.172; } # gavin-wks
+host ppm-jhb-sip-173     { hardware ethernet 00:0b:82:74:5b:46; fixed-address 192.168.1.173; } # gavin-sip
+# 174     
+# 175
+# 175
+# DEVELOPMENT
+host ppm-jhb-nbe-176    { hardware ethernet a0:1d:48:d6:02:09; fixed-address 192.168.1.176; } # fulela-nb-eth
+host ppm-jhb-sip-177    { hardware ethernet 00:15:65:75:31:e8; fixed-address 192.168.1.177; } # fulela-sip
+host ppm-jhb-wks-178    { hardware ethernet 10:78:d2:d3:99:ec; fixed-address 192.168.1.178; } # nosi-wks
+host ppm-jhb-sip-179    { hardware ethernet 00:15:65:48:7e:b9; fixed-address 192.168.1.179; } # nosi-sip REGISTER FAILS WRONg ACCOUNT
+host ppm-jhb-wks-180    { hardware ethernet 4c:cc:6a:02:95:43; fixed-address 192.168.1.180; } # tofara-wks
+host ppm-jhb-sip-181    { hardware ethernet 00:15:65:27:2a:dd; fixed-address 192.168.1.181; } # tofara-sip
+host ppm-jhb-wks-182    { hardware ethernet d0:27:88:a5:ad:98; fixed-address 192.168.1.182; } # cliford-wks
+host ppm-jhb-sip-183    { hardware ethernet 00:15:65:48:80:2f; fixed-address 192.168.1.183; } # cliford-sip REGISTER FAILS WRONg ACCOUNT
+host ppm-jhb-nbe-184    { hardware ethernet a0:1d:48:d6:02:d3; fixed-address 192.168.1.184; } # neill-nb-eth
+host ppm-jhb-sip-185    { hardware ethernet 00:15:65:75:33:3c; fixed-address 192.168.1.185; } # neill-sip
+host ppm-jhb-nbe-186    { hardware ethernet 9c:b6:54:a5:6a:48; fixed-address 192.168.1.186; } # michael-nb-eth
+host ppm-jhb-wks-187    { hardware ethernet ; fixed-address 192.168.1.187; } # 
+host ppm-jhb-wks-188    { hardware ethernet 00:22:68:31:45:E3; fixed-address 192.168.1.188; } # testsvr-wks 
+#host template-srv       { hardware ethernet 52:54:00:bd:42:33; fixed-address 192.168.1.189; }
+# TESTING
+host tst-ppm-ha-0         { hardware ethernet 52:54:00:58:b4:01; fixed-address 192.168.1.190; } # VM on 192.168.1.39
+host tst-ppm-ha-1         { hardware ethernet 52:54:00:58:b4:02; fixed-address 192.168.1.191; } # VM on 192.168.1.44
+host tst-ppm-www-0        { hardware ethernet 52:54:00:58:b4:03; fixed-address 192.168.1.192; } # VM on 192.168.1.40
+host tst-ppm-www-1        { hardware ethernet 52:54:00:58:b4:04; fixed-address 192.168.1.193; } # VM on 192.168.1.45
+host tst-ppm-clr-0        { hardware ethernet 52:54:00:58:b4:05; fixed-address 192.168.1.194; } # VM on 192.168.1.41
+host tst-ppm-clr-1        { hardware ethernet 52:54:00:58:b4:06; fixed-address 192.168.1.195; } # VM on 192.168.1.46
+host tst-ppm-clr-2        { hardware ethernet 52:54:00:58:b4:07; fixed-address 192.168.1.196; } # VM on 192.168.1.42
+host tst-ppm-clr-3        { hardware ethernet 52:54:00:58:b4:08; fixed-address 192.168.1.197; } # VM on 192.168.1.47
+host tst-ppm-file-0       { hardware ethernet 52:54:00:58:b4:09; fixed-address 192.168.1.198; } # VM on 192.168.1.43
+host tst-ppm-file-1       { hardware ethernet 52:54:00:58:b4:10; fixed-address 192.168.1.199; } # VM on 192.168.1.48
+host tst-ppm-sts-0        { hardware ethernet 52:54:00:58:b4:11; fixed-address 192.168.1.200; } # VM on 192.168.1.39
+host tst-ppm-sts-1        { hardware ethernet 52:54:00:58:b4:12; fixed-address 192.168.1.201; } # VM on 192.168.1.44
+host tst-ppm-infra-0      { hardware ethernet 52:54:00:58:b4:13; fixed-address 192.168.1.202; } # VM on 192.168.1.40
+host tst-ppm-voip-0       { hardware ethernet 52:54:00:58:b4:14; fixed-address 192.168.1.203; } # VM on 192.168.1.41
+host tst-ppm-mail-0       { hardware ethernet 52:54:00:58:b4:15; fixed-address 192.168.1.204; } # VM on 192.168.1.42
+# STAGING
+host stg-ppm-ha-0         { hardware ethernet 52:54:00:58:b4:16; fixed-address 192.168.1.205; } # VM on 192.168.1.39
+host stg-ppm-ha-1         { hardware ethernet 52:54:00:58:b4:17; fixed-address 192.168.1.206; } # VM on 192.168.1.44
+host stg-ppm-www-0        { hardware ethernet 52:54:00:58:b4:18; fixed-address 192.168.1.207; } # VM on 192.168.1.40
+host stg-ppm-www-1        { hardware ethernet 52:54:00:58:b4:19; fixed-address 192.168.1.208; } # VM on 192.168.1.45
+host stg-ppm-clr-0        { hardware ethernet 52:54:00:58:b4:20; fixed-address 192.168.1.209; } # VM on 192.168.1.41
+host stg-ppm-clr-1        { hardware ethernet 52:54:00:58:b4:21; fixed-address 192.168.1.210; } # VM on 192.168.1.46
+host stg-ppm-clr-2        { hardware ethernet 52:54:00:58:b4:22; fixed-address 192.168.1.211; } # VM on 192.168.1.42
+host stg-ppm-clr-3        { hardware ethernet 52:54:00:58:b4:23; fixed-address 192.168.1.212; } # VM on 192.168.1.47
+host stg-ppm-file-0       { hardware ethernet 52:54:00:58:b4:24; fixed-address 192.168.1.213; } # VM on 192.168.1.43
+host stg-ppm-file-1       { hardware ethernet 52:54:00:58:b4:25; fixed-address 192.168.1.214; } # VM on 192.168.1.48
+host stg-ppm-sts-0        { hardware ethernet 52:54:00:58:b4:26; fixed-address 192.168.1.215; } # VM on 192.168.1.39
+host stg-ppm-sts-1        { hardware ethernet 52:54:00:58:b4:27; fixed-address 192.168.1.216; } # VM on 192.168.1.44
+host stg-ppm-infra-0      { hardware ethernet 52:54:00:58:b4:28; fixed-address 192.168.1.217; } # VM on 192.168.1.40
+host stg-ppm-voip-0       { hardware ethernet 52:54:00:58:b4:29; fixed-address 192.168.1.218; } # VM on 192.168.1.41
+host stg-ppm-mail-0       { hardware ethernet 52:54:00:58:b4:30; fixed-address 192.168.1.219; } # VM on 192.168.1.42
+# 220
+# 221
+# 222
+# 223
+# 224
+# 225
+# 226
+# 227
+# 228
+# 229
+# MANAGEMENT
+host ppm-jhb-wks-230    { hardware ethernet a0:2b:b8:48:d0:53; fixed-address 192.168.1.230; } # barbara-nb-eth
+host ppm-jhb-sip-231    { hardware ethernet 00:15:65:18:88:a9; fixed-address 192.168.1.231; } # barbara-sip
+host ppm-jhb-wks-232    { hardware ethernet 44:8a:5b:d8:63:7a; fixed-address 192.168.1.232; } # steven-wks
+host ppm-jhb-sip-233    { hardware ethernet 00:15:65:24:74:38; fixed-address 192.168.1.233; } # steven-sip
+host ppm-jhb-nbe-234    { hardware ethernet a0:1d:48:d4:9d:78; fixed-address 192.168.1.234; } # llewellyn-nb-eth
+host ppm-jhb-sip-235    { hardware ethernet 00:15:65:27:28:45; fixed-address 192.168.1.235; } # llewellyn-sip
+host ppm-jhb-wks-236    { hardware ethernet cc:5d:4e:38:7e:15; fixed-address 192.168.1.236; } # barbara-wks-eth
+# 237
+# 238
+# 239
+# EXECUTIVE
+host ppm-jhb-wks-240    { hardware ethernet 44:39:C4:50:7E:0B; fixed-address 192.168.1.240; } # sean-wks
+host ppm-jhb-sip-241    { hardware ethernet 00:15:65:75:31:30; fixed-address 192.168.1.241; } # sean-sip
+host ppm-jhb-wks-242    { hardware ethernet d0:27:88:96:d3:4e; fixed-address 192.168.1.242; } # karen-wks
+host ppm-jhb-sip-243    { hardware ethernet 00:15:65:75:35:62; fixed-address 192.168.1.243; } # karen-sip
+# 244
+# 245
+# 246
+# 247
+# 248
+# 249
+# 250
+# 251
+# 252
+# 253
+# 254		LAN GATEWAY
+# 255		BROADCAST
+
+{% else %}
+# DEVICES
+host switch-ubnt	{ hardware ethernet 04:18:D6:A1:94:5F; fixed-address 192.168.3.1; }
+host unifi-1		{ hardware ethernet 04:18:D6:CA:45:EC; fixed-address 192.168.3.2; }
+host unifi-2		{ hardware ethernet 04:18:D6:CA:48:1D; fixed-address 192.168.3.3; }
+host printer-1		{ hardware ethernet 30:CD:A7:AC:DC:68; fixed-address 192.168.3.4; }
+host printer-2		{ hardware ethernet F4:81:39:DB:E4:03; fixed-address 192.168.3.5; }
+
+# SERVERS
+host ppm-dbn-infra-0 { hardware ethernet 00:14:22:11:ac:a7; fixed-address 192.168.3.20; }
+
+# FIELD SERVICES
+
+# BUSINESS DEVELOPMENT
+
+# MARKETING
+
+# SALES
+host ppm-dbn-wks-80 { hardware ethernet 98:90:96:B0:42:BD; fixed-address 192.168.3.80; } # jaco
+host ppm-dbn-wks-82 { hardware ethernet 98:90:96:bf:2e:b5; fixed-address 192.168.3.82; } # mathew
+host ppm-dbn-sip-83 { hardware ethernet 00:0b:82:74:5c:00; fixed-address 192.168.3.83; } # mathew
+
+# TECHNICAL SUPPORT
+host ppm-dbn-wks-90 { hardware ethernet d0:27:88:a5:97:1b; fixed-address 192.168.3.90; } # tashir
+host ppm-dbn-sip-91 { hardware ethernet 00:0B:82:74:5B:2B; fixed-address 192.168.3.91; } # tashir
+host ppm-dbn-wks-92 { hardware ethernet 98:90:96:BF:39:E6; fixed-address 192.168.3.92; } # emmanuel
+host ppm-dbn-sip-93 { hardware ethernet 00:0B:82:74:5B:2D; fixed-address 192.168.3.93; } # emmanuel
+
+# ACCOUNTS SUPPORT
+
+# WIFI DEVICES 
+host ppm-gsmw-110 { hardware ethernet c4:3a:be:a8:96:4d; fixed-address 192.168.3.110; } #Desh Phone
+
+# ACCOUNTS
+
+# CUSTOMER SERVICES
+
+# DEVELOPMENT
+
+# TESTING
+
+# STAGING
+
+# MANAGEMENT
+host ppm-dbn-wks-140 { hardware ethernet 98:90:96:BF:3A:3E; fixed-address 192.168.3.140; } #deshnee-wks
+host ppm-dbn-sip-141 { hardware ethernet 00:0B:82:74:5B:2C; fixed-address 192.168.3.141; } #deshnee-sip
+
+# EXECUTIVE
+#host ppm-nbw-120 { hardware ethernet 48:5a:b6:99:b0:21; fixed-address 192.168.3.226; } #sean-nb
+#host ppm-nbe-121 { hardware ethernet 3a:8f:49:d9:f2:a7; fixed-address 192.168.3.227; }
+#host ppm-nbe-karen { hardware ethernet b8:88:e3:f3:83:1b; fixed-address 192.168.3.228; } #karen-nb
+
+# 254		LAN GATEWAY
+# 255		BROADCAST
+{% endif %}
+
+# PXE config (network booting)
+allow booting;
+allow bootp;
+option option-128 code 128 = string;
+option option-129 code 129 = text;
+{% if ansible_default_ipv4.network == '192.168.1.0' %}
+next-server 192.168.1.20;
+{% else %}
+next-server 192.168.3.20;
+{% endif%}
+filename "pxelinux.0";

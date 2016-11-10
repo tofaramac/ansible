@@ -1,0 +1,13 @@
+<VirtualHost *:80>
+    ServerAdmin {{ email_systems }}
+    ServerName prepaidmeters.co.za
+
+    DocumentRoot /var/www/
+    <Directory {{ itop_document_root }}>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride None
+        Order allow,deny
+        allow from all
+    </Directory>
+	
+</VirtualHost>

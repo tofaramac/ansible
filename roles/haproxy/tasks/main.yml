@@ -1,0 +1,15 @@
+---
+# tasks file for ha-proxy
+- name: haproxy install
+  apt: name=haproxy state=present update_cache=yes cache_valid_time=86400
+  tags: [ 'packages' ]
+
+- name: haproxy on startup
+  template: src=haproxy.j2 dest=/etc/default/haproxy backup=yes
+  
+- name: haproxy config
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg backup=yes
+  notify: haproxy restart
+  
+- name: haproxy status
+  service: name=haproxy state=running enabled=true

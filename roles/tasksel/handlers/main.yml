@@ -1,0 +1,10 @@
+---
+# handlers file for tasksel
+- name: smokeping start
+  service: name=smokeping state=started
+
+- name: smokeping restart
+  service: name=smokeping state=restarted
+
+- name: smokeping stop
+  service: name=smokeping state=stopped

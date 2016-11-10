@@ -1,0 +1,6 @@
+# {{ansible_managed }}
+acl localnet src {{ jhb_scope }}
+acl localnet src {{ dbn_scope }}
+acl localnet src {{ apn_vodacom_scope }}
+
+http_access allow localnet

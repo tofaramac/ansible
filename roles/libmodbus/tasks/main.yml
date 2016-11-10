@@ -1,0 +1,4 @@
+---
+# tasks file for libmodbus
+- name: lib-modbus install
+  apt: name=libmodbus-dev state=present update_cache=yes cache_valid_time=86400

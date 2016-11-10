@@ -1,0 +1,4 @@
+---
+# handlers file for mailutils
+- name: postfix restart
+  service: name=postfix state=restarted

@@ -1,0 +1,148 @@
+---
+# tasks file for desktop
+
+- name: check if first run or not
+  stat: path=/etc/lightdm/lightdm.conf.d/50-no-guest.conf.j2
+  register: firstrun
+  
+- name: basic ubuntu desktop
+  apt: name=ubuntu-desktop state=present update_cache=yes cache_valid_time=86400
+  when: firstrun.stat.exists == False
+  tags: [ 'packages' ]
+  
+- name: install basics
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - lsb-core
+    - curl
+    - lynx
+    - vim
+    - squid-deb-proxy-client
+    - ubuntu-restricted-extras
+    - unattended-upgrades
+    - evince
+    - screen
+    - chromium-browser
+    - tar
+    - gzip
+    - zip
+    - unzip
+    - bzip2
+    - p7zip
+    - rar
+    - unrar
+    - msttcorefonts
+    - nfs-common
+    - default-jre
+  tags: [ 'packages' ]
+
+- name: remove packages
+  apt: name={{item}} state=absent purge=yes
+  with_items:
+    - thunderbird
+    - adobereader-enu
+#    Evolution Mail, will also remove Ekiga (VoIP client)
+    - evolution-common
+    - evolution-data-server
+    - evolution-exchange
+    - evolution-plugins
+    - evolution-webcal
+#    Panel applet to search Evolution address book
+    - contact-lookup-applet
+#    Mark Pilgrim’s Python tutorial
+    - diveintopython
+#    Example content for various desktop apps
+    - example-content
+#    Gnome games and associated data    
+    - gnome-games gnome-games-data gnome-cards-data
+#    Transmission BitTorrent client
+    - transmission-common transmission-gtk
+#    Openoffice.org productivity suite
+#    - openoffice.org-calc 
+#    - openoffice.org-draw 
+#    - openoffice.org-impress 
+#    - openoffice.org-writer 
+#    - openoffice.org-base-core
+#    Speech synthesizer (text to voice)
+    - espeak
+    - espeak-data
+    - libespeak1
+    - libgnome-speech7
+#    Various accessibility functions
+    - gnome-orca
+    - brltty
+    - brltty-x11
+    - gnome-accessibility-themes
+    - gnome-mag
+    - libgnome-mag2
+#    Assorted Arabic/Asian language font types
+    - ttf-arabeyes
+    - ttf-arphic-uming
+    - ttf-indic-fonts-core
+    - ttf-kochi-gothic
+    - ttf-kochi-mincho
+    - ttf-lao
+    - ttf-malayalam-fonts
+    - ttf-thai-tlwg
+    - ttf-unfonts-core
+  tags: [ 'packages' ]
+
+- name: remove unity launcher icons
+  file: path={{item}} state=absent
+  with_items:
+    - /usr/share/applications/ubuntu-amazon-default.desktop
+  when: firstrun.stat.exists == False
+
+# not sure this is needed anymore to check
+#- name: enable to play DVD's
+#  shell: /usr/share/doc/libdvdread4/install-css.sh
+#  when: firstrun.stat.exists == False
+  
+# ALWAYS DO THIS LAST AS WE CHECK AT THE START
+- name: disable guest session 
+  template: src=50-no-guest.conf.j2  dest=/etc/lightdm/lightdm.conf.d/50-no-guest.conf
+  tags: [ 'config' ]
+  
+#- name: install wine
+#  apt: name={{item}} state=present update_cache=yes
+#  with_items:
+#    - wine
+#    - wine1.8
+#    - winetricks
+#    - wine-gecko2.21 
+#    - wine-mono0.0.8
+#  when: "'{{ inventory_hostname_short }}' in groups['dev']"
+#  
+- name: install basics
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+      - mysql-workbench
+      - terminator
+  when: "'{{ inventory_hostname_short }}' in groups['dev']"
+  tags: [ 'packages' ]
+  
+- name: composer install
+  get_url: url=https://getcomposer.org/composer.phar dest=/usr/local/bin/composer 
+    mode=0755 validate_certs=no
+  when: "'{{ inventory_hostname_short }}' in groups['dev']"
+  tags: [ 'packages' ]
+
+- name: add user to www-data
+  user: name={{ user }} group=www-data append=yes
+  when: "'{{ inventory_hostname_short }}' in groups['dev']"
+  
+- name: create project folder
+  file: path=/home/{{ user }}/project state=directory mode=0755
+  become_user: "{{ user }}"
+  when: "'{{ inventory_hostname_short }}' in groups['dev']"
+  
+- name: remove www folder
+  file: dest=/var/www  state=absent
+  become: true
+  when: "'{{ inventory_hostname_short }}' in groups['dev']"
+  
+- name: link project to var www
+  file: dest=/var/www src=/home/{{ user }}/project owner={{ user }} group={{ user }}
+    state=link mode=0755
+  become: true
+  when: "'{{ inventory_hostname_short }}' in groups['dev']"

@@ -1,0 +1,29 @@
+<VirtualHost *:80>
+    ServerAdmin {{useremail}}
+    ServerName local.crescendo.prepaidmeters.net
+
+#    RewriteEngine On
+#    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+
+    DocumentRoot /var/www/crescendo
+    DirectoryIndex index.php
+
+    <Directory /var/www/crescendo>
+        Options FollowSymLinks
+        AllowOverride All
+    </Directory>
+
+    <Directory /var/www/crescendo>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Order allow,deny
+        allow from all
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
+    # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+    LogLevel notice
+
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>

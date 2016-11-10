@@ -1,0 +1,21 @@
+; {{ ansible_managed }}
+;  ----------------------------------------------------------
+;  ENCRYPTION CONFIGURATION
+;  ----------------------------------------------------------
+;
+;   Types of devices available: NET/USB/EMULATED
+;   Node is of the following types:
+;   			prism.device.node = /dev/ttyUSB0
+;   			prism.device.node = 192.168.16.10
+;   	* EMULATED doesn't care about a node but set it to /dev/null
+;
+
+prism.device.max_retry_count = 20
+prism.device.timeout = 120000
+prism.device.node = /dev/null
+prism.device.type = EMULATED
+prism.device.connection_per_request = yes
+prism.device.reset_connection_count = 100
+
+
+

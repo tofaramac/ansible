@@ -1,0 +1,56 @@
+# roles/bind/tasks/main.yml
+---
+
+#- name: Check whether `bind_zone_master_server_ip` was set
+#  assert:
+#    that: bind_zone_master_server_ip is defined
+
+- name: Install BIND
+#  apt:
+#    pkg: "{{ item }}"
+#    state: installed
+#  with_items: "{{ bind_packages }}"
+#  tags: - name: bind9 cache install
+  apt: name={{ item }} state=present update_cache=true
+  with_items:
+    - bind9
+    - bind9utils
+    - bind9-doc
+    - dnsutils
+
+- name: Create serial
+  command: date +%y%m%d%H
+  register: timestamp
+  changed_when: false
+  tags: bind
+
+- name: setup zone directories
+  file: dest=/var/named/{{ item }} state=directory owner=bind group=bind mode=0755
+  with_items:
+  - masters
+  - slaves
+
+- name: setup zones
+  template: src=named.conf.local.{{ item }}.j2 dest=/varnamed/named.conf.local.{{ item }} owner=bind group=bind mode=0600
+  with_items:
+  - master
+  - slave
+  - forward
+  notify: reload bind
+
+- name: configure bind
+  copy: src=named.conf dest=/varnamed/named.conf owner=bind group=bind mode=0600
+  notify: restart bind
+
+- name: configure bind options
+  template: src=named.conf.options.j2 dest=/varnamed/named.conf.options owner=bind group=bind mode=0600
+  notify: restart bind
+
+- name: Copy master zone files
+  copy: src={{ bind_masterzones_path }}/db.{{ item.name }} dest={{ bind_base_zones_path }}/{{bind_masterzones_path}} owner=bind group=bind
+  with_items: bind_config_master_zones
+  notify: reload bind
+  tags: bind-zones
+
+- name: start/stop bind service
+  service: name={{ bind_service_name }} state={{ bind_service_state }} enabled={{ bind_service_enabled }}

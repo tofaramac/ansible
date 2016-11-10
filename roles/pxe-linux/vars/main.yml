@@ -1,0 +1,24 @@
+---
+# vars file for pxe
+
+
+tftp_boot_dir: /var/lib/tftpboot
+
+remote_dir: /volume1/ops/distros/ubuntu
+
+com32_dir: /usr/lib/syslinux/modules/bios
+
+pxelinux_dir: /usr/lib/PXELINUX
+
+boot_dir: /mnt/nfs/var/nfs/16.04/amd64/server/install/netboot/ubuntu-installer/amd64
+
+casper_dir: /mnt/nfs/var/nfs/16.04/amd64/desktop/casper
+
+kernel_dir: /mnt/nfs/var/nfs/16.04/amd64/server/install
+
+serverks_dir: /var/www/ubuntu/server
+    
+desktopks_dir: /var/www/ubuntu/desktop
+
+
+

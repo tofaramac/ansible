@@ -1,0 +1,10 @@
+---
+# handlers file for cups
+- name: cups restart
+  service: name=cups state=restarted
+  
+- name: cups start
+  service: name=cups state=started
+  
+- name: cups stop
+  service: name=cups state=stopped

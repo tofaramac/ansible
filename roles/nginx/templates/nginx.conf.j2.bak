@@ -1,0 +1,41 @@
+#{{ ansible_managed }}
+{% if ansible_os_family == 'RedHat' %} 
+user              nginx;
+{% endif %}
+{% if ansible_os_family == 'Debian' %} 
+user              www-data;
+{% endif %}
+
+worker_processes  {{ ansible_processor_count }};
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  10;
+}
+
+
+http {
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        access_log /var/log/nginx/{{ '{{' }} domain {{ '}}'  }}.log;
+        error_log  /var/log/nginx/{{ '{{' }} domain {{ '}}'  }}-error.log error;
+        
+        server_name {{ '{{' }} domain {{ '}}'  }};
+   
+include fastcgi_params; # fastcgi.conf for version 1.6.1+
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO       $fastcgi_path_info;
+        fastcgi_param ENV production;
+
+        {{ k }}  {{ v }};
+{% endfor %}
+
+        gzip on;
+        gzip_disable "msie6";
+
+        include /etc/nginx/conf.d/*.conf;
+        include /etc/nginx/sites-enabled/*;
+}

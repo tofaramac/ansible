@@ -1,0 +1,71 @@
+---
+# tasks file for crescendo
+
+#- name: ensure github.com is a known host
+#  lineinfile:
+#    dest: /home/fulela/.ssh/known_hosts
+#    create: yes
+#    state: present
+#    line: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
+#    line: "{{ lookup('pipe', 'ssh-keyscan -H github.com') }}"
+#    regexp: "^github\\.com"
+# ssh -T git@github.com
+
+#- name: git clone cresendo
+#  git: repo={{ github_repo }} dest={{ clone_dest }} accept_hostkey=yes
+#  become_user: "{{ user }}"
+  
+- name: deploy prd conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - cake.crescendo.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['prd-apache2-servers']"
+  
+- name: enable prd sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - cake.crescendo.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['prd-apache2-servers']"
+ 
+  
+- name: deploy stg conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - stg.cake.crescendo.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['stg-apache2-servers']"
+  
+- name: enable stg sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - stg.cake.crescendo.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['stg-apache2-servers']"
+
+   
+- name: deploy tst conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - tst.cake.crescendo.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['tst-apache2-servers']"
+  
+- name: enable tst sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - tst.cake.crescendo.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['tst-apache2-servers']"
+
+
+- name: deploy local conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - local.crescendo.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['dev']"
+  
+- name: enable local sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - local.crescendo.prepaidmeters.net.conf
+  when: "'{{hostname}}' in groups['dev']"
+
+
+#- name: apache restart
+#  service: name=apache2 state=started enabled=yes

@@ -1,0 +1,4 @@
+---
+# defaults file for ssh
+openssh_port: 201
+openssh_root_login: no

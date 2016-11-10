@@ -1,0 +1,9 @@
+---
+# defaults file for app_databases
+audit_db_name: audit
+archive_db_name: archive
+aurora_db_name: aurora
+aurorabackup_db_name: aurorabackup
+crescendo_db_name: crescendo
+enbayabackups_db_name: enbayabackups
+enbayasts_db_name: enbayasts

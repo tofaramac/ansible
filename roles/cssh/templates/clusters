@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+
+{% for host in groups['infra-servers-farm'] %}
+   {{host}}
+{% endfor %}

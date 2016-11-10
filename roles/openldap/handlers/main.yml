@@ -1,0 +1,10 @@
+---
+# handlers file for openldap
+- name: slapd restart
+  service: name= slapd state=restarted
+  
+- name: slapd start
+  service: name= slapd state=started
+
+- name: slapd stop
+  service: name= slapd state=stopped

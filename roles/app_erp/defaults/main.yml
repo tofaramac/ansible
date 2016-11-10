@@ -1,0 +1,5 @@
+---
+# defaults file for erp
+github_repo: ssh://git_enbaya@enbaya.git.cloudforge.com/erp.git
+
+clone_dest: /home/{{ user }}/project/erp

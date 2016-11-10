@@ -1,0 +1,15 @@
+---
+# tasks file for dhcp
+- name: dhcpd install
+  apt: name=isc-dhcp-server state=present update_cache=yes cache_valid_time=86400
+  when: "'{{ inventory_hostname_short }}' in groups['dhcp-servers']"
+  tags: [ 'packages' ]
+
+- name: dhcp conf
+  template: src=dhcpd.conf.j2 dest=/etc/dhcp/dhcpd.conf owner=root group=root mode=0644
+  notify: dhcp restart
+  when: "'{{ inventory_hostname_short }}' in groups['dhcp-servers']"
+  tags: [ 'config' ]
+  
+- name: dhcp status
+  service: name=isc-dhcp-server state=started enabled=true

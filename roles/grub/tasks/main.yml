@@ -1,0 +1,13 @@
+---
+# tasks file for grub
+- name: ignore bios device names
+  lineinfile: dest=/etc/default/grub regexp="^GRUB_CMDLINE_LINUX_DEFAULT" 
+    line="GRUB_CMDLINE_LINUX_DEFAULT="net.ifnames=0"" state=present
+  notify: grub update
+  tags: [ 'config' ]
+
+- name: ignore bios device names
+  lineinfile: dest=/etc/default/grub regexp="^GRUB_CMDLINE_LINUX" 
+    line="GRUB_CMDLINE_LINUX="net.ifnames=0"" state=present
+  notify: grub update
+  tags: [ 'config' ]

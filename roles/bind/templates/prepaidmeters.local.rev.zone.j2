@@ -1,0 +1,39 @@
+; {{ ansible_managed }}
+; BIND reverse data file for local loopback interface
+;
+{% if ansible_default_ipv4.network == '192.168.1.0' %}
+$ORIGIN .
+$TTL	604800
+1.168.192.in-addr.arpa	IN	SOA	ns1.{{ppm_local_domain_name}}. systems.{{ppm_local_domain_name}}. (
+<<<<<<< HEAD:roles/bind/templates/prepaidmeters.local.dbn.rev.zone.j2
+			23	; Serial
+=======
+			{{zone_serial}}	; Serial
+>>>>>>> 024dfebe0b7048489f92b4d04795280f0aa4e73d:roles/bind/templates/prepaidmeters.local.rev.zone.j2
+			28800   ; Refresh 8 hours
+			3600    ; Retry 1 hour
+			604800  ; Expire 1 week
+			38400   ; Negative Cache TTL 10 hours 40 minutes
+                        )
+		NS	ns1.{{ppm_local_domain_name}}.
+$ORIGIN 1.168.192.in-addr.arpa.
+29          PTR     ns1.{{ppm_local_domain_name}}.
+29          PTR     {{ inventory_hostname_short }}.{{ppm_local_domain_name}}.
+            PTR     {{ppm_local_domain_name}}.
+{% endif %}
+{% if ansible_default_ipv4.network == '192.168.3.0' %}
+$ORIGIN .
+$TTL	604800
+3.168.192.in-addr.arpa	IN	SOA	ns2.{{ppm_local_domain_name}}. systems.{{ppm_local_domain_name}}. (
+			{{zone_serial}}	; Serial
+			28800   ; Refresh 8 hours
+			3600    ; Retry 1 hour
+			604800  ; Expire 1 week
+			38400   ; Negative Cache TTL 10 hours 40 minutes
+                        )
+		NS	ns2.{{ppm_local_domain_name}}.
+$ORIGIN 3.168.192.in-addr.arpa.
+20          PTR     ns2.{{ppm_local_domain_name}}.
+20          PTR     {{ inventory_hostname_short }}.{{ppm_local_domain_name}}.
+            PTR     {{ppm_local_domain_name}}.
+{% endif %}

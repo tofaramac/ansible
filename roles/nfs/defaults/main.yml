@@ -1,0 +1,5 @@
+---
+# defaults file for nfs
+nfs_export_point: "/var/nfs"
+nfs_allowed_network: "192.168.*.*"
+nfs_options: "(rw,async,no_root_squash,no_subtree_check)"

@@ -1,0 +1,24 @@
+---
+    - name: install mysql componets
+      apt: name={{item}} state=present 
+      with_items:
+       - mysql-server
+       - python-mysqldb 
+    
+    - name: Create a new database with name 'bobdata'
+      mysql_db: name=bobdata state=present
+      notify: restart mysql
+
+    - name: Create database user 'tofara' and password '12345678' with all database privileges 
+      mysql_user: name=tofara password=M4V4ngw39090# priv=*.*:ALL host='%' state=present    
+      notify: restart mysql
+
+    - name: ensure mysql listening to all ports
+      lineinfile: dest=/etc/mysql/my.cnf regexp=^bind-address
+                  line="bind-address = 0.0.0.0"
+      notify: restart mysql
+        
+    - name: ensure mysql started
+      service: name=mysql state=started enabled=yes
+
+    

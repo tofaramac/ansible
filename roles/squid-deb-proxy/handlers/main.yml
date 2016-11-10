@@ -1,0 +1,13 @@
+---
+# handlers file for squid-deb-proxy
+- name: squid-deb-proxy stop
+  service: name=squid-deb-proxy state=stopped
+  
+- name: squid-deb-proxy start
+  service: name=squid-deb-proxy state=started
+  
+- name: squid-deb-proxy restart
+  service: name=squid-deb-proxy state=restarted
+  
+- name: squid-deb-proxy status
+  service: name=squid-deb-proxy enabled=true

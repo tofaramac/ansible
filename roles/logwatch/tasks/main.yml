@@ -1,0 +1,23 @@
+---
+# tasks file for logwatch
+- name: logwatch install
+  apt: name=logwatch state=present update_cache=yes cache_valid_time=86400
+  
+- name: logwatch cache directory create
+  file: path=/var/cache/logwatch state=directory
+
+- name: update logwatch config
+  template: src=logwatch.conf.j2 dest=/etc/logwatch/conf/logwatch.conf
+
+#- name: move logwatch cron daily to weekly
+#  command: mv /etc/cron.daily/00logwatch /etc/cron.weekly/
+
+- name: check if apache2 installed
+  stat: path=/usr/sbin/apache2
+  register: apache2_installed
+  
+- name: logwatch http.conf if apache2 installed
+  template: src=http.conf.j2 dest=/etc/logwatch/conf/logfiles/http.conf 
+    backup=yes
+  when: apache2_installed.stat.exists == True
+  

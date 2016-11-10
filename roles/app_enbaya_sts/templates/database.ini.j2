@@ -1,0 +1,11 @@
+; {{ ansible_managed }}
+;  ----------------------------------------------------------
+;  DATABASE CONFIGURATION
+;  ----------------------------------------------------------
+
+db.connection = host={{ sts_db_connection_host }};port=3306;user=root;password={{ stsdbpassword }};db=enbayasts;auto-reconnect=true;compress=true
+db.minSessions = 1
+db.maxSessions = 5
+db.idleTime = 60
+
+

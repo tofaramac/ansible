@@ -1,0 +1,10 @@
+---
+# handlers file for samba
+- name: samba restart
+  service: name=samba state=restarted
+  
+- name: samba start
+  service: name=samba state=started
+  
+- name: samba stop
+  service: name=samba state=stop

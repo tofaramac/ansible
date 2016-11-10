@@ -1,0 +1,6 @@
+## YAML Template.
+---
+#  with_items:
+# when: "{{'hostname'}}" in groups ['webservers']
+- name: recreate a fresh cert
+  command: make-ssl-cert generate-default-snakeoil --force-overwrite

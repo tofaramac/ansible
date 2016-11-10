@@ -1,0 +1,30 @@
+---
+# tasks file for mysql-server
+
+- name: set root password before installing
+  debconf: name='mysql-server' 
+           question='mysql-server/root_password' 
+           value='12345678'
+           vtype='password'
+- name: confirm root password before installing
+  debconf: name='mysql-server'
+           question='mysql-server/root_password_again'
+           value='12345678'
+           vtype='password'
+
+#- name: Add MySQL Server repository
+#  apt_repository: repo='deb http://repo.mysql.com/apt/debian/ jessie mysql-5.6' state=present
+#  
+#- name: Allow unauthenticated packages to install
+#  copy: content='APT::Get::AllowUnauthenticated "true";' dest=/etc/apt/apt.conf.d/99temp owner=root group=root mode=0644  
+#    
+- name: install mysql-server
+  apt: name={{item}} state=present update_cache=yes
+  with_items:
+    - mysql-server-5.6
+    - mysql-client-5.6
+#  when: "'{{ inventory_hostname_short }}' in groups['dev']"
+
+#- name: remove hack that allows unauthenticated packages to install
+#  file: path=/etc/apt/apt.conf.d/99temp state=absent
+

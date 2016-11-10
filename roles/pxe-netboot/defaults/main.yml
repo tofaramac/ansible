@@ -1,0 +1,59 @@
+---
+# defaults file for pxe-netboot
+apache_root: /var/www/html
+apache_tftp_links:
+  - images
+  
+apt_cacher_server: '{{ ansible_hostname_short }}'
+apt_mirror_dir: /ubuntu  
+apt_mirror_server: 'apt-mirror.{{pri_domain_name }}'  
+config_tftp: true  
+
+netboot_url: http://archive.ubuntu.com/ubuntu/ubuntu/dists/xenial/main/installer-amd64/current/images/netboot
+netboot_file: netboot.tar.gz
+
+tftp_bind_address: '{{ ansible_default_ipv4.address }}'
+tftp_boot_menu:  #menu_default has been disabled to allow boot from local HD by default
+
+  - label: 'auto-install Ubuntu Netboot (Latest)'
+    menu_label: 'Automated install Ubuntu (Latest)'
+    menu_default: false
+    kernel: ubuntu-installer/amd64/linux
+    append: 'auto=true priority=critical vga=788 initrd=tftp://{{ tftp_bind_address }}/ubuntu-installer/amd64/initrd.gz locale=en_US.UTF-8 kbd-chooser/method=us netcfg/choose_interface=auto url=tftp://{{ tftp_bind_address }}/preseed.cfg'
+
+tftp_build_images: false  
+
+  - Ubuntu/16.04
+tftp_poweroff_after_install: false  #defines if host should be shutdown after installing...good for mass PXE deployments when the option to do a one-time boot to PXE is not an option.
+tftpboot_dir: /var/lib/tftpboot
+tftp_iso_images: []
+
+tftp_preseed_create_users: true
+tftp_preseed_files:
+  - preseed
+  - ubuntu_16.04_preseed
+tftp_preseed_ntp_sync: true  
+tftp_preseed_users_encrypted_pw: true  
+
+# Address and port on which ``tftpd-hpa`` server is listening
+tftpd_address: '[::]:69'
+
+tftpd_directory: '/var/lib/tftpboot'
+
+tftpd_username: 'tftp'
+
+tftpd_options: '--secure'
+
+options: "-l -s /var/lib/tftpboot"
+
+run_daemon: "yes"
+
+
+tftpd_allow: []
+
+#DNS MASQ
+
+dnsmasq_domain_needed: false
+dnsmasq_bogus_priv: false
+dnsmasq_authoritative: false
+dnsmasq_expand_hosts: false

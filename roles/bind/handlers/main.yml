@@ -1,0 +1,13 @@
+---
+# handlers file for bind
+- name: bind9 stop
+  service: name=bind9 state=stopped
+
+- name: bind9 start
+  service: name=bind9 state=started
+
+- name: bind9 restart
+  service: name=bind9 state=restarted
+
+- name: bind9 status
+  service: name=bind9 state=running

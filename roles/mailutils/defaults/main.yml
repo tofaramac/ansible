@@ -1,0 +1,3 @@
+---
+# defaults file for mailutils
+postfix_inet_interfaces: loopback-only

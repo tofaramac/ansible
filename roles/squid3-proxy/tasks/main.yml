@@ -1,0 +1,37 @@
+---
+# tasks file for squid-proxy
+
+- name: install squid3
+  apt: name={{ item }} state=present update_cache=yes  cache_valid_time=86400
+  with_items: 
+    - squid3
+  tags: [ 'packages' ]
+
+- name: create include directory
+  file: path=/etc/squid3/squid.conf.d owner=root group=root mode=0755
+        state=directory
+  tags: [ 'config' ]
+
+- name: add /etc/squid3/squid.conf
+  template: src=squid.conf.j2 dest=/etc/squid3/squid.conf
+  notify: squid3 restart
+  tags: [ 'config' ]
+  
+- name: add /etc/squid3/squid.conf.d/acl-localnet.conf
+  template: src=acl-localnet.conf.j2 dest=/etc/squid3/squid.conf.d/acl-localnet.conf
+  notify: squid3 restart
+  tags: [ 'config' ]
+  
+- name: add /etc/squid3/squid.conf.d/delay-pools.j2
+  template: src=delay-pools.conf.j2 dest=/etc/squid3/squid.conf.d/delay-pools.conf
+  notify: squid3 restart
+  tags: [ 'config' ]
+
+# This is not working and I dont know why. Commented and applied manually
+#- name: Exclude pdf extensions from caching
+#  blockinfile: 
+#    dest= /etc/squid3/squid.conf
+#    block: |
+#      "hierarchy_stoplist cgi-bin ?
+#      acl QUERY urlpath_regex cgi-bin \? \.pdf
+#      no_cache deny QUERY"

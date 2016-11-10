@@ -1,0 +1,5 @@
+---
+# defaults file for unison
+unison_user: netadmin
+unison_config_path: "/home/{{ unison_user }}/.unison"
+

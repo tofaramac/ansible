@@ -1,0 +1,9 @@
+---
+# tasks file for rabbitmq
+- name: rabbitmq-server install
+  apt: name={{ item }} state=present
+  with_items:
+       - rabbitmq-server
+       
+- name: rabbitmq-server status
+  service: name=rabbitmq-server enabled=true state=started

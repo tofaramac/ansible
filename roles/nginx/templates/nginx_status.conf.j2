@@ -1,0 +1,29 @@
+server {
+    listen 80;
+
+    server_name localhost 127.0.0.1;
+
+    root  /var/www/;
+
+    index index.html;
+
+    server_tokens off;
+
+    error_page 404 /404.html;
+
+    error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+        root /var/www/;
+    }
+
+   location /nginx_status {
+        # Turn on nginx stats
+        stub_status on;
+        # I do not need logs for stats
+        access_log   off;
+        # Security: Only allow access from LAN IP #
+        allow all;
+        # Send rest of the world to /dev/null #
+        deny all;
+   }
+}

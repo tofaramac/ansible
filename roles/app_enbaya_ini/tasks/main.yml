@@ -1,0 +1,15 @@
+---
+
+##########
+#
+# This play deploys /var/www/enbaya.ini to a host
+#
+# Deploying to a developer workstation is NOT supported
+# Use usersettings.sh in devdocs for that
+#
+##########
+
+- name: deploy enbaya.ini
+  template: src=enbaya.ini.j2 dest=/var/www/enbaya.ini 
+    owner=www-data group=www-data mode=0644 backup=yes
+  

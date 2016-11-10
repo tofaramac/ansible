@@ -1,0 +1,5 @@
+---
+# defaults file for cups
+cups_port: 631
+
+cups_ppd_directory: /etc/cups/ppd

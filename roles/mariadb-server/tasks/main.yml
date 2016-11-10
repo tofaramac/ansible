@@ -1,0 +1,44 @@
+---
+- name: mariadb-server install
+  apt: name=mariadb-server state=present update_cache=true cache_valid_time=86400
+  
+- name: deploy my.cnf 
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
+  
+- name: set global variables
+  mysql_variables: variable={{item}} value={{item}}
+  with_items:
+    - { variable: 'group_concat_max_len', value: '20000' }
+
+- name: create databases
+  mysql_db: name={{item}} state=present
+  with_items: list_databases
+
+- name: add database users
+  mysql_user: name={{item}} host={{item}} priv={{item}} password={{item}} state=present update_password=always
+  with_items:
+    - { name: '{{ prd_root_user }}', host: 'localhost', priv: '*.*:ALL', password: '{{ prd_root_pass }}' }
+    - { name: '{{ prd_backup_user }}', host: 'localhost', priv: '*.*:SELECT,SHOW DATABASES,SHOW VIEW', password: '{{ prd_backup_pass' }
+    - { name: '{{ prd_sst_user }}', host: '%', priv: '*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT', password: '{{ prd_sst_pass' }
+    - { name: '{{ prd_devdocs_user }}', host: 'localhost', priv: '*.*:SELECT,SHOW DATABASES,SHOW VIEW', password: '{{ prd_devdocs_pass' }
+    - { name: '{{ prd_readonly_user }}', host: 'localhost', priv: '*.*:SELECT,SHOW DATABASES,SHOW VIEW', password: '{{ prd_readonly_pass' }
+    - { name: '{{ prd_aurora_user }}', host: '192.168.0.20', priv: '*.*:ALL', password: '{{ prd_aurora_pass }}' }
+    - { name: '{{ prd_fulela_user }}', host: '%', priv: '*.*:SELECT,SHOW DATABASES,SHOW VIEW', password: '{{ prd_fulela_pass' }
+    - { name: '{{ prd_llewellyn_user }}', host: '%', priv: '*.*:ALL', password: '{{ prd_llewellyn_pass' }
+    - { name: '{{ prd_crescendo_user }}', host: '%', priv: '*.*:ALL', password: '{{ prd_crescendo_pass' }
+    - { name: '{{ prd_crm_user }}', host: '%', priv: '*.*:ALL', password: '{{ prd_crm_pass' }
+    - { name: '{{ prd_erp_user }}', host: '%', priv: '*.*:ALL', password: '{{ prd_erp_pass' }
+    - { name: '{{ prd_generic_user }}', host: '%', priv: '*.*:ALL', password: '{{ prd_generic_pass' }
+    - { name: '{{ prd_joomla_user }}', host: '%', priv: '*.*:ALL', password: '{{ prd_joomla_pass' }
+    - { name: '{{ prd_propertyware_user }}', host: '%', priv: '*.*:ALL', password: '{{ prd_propertyware_pass' }
+    - { name: '{{ prd_replication_user }}', host: '%', priv: '*.*:ALL', password: '{{ prd_replication_pass' }
+    - { name: '{{ prd_enbayasts_user }}', host: '%', priv: '*.*:ALL', password: '{{ prd_enbayasts_pass' }
+    - { name: '{{ prd_satec_user }}', host: '%', priv: '*.*:ALL', password: '{{ prd_satec_pass' }
+    
+    
+
+
+
+
+
+

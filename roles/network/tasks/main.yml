@@ -1,0 +1,25 @@
+---
+# tasks file for host
+
+- name: change hosts file
+  template: src=hosts.j2 dest=/etc/hosts owner=root group=root mode=0644
+  notify: set hostname
+  tags: [ 'config' ]
+
+- name: change hostname file
+  template: src=hostname.j2 dest=/etc/hostname owner=root group=root mode=0644
+  tags: [ 'config' ]
+  
+- name: interfaces file
+  template: src=interfaces.j2 dest=/etc/network/interfaces owner=root 
+    group=root mode=0644 backup=yes
+  tags: [ 'config' ]
+
+- name: improve ipsecurity
+  template: src=10-network-security.conf.j2 
+    dest=/etc/sysctl.d/10-network-security.conf owner=root group=root mode=0644
+  notify: procps restart
+  tags: [ 'config' ]
+
+- name: check procps up
+  service: name=procps state=running enabled=true

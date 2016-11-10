@@ -1,0 +1,157 @@
+---
+# tasks file for apache2
+- name: apache2 install
+  apt: name=apache2 state=present update_cache=yes cache_valid_time=86400
+  when: "'{{hostname}}' in groups['tst-apache2-servers']"
+  tags: [ 'packages' ]
+
+- name: cleanout sites-enabled
+  file: path=/etc/apache2/sites-enabled/* state=absent
+
+- name: cleanout sites-available
+  file: path=/etc/apache2/sites-available/* state=absent
+  
+# INSTALL APACHE MODULES
+- name: install additional apache2 modules
+  apt: name={{ item }} state=present
+  with_items:
+      - libapache2-mod-php7.0
+      - libapache2-mod-auth-mysql
+      - libapache2-mod-fcgid
+      - libapache2-mod-security2 
+      - libapache2-modsecurity 
+      - libapache2-mod-evasive
+#  notify: apache2 restart
+  when: "'{{hostname}}' in groups['tst-apache2-servers']"
+
+# ENABLE APACHE MODULES
+- name: enable apache2 modules
+  apache2_module: name={{ item }} state=present
+  with_items:
+      - php7.0
+      - auth_mysql
+      - headers
+      - rewrite
+      - ssl
+      - socache_shmcb
+      - cgi
+      - fcgid
+      - evasive
+      - security2
+#  notify: apache2 restart
+  when: "'{{hostname}}' in groups['tst-apache2-servers']"
+  
+- name: deploy default conf
+  template: src=000-default.conf.j2 dest=/etc/apache2/sites-available/000-default.conf
+#  notify: apache2 reload
+  
+- name: config apache2 basic security
+  template: src=security.conf.j2 dest=/etc/apache2/conf-enabled/security.conf
+    backup=yes
+#  notify: apache2 restart
+  
+- name: config security2 include owasp-modsecurity-crs
+  template: src=security2.conf.j2 dest=/etc/apache2/mods-available/security2.conf
+    backup=yes
+  
+- name: config mod_security
+  template: src=modsecurity.conf.j2 dest=/etc/modsecurity/modsecurity.conf 
+    backup=yes
+#  notify: apache2 restart
+  
+- name: check if owasp-modsecurity-crs archive exists
+  stat: path=/tmp/owasp-modsecurity-crs-master.zip
+  register: archive
+  
+- name: check if owasp-modsecurity-crs directory exists
+  stat: path=/tmp/owasp-modsecurity-crs-master
+  register: folder
+  
+- name: remove owasp-modsecurity-crs-master archive
+  file: path=/tmp/owasp-modsecurity-crs-master.zip state=absent
+  when: archive.stat.exists == True
+
+- name: remove owasp-modsecurity-crs-master directory
+  file: path=/tmp/owasp-modsecurity-crs-master state=absent
+  when: folder.stat.isdir is defined
+  
+# wget https://github.com/SpiderLabs/owasp-modsecurity-crs/archive/master.zip
+- name: download owasp-modsecurity-crs archive
+  get_url: url="https://github.com/SpiderLabs/owasp-modsecurity-crs/archive/master.zip"
+    dest=/tmp/
+
+- name: xtract owasp-modsecurity-crs-master archive   
+  unarchive: src=/tmp/owasp-modsecurity-crs-master.zip dest=/tmp/ copy=no
+    creates=owasp-modsecurity-crs-master mode=777
+  
+- name: copy files owasp-modsecurity-crs-master into place
+  shell: cp -r /tmp/owasp-modsecurity-crs-master/*  /etc/modsecurity/
+  
+- name: get list of base_rules
+  command: "ls /etc/modsecurity/base_rules/"
+  register: base_rules
+  
+- name: get list of optional_rules
+  command: "ls /etc/modsecurity/optional_rules/"
+  register: optional_rules
+  
+- name: activate the base_rules  
+  file: src=/etc/modsecurity/base_rules/{{item}} 
+    dest=/etc/modsecurity/activated_rules/{{item}} state=link
+  with_items: '{{ base_rules.stdout_lines }}'
+  
+- name: activate the optional_rules  
+  file: src=/etc/modsecurity/optional_rules/{{item}} 
+    dest=/etc/modsecurity/activated_rules/{{item}} state=link
+  with_items: '{{ optional_rules.stdout_lines }}'
+
+- name: update modsecurity_crs_10_setup.conf
+  template: src=modsecurity_crs_10_setup.conf.j2 
+    dest=/etc/modsecurity/modsecurity_crs_10_setup.conf
+#  notify: apache2 restart
+  
+- name: create /var/log/mod_evasive
+  file: path=/var/log/mod_evasive state=directory owner=www-data group=www-data 
+    mode=755
+
+- name: update mod_evasive
+  template: src=evasive.conf.j2 
+    dest=/etc/apache2/mods-available/evasive.conf backup=yes
+  notify: apache2 restart
+
+- name: activate mod_evasive  
+  file: src=/etc/apache2/mods-available/evasive.conf 
+    dest=/etc/apache2/mods-enabled/evasive.conf state=link
+#  notify: apache2 restart
+    
+- name: check if logwatch installed
+  stat: path=/usr/sbin/logwatch
+  register: logwatch
+  
+- name: enable logwatch http.conf
+  template: src=roles/logwatch/templates/http.conf.j2 dest=/etc/logwatch/conf/logfiles/http.conf
+  when: logwatch.stat.exists == True
+
+#- name: apache2 status
+#  service: name=apache2 state=started enabled=yes
+
+---
+  - name: Generate RSA key
+    command: openssl genrsa -out {{ ssl_certs_privkey_path }} {{ ssl_certs_key_size }} creates={{ ssl_certs_privkey_path }}
+
+  - name: RSA key file ownership
+    file: path={{ ssl_certs_privkey_path }} owner={{ ssl_certs_path_owner }} group={{ ssl_certs_path_group }} mode={{ ssl_certs_mode }}
+
+  - name: Generate CSR
+    command: openssl req -new -sha256 -subj "{{ ssl_certs_fields }}" -key {{ ssl_certs_privkey_path }} -out {{ ssl_certs_csr_path }} creates={{ ssl_certs_csr_path }}
+
+  - name: CSR file ownership
+    file: path={{ ssl_certs_csr_path }} owner={{ ssl_certs_path_owner }} group={{ ssl_certs_path_group }} mode={{ ssl_certs_mode }}
+
+  - name: Generate self-signed SSL certificate
+    command: openssl req -nodes -x509 -days {{ ssl_certs_days }} -in {{ ssl_certs_csr_path }} -key {{ ssl_certs_privkey_path }} -out {{ ssl_certs_cert_path }} -extensions v3_ca creates={{ ssl_certs_cert_path }}
+    when: ssl_certs_generate_self_signed
+
+  - name: Self-signed SSL certificate file ownership
+    file: path={{ ssl_certs_cert_path }} owner={{ ssl_certs_path_owner }} group={{ ssl_certs_path_group }} mode={{ ssl_certs_mode }}
+    when: ssl_certs_generate_self_signed

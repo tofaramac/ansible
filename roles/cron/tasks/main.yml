@@ -1,0 +1,30 @@
+---
+# tasks file for cron
+- name: backup databases on master
+  cron: name="backup database backups on master" cron_file=database-prod user=root
+        minute="00" state=present 
+        job="/var/www/devdocs/production/ppm-db/scripts/backupdatabases.sh >> {{ enbayacronrootlog }} 2>&1"
+  tags: [ 'config' ]
+  
+- name: load current asterisk databases from elastix
+  cron: name="load current asterisk databases from elastix" cron_file=database-prod
+    user=root minute="45" state=present
+    job="/var/www/devdocs/production/ppm-db/scripts/restoreasteriskdatabases.sh >> {{ enbayacronrootlog }} 2>&1"
+  tags: [ 'config' ]
+  
+- name: rsync database backups from master
+  cron: name="rsync database backups from master" cron_file=database-scrub 
+    user=root minute="25" state=present
+    job="/var/www/devdocs/preprod/scripts/fetchlivedatabases.sh >> {{ enbayacronrootlog }} 2>&1"
+  tags: [ 'config' ]
+
+- name: restore all databases and create sanitized developer versions
+  cron: name="restore all databases using master copies" cron_file=database-scrub 
+    user=root hour="01" minute="30" state=present
+    job="/var/www/devdocs/preprod/scripts/restorealldatabases.sh >> {{ enbayacronrootlog }} 2>&1"
+  tags: [ 'config' ]
+
+- name: add openaudit inventory cron job
+  cron: name="OpenAudit inventory run" cron_file=base user=root hour="13" 
+    minute="0" job=/usr/local/bin/audit_linux.sh state=present
+  tags: [ 'config' ]

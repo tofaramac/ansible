@@ -1,0 +1,79 @@
+---
+    - name: Download GLPI from Internet
+      get_url: url="{{ glpi_download_url }}"  dest="{{ glpi_local_path }}"
+
+    - name: Install apache2, mod_ssl, php, php-ldap, mysql-server, php-mysql, php-mbstring, php-gd
+      apt: name={{ item }} state=present
+      with_items:
+         - apache2
+         - php5
+         - php5-ldap
+         - mysql-server
+         - php5-mysql
+         - php5-gd
+         - libapache2-mod-php5 
+         - php5-cli 
+         - php5-common 
+         - php5-cgi
+         - python-pip
+         
+      notify:
+        - restart apache2
+
+    - stat: path="{{httpd_document_root}}/html/"
+      register: glpi
+
+#    - name: Copy iptables file if not present already
+#      template: src=iptables dest=/etc/sysconfig/iptables
+#      notify:
+#        - restart iptables
+#        - restart fail2ban
+
+    - name: Extract glpi downloaded sources in /var/www/
+      unarchive: copy=no src="{{glpi_local_path}}" dest=/var/www/ owner=www-data group=www-data 
+      when: glpi.stat.exists == False
+
+    - name: Copy glpi file to document root
+      copy: src=/var/www dest="{{ httpd_document_root }}" owner=www-data group=www-data 
+
+    - name: Ensure files directories has 777
+      file: dest="/var/www/html/glpi/files" state=directory owner=www-data group=www-data mode=777 recurse=yes
+    
+    - name: Ensure config directories has 755
+      file: dest="/var/www/html/glpi/config" state=directory owner=www-data group=www-data mode=777 recurse=yes
+    
+    - name: Ensure files are owned by www-data user
+      file: dest="{{httpd_document_root}}" owner=www-data group=www-data recurse=yes
+     
+#    - name: Install the Python MySQLB module
+#      pip: name=MySQL-python
+    
+    - name: install python mysql bindings
+      apt: name=python-mysqldb state=installed
+  
+    - name: Create glpi database in mysql
+      mysql_db: name=glpi
+
+    - name: Create glpi user and give all permissions on glpi database
+      mysql_user: name=glpi password="{{ mysql_glpi_password }}" priv=glpi.*:ALL
+
+    - name: Print web instructions
+      debug: msg="Please visit http://{{ ansible_default_ipv4.address }} and setup glpi using MySQL username glpi, password {{ mysql_glpi_password }} and host localhost.  Login using glpi:glpi"
+
+
+    - name: Print post setup instructions
+      debug: msg="After setup is complete also run glpi_postsetup.yaml playbook to remove install/install.php file from glpi server"
+   
+    - name: Make sure Web access to the files directory, should not be allowed
+#      lineinfile: dest=/etc/apache2/apache2.conf regexp=^AllowOverride= line=AllowOverride All backup=yes
+      replace: dest=/etc/apache2/apache2.conf regexp='^(AllowOverride|All)\s*$' replace='\None' validate='/usr/sbin/apache2ctl -f %s -t'
+    
+    - name: restart apache2
+      service: name=apache2 state=restarted
+      
+      
+    - name: Start and Enable httpd, mysqld
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - apache2
+        - mysql

@@ -1,0 +1,60 @@
+---
+# tasks file for generic
+#- name: git clone generic
+#  git: repo={{ github_repo }} dest={{ clone_dest }} accept_hostkey=yes
+#  become_user: "{{ user }}"
+  
+- name: deploy prd conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - generic.prepaidmeters.co.za.conf
+  when: "'{{hostname}}' in groups['prd-apache2-servers']"
+  
+- name: enable prd sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - generic.prepaidmeters.co.za.conf
+  when: "'{{hostname}}' in groups['prd-apache2-servers']"
+  
+  
+- name: deploy stg conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - stg.generic.prepaidmeters.co.za.conf
+  when: "'{{hostname}}' in groups['stg-apache2-servers']"
+  
+- name: enable stg sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - stg.generic.prepaidmeters.co.za.conf
+  when: "'{{hostname}}' in groups['stg-apache2-servers']"
+  
+
+- name: deploy tst conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - tst.generic.prepaidmeters.co.za.conf
+  when: "'{{hostname}}' in groups['tst-apache2-servers']"
+  
+- name: enable tst sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - tst.generic.prepaidmeters.co.za.conf
+  when: "'{{hostname}}' in groups['tst-apache2-servers']"
+
+
+- name: deploy local conf files
+  template: src={{ item }}.j2 dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - local.generic.prepaidmeters.co.za.conf
+  when: "'{{hostname}}' in groups['dev']"
+  
+- name: enable local sites available
+  command: a2ensite {{ item }}
+  with_items:
+    - local.generic.prepaidmeters.co.za.conf
+  when: "'{{hostname}}' in groups['dev']"
+
+
+#- name: apache restart
+#  service: name=apache2 state=started enabled=yes

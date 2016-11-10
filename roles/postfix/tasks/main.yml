@@ -1,0 +1,18 @@
+---
+# tasks file for postfix
+- name: set postfix type as internet site
+  debconf: name=postfix question="postfix/main_mailer_type" 
+    value="'Internet Site'" vtype="string"
+
+- name: set postfix option hostname
+  debconf: name=postifx question="postfix/mailname" 
+    value="{{inventory_hostname_short}}" vtype="string"
+
+- name: postfix install
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+   - postfix
+
+- name: postfix listen local interface only
+  template: src=main.cf.j2 dest=/etc/postfix/main.cf
+  notify: postfix restart

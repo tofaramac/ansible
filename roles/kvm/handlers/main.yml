@@ -1,0 +1,4 @@
+---
+# handlers file for kvm
+- name: libvirt restart
+  command: /etc/init.d/libvirt-bin restart

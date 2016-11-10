@@ -1,0 +1,10 @@
+---
+# handlers file for pxe
+- name: tftp start
+  service: name=tftpd-hpa state=started
+  
+- name: tftp stop
+  service: name=tftpd-hpa state=stopped
+
+- name: tftp restart
+  service: name=tftpd-hpa state=restarted

@@ -1,0 +1,13 @@
+---
+# tasks file for git
+- name: install git
+  apt: name=git state=present update_cache=yes cache_valid_time=86400
+  when: "'{{ inventory_hostname_short }}' in groups['dev']"
+
+- name: config git netadmin
+  template: src=gitconfig.j2 dest=/home/netadmin/.gitconfig 
+    owner=netadmin group=netadmin mode=0644
+
+- name: config git root
+  template: src=gitconfig.j2 dest=/root/.gitconfig 
+    owner=root group=root mode=0644

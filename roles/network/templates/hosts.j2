@@ -1,0 +1,45 @@
+# {{ ansible_managed }}
+#
+127.0.0.1   localhost
+
+{% if inventory_hostname_short in groups['prd'] %}
+127.0.1.1   {{inventory_hostname_short}}.{{ppm_com_domain_name}}  {{inventory_hostname_short}}
+{% endif %}
+
+{% if inventory_hostname_short in groups['stg'] %}
+127.0.1.1   {{inventory_hostname_short}}.{{ppm_stg_domain_name}}  {{inventory_hostname_short}}
+{% endif %}
+
+{% if inventory_hostname_short in groups['tst'] %}
+127.0.1.1   {{inventory_hostname_short}}.{{ppm_tst_domain_name}}  {{inventory_hostname_short}}
+{% endif %}
+
+{% if inventory_hostname_short in groups['infra-servers'] %}
+127.0.1.1   {{inventory_hostname_short}}.{{ppm_local_domain_name}}  {{inventory_hostname_short}}
+{% endif %}
+
+{% if inventory_hostname_short in groups['workstations'] %}
+127.0.1.1   {{inventory_hostname_short}}.{{ppm_local_domain_name}}  {{inventory_hostname_short}}
+{% endif %}
+
+{% if inventory_hostname_short in groups['dev'] %}
+127.0.1.1   {{inventory_hostname_short}}.{{ppm_local_domain_name}}  {{inventory_hostname_short}}
+
+127.0.0.1  {{resolv}}.{{ppm_coza_domain_name}} local.{{ppm_com_domain_name}}
+127.0.0.1  {{resolv}}.{{ppm_net_domain_name}}
+127.0.0.1  {{resolv}}.erp.{{ppm_coza_domain_name}}
+127.0.0.1  {{resolv}}.crm.{{ppm_coza_domain_name}}
+127.0.0.1  {{resolv}}.generic.{{ppm_coza_domain_name}}
+127.0.0.1  {{resolv}}.geo.{{ppm_coza_domain_name}}
+127.0.0.1  {{resolv}}.za.{{ppm_net_domain_name}}
+127.0.0.1  {{resolv}}.crescendo.{{ppm_net_domain_name}}
+localhost  ppm-db-0
+localhost  ppm-db-1
+localhost  ppm-db-ctrl
+
+#Just for llew
+192.168.1.20    rundeck.prepaidmeters.co.za 
+192.168.8.31    zekini.co.za 
+{% endif %}
+
+

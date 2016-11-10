@@ -1,0 +1,6 @@
+---
+# handlers file for easy-rsa
+- name: pack clients
+  command: tar cvzf {{easy_rsa_key_dir}}/{{item.item}}.tar.gz -C {{easy_rsa_key_dir}} {{item.item}}.crt {{item.item}}.key {{item.item}}.ovpn ca.crt
+  when: item.changed
+  with_items: openvpn_clients_changed.results

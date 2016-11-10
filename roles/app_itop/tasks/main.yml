@@ -1,0 +1,39 @@
+---
+# tasks file for app_itop
+- name: graphviz install
+  apt: name=graphviz state=present update_cache=true cache_valid_time=86400
+  
+- name: get itop archive
+  get_url: url=http://downloads.sourceforge.net/project/itop/itop/2.3.1/iTop-{{ itop_version }}.zip
+    dest=/tmp
+ 
+- name: create itop installation folder
+  file: path={{ itop_install_path }} state=directory owner=www-data group=www-data mode=0755
+    
+- name: extract itop archive
+  unarchive: src=/tmp/iTop-2.3.1-2832.zip dest={{ itop_install_path }} owner=www-data 
+    group=www-data mode=0755 copy=no remote_src=yes
+    
+- name: change file ownership
+  command: chown -R www-data:www-data {{ itop_install_path }}
+  
+- name: deploy itop configuration file
+  template: src=config-itop.php.j2 dest={{itop_install_path}}/web/conf/production/config-itop.php
+    owner=www-data group=www-data mode=0444
+  
+- name: deploy itop apache2 conf
+  template: src=itop.conf.j2 dest=/etc/apache2/sites-available/itop.conf
+
+- name: enable itop site
+  command: a2ensite itop.conf
+
+- name: increase post_max_size size
+  lineinfile: dest=/etc/php/7.0/apache2/php.ini regexp='^post_max_size' 
+    line='post_max_size = 8M'
+  
+- name: set upload_tmp_dir
+  lineinfile: dest=/etc/php/7.0/apache2/php.ini regexp='^upload_tmp_dir' 
+    line='upload_tmp_dir = /tmp'
+  
+- name: apache2 reload
+  service: name=apache2 state=reloaded enabled=true

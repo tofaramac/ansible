@@ -1,0 +1,354 @@
+# {{ ansible_managed }}
+# prd
+
+[runtime]
+debug=0
+
+[environment]
+environment=prod
+
+[maintenancemode]
+maintenancemode=0
+
+[timers]
+{% for timers in list_timers %}
+{{timers.alias}}_user={{timers.seconds}}
+{% endfor%}
+
+[limits]
+{% for limits in list_limits %}
+{{limits.alias}}_path={{limits.limit}}
+{% endfor%}
+
+[emails]
+{% for emails in live_group_emails %}
+{{emails.alias}}_user={{emails.email}}
+{% endfor%}
+
+[msisdn]
+{% for msisdns in list_msisdns %}
+{{msisdns.alias}}_user={{msisdns.msisdn}}
+{% endfor%}
+
+[users]
+{% for users in list_users_db %}
+{{users.alias}}_user={{users.user}}
+{% endfor%}
+
+[passwords]
+{% for passwords in list_passwords %}
+{{passwords.alias}}_pass={{passwords.password}}
+{% endfor%}
+
+[authkeys]
+{% for authkeys in list_authkeys %}
+{{authkeys.alias}}_key={{authkeys.key}}
+{% endfor%}
+
+{% for authkeys in list_google_authkeys %}
+{{authkeys.alias}}_key={{authkeys.key}}
+{{authkeys.alias}}_pass={{authkeys.secret}}
+{% endfor%}
+
+{% for authkeys in list_facebook_authkeys %}
+{{authkeys.alias}}_key={{authkeys.key}}
+{{authkeys.alias}}_pass={{authkeys.secret}}
+{% endfor%}
+
+{% for keyfiles in list_google_keyfiles %}
+{{keyfiles.alias}}_id={{keyfiles.id}}
+{{keyfiles.alias}}_keyfile={{keyfiles.keyfile}}
+{% endfor%}
+
+[apis]
+{% for apis in list_apis %}
+{{apis.alias}}_apiid={{apis.apiid}}
+{{apis.alias}}_user={{apis.user}}
+{{apis.alias}}_pass={{apis.password}}
+{% endfor %}
+
+[databases]
+{% for databases in list_database_names %}
+{{databases.alias}}_user={{databases.dbname}}
+{% endfor %}
+
+[urls]
+{% for urls in list_urls %}
+{{urls.alias}}_path={{urls.url}}
+{% endfor%}
+
+[webservices]
+{% for webservices in list_webservices %}
+{{webservices.alias}}_user={{webservices.user}}
+{{webservices.alias}}_pass={{webservices.password}}
+{% endfor%}
+
+[paths]
+# folder paths
+{% for paths in list_paths_folders %}
+{{paths.alias}}_path={{paths.path}}
+{% endfor%}
+
+# file paths
+{% for files in list_paths_files %}
+{{files.alias}}_file={{files.file}}
+{% endfor%}
+
+[specials]
+{% for specials in list_specials %}
+{{specials.alias}}_path={{specials.special}}
+{% endfor%}
+
+[ipaddresses]
+# external ip-addresses
+{% for ipaddresses in list_ipaddress_external %}
+{{ipaddresses.alias}}_path={{ipaddresses.ip}}
+{% endfor%}
+# internal ip-addresses
+{% for ipaddresses in list_ipaddress_internal %}
+{{ipaddresses.alias}}_path={{ipaddresses.ip}}
+{% endfor%}
+
+[fqdns]
+# external fqdn
+{% for fqdns in list_fqdns_external %}
+{{fqdns.alias}}_path={{fqdns.fqdn}}
+{% endfor%}
+
+# internal fqdn
+{% for fqdns in list_fqdns_internal %}
+{{fqdns.alias}}_path={{fqdns.fqdn}}
+{% endfor%}
+
+
+
+[mail]
+{% for smtps in list_smtps %}
+{{smtps.alias}}_host={{smtps.host}}
+{{smtps.alias}}_port={{smtps.port}}
+{{smtps.alias}}_user={{smtps.user}}
+{{smtps.alias}}_password={{smtps.password}}
+{{smtps.alias}}_crypt={{smtps.crypt}}
+{{smtps.alias}}_auth={{smtps.auth}}
+{% endfor %}
+    
+[crypt]
+{% for crypts in list_crypts %}
+{{crypts.alias}}_host={{crypts.token}}
+{% endfor %}
+
+
+
+[hosts]
+{% for hosts in list_haproxy %}
+{{ hostvars[hosts]['inventory_hostname_short'] }}={{ hostvars[hosts]['ansible_ssh_host'] }}
+{% endfor%}
+{% for hosts in list_apache2 %}
+{{ hostvars[hosts]['inventory_hostname_short'] }}={{ hostvars[hosts]['ansible_ssh_host'] }}
+{% endfor%}
+{% for hosts in list_cluster %}
+{{ hostvars[hosts]['inventory_hostname_short'] }}={{ hostvars[hosts]['ansible_ssh_host'] }}
+{% endfor%}
+{% for hosts in list_sts %}
+{{ hostvars[hosts]['inventory_hostname_short'] }}={{ hostvars[hosts]['ansible_ssh_host'] }}
+{% endfor%}
+{% for hosts in list_file %}
+{{ hostvars[hosts]['inventory_hostname_short'] }}={{ hostvars[hosts]['ansible_ssh_host'] }}
+{% endfor%}
+{% for hosts in list_infra %}
+{{ hostvars[hosts]['inventory_hostname_short'] }}={{ hostvars[hosts]['ansible_ssh_host'] }}
+{% endfor%}
+{% for hosts in list_mail %}
+{{ hostvars[hosts]['inventory_hostname_short'] }}={{ hostvars[hosts]['ansible_ssh_host'] }}
+{% endfor%}
+{% for hosts in list_voip %}
+{{ hostvars[hosts]['inventory_hostname_short'] }}={{ hostvars[hosts]['ansible_ssh_host'] }}
+{% endfor%}
+
+dbhost={{ prd_dbhost }}
+dbhostreads={{ prd_dbhostreads }}
+dbcontrol={{ prd_dbcontrol }}
+dbhostcrm={{ prd_dbhostcrm }}
+
+#{% if inventory_hostname_short in groups['dev'] %}
+
+[emailaddresses]
+alertemailto={{ useremail }}
+alertemailcronto={{ useremail }}
+ppmaccountsemailaddress={{ useremail }}
+ppmsupportemailaddress={{ useremail }}
+auroraproductowneremailaddress={{ useremail }}
+ppmdevelopmentemailaddress={{ useremail }}
+cleandatabaseemailto={{ useremail }}
+ppmaccountswarningsemailaddress={{ useremail }}
+
+[runtime]
+debug=0
+ 
+[mysql]
+rootpass={{ dev_rootpass }}
+aurorapassword={{ dev_rootpass }}
+crmpassword={{ dev_rootpass }}
+erppassword={{ dev_rootpass }}
+genericpassword={{ dev_rootpass }}
+joomlapassword={{ dev_rootpass }}
+satecpassword={{ dev_rootpass }}
+propertywarepassword={{ dev_rootpass }}
+
+dbhost=127.0.0.1
+dbhostreads=127.0.0.1
+dbcontrol=127.0.0.1
+dbhostcrm=127.0.0.1
+
+[runtime]
+debug=1
+
+crmurl=http://preprod.crm.prepaidmeters.co.za
+
+[crescendo_tickets]
+ticketsemailusername=
+ticketsemailpassword=
+
+[sts]
+stsip1=127.0.0.1
+stsip2=127.0.0.1
+
+[environment]
+environment=local
+
+[maintenancemode]
+maintenancemode=0
+
+rootpath_aurora=/var/www/aurora/trunk/
+rootpath_erp=/var/www/erp/trunk/
+rootpath_generic=/var/www/generic/trunk/
+rootpath_aurora_cake=/var/www/aurora_cake/trunk/
+rootpath_erp_cake=/var/www/erp_cake/trunk/
+rootpath_generic_cake=/var/www/generic_cake/trunk/
+
+[socialmedia]
+propertywaregooglekey=549092841382-gr89lf4l5lv58iha2efj0j4s7bh6hppt.apps.googleusercontent.com
+propertywaregooglesecret=Y_LVTGDz9osHFkfXdjApShYc
+propertywaregoogleemail=549092841382-gr89lf4l5lv58iha2efj0j4s7bh6hppt@developer.gserviceaccount.com
+propertywarefacebookkey=791514304265407
+propertywarefacebooksecret=7eb5235f2aafdf904aaed6aece9a3596
+propertywarefacebookemail=cc381fc9072caa89f6619c96b1fd8c7e
+
+googleapiclientid=549092841382-5qr2c0k9odmqtn55gtjh2al66u3rmt9r.apps.googleusercontent.com
+googleapiserviceaccount=549092841382-5qr2c0k9odmqtn55gtjh2al66u3rmt9r@developer.gserviceaccount.com
+googleapikeyfile=2f2a17fcfa7775000e7c2a7d36a11b9f7b3a6183-privatekey.p12
+googleplusclientid=549092841382-jv6j31qs9cdnkeocq7sbcbolpaubikno.apps.googleusercontent.com
+googleplussecret=pw7k8qChuc_FmHvNG-5nVPuN
+googleapiwhitelabelza=ZA
+
+mrprepaidemail=subs@mrprepaid.co.za
+iapaurorauserspassword={{ dev_rootpass }}
+absaaurorauserspassword={{ dev_rootpass }}
+crmsoapusername=netmin
+crmsoappassword=thisisforcrmanderppleasedontforgetit
+getresponseapikey=4d2ceb49f52077922c61be3e66417830
+
+getresponseuser=netmin@prepaidmeters.com
+getresponsepasswrod={{ dev_rootpass }}
+
+[vcs]
+vcswebservicesusername=enbaya-accounts
+vcswebservicespassword={{ dev_rootpass }}
+
+[Netcash]
+netcash_account_key=3a9e84f2-7007-49e2-aeae-604c0ed36203
+netcash_debitorder_key=b1c59551-f7dc-47af-86af-08f9937fba8d
+
+smtpssl=tls
+smtphost=mail.prepaidmeters.co.za
+smtpport=25
+smtpauth=True
+smtpusername=noreply@prepaidmeters.net
+smtppassword={{ dev_rootpass }}
+    
+urlmdfivetoken=asfsd3$T#VDvf43vedsv
+txtoken=at3g4rtbvsvsd43vedsv
+passwordkey={{ dev_rootpass }}
+
+cigicellemailaddress=systems@prepaidmeters.com
+cigicellsmsnumber=0834588279
+
+ampsip=196.214.184.98
+impactusersid=45602
+impactftpserver=ftp.amps.co.za
+impactftpusername=water
+impactftppassword={{ dev_rootpass }}
+impactftpdirectory=prepaid/
+
+[constants]
+enbayaconfigfile=/var/www/enbaya.ini
+tempfolder=/tmp/
+enbayacronrootlogdir=/var/log/enbaya/
+enbayacronrootlog=/var/log/enbaya/enbayacronroot.log
+cronreports=/tmp/cronreports.txt
+maintenancemodefilewebservers=/var/www/maintenancemode.ini
+maintenancemodefiledatabaseservers=/run/ppm/maintenancemode.ini
+maintenancemodeminutes=5
+eskomdebtorno=0000006903
+cronlogwwwdata=/var/log/enbaya/enbayacronwwwdata.log
+rsyncfolder=/run/ppm/
+backupfolder=/var/backups/mysql/
+backuprestorefolder=/var/backups/mysql/work/
+databasebackupfolder=/var/rsync/db/
+documentsfolder=/var/www/documents/trunk/
+documentsfolderdynamic=/var/www/documentsdynamic/
+customhostsfile=/root/customhosts
+customapapcheconffile=/root/customapapcheconf.conf
+devdatabasesourceurl=http://preprod.generic.prepaidmeters.co.za/databasesamples/
+devdatabasedestinationfolder=/var/www/generic/trunk/databasesamples/
+devdatabaseworkfolder=${devdatabasedestinationfolder}/work/
+
+emailfrom={{ useremail }}
+alertemailfrom={{ useremail }}
+cronemailto={{ useremail }}
+cronemailfrom={{ useremail }}
+
+joomladatabasename=prepaidmeters_%
+joomladatabaseuser=joomlauser
+
+propertywaredatabasename=propertyware
+propertywaredatabaseuser=propertyware
+
+impactpublicip=196.214.184.98
+impactemailto=cron@amps.co.za
+clickatellapiid=3191705
+clickatelluser=ppm_coza
+clickatellpassword={{ dev_rootpass }}
+
+routesmsuser=prepaidsms
+routesmspassword={{ dev_rootpass }}
+
+clickatellapiidaus=3346794
+clickatelluseraus=ppm_au
+clickatellpasswordaus={{ dev_rootpass }}
+
+clickatellaurorausersmobile=clickatellws
+clickatellaurorauserspassword={{ dev_rootpass }}
+
+clickatellduplicatetransactioncheckinminutes=3
+unipinduplicatetransactioncheckinminutes=60
+
+masterdatabaseserver=127.0.0.1
+pathtovoicerecordings=/var/tmp
+
+mobilenumberceo=0768877775
+mobilenumberelectrician=0828300968
+mobilenumberplumber=0793686552
+mobilenumbermanager=0793686552
+
+testtokenkwhmax=5
+testtokenkwhmaxadmin=999
+
+cigicellaurorausersmobile=cigicellws
+cigicellaurorauserspassword=c1g1ws 
+
+{% endif %}
+
+# stg
+# tst
+# dev

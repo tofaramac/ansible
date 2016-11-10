@@ -1,0 +1,3 @@
+---
+# defaults file for smokeping
+smokeping_cgiurl: localhost

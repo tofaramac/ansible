@@ -1,0 +1,12 @@
+---
+# defaults file for java
+
+java_implementation: openjdk
+
+java_openjdk_version: 8
+java_openjdk_jre_only: false
+java_openjdk_headless: false
+java_openjdk_use_ppa: true
+
+java_oracle_version: 8
+java_oracle_install_jce_policy: false

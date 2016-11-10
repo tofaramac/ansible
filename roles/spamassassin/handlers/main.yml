@@ -1,0 +1,9 @@
+---
+# handlers file for spamassassin
+- name: restart spamassassin
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - spamassassin
+    - spamass-milter

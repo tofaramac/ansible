@@ -1,0 +1,29 @@
+; {{ ansible_managed }}
+;  ----------------------------------------------------------
+;  AMQP CONFIGURATION
+;  ----------------------------------------------------------
+
+amqp.connection.host = localhost
+amqp.connection.port = 5672
+amqp.connection.username = enbayasts
+amqp.connection.password = enbayasts
+amqp.connection.vhost = sts
+amqp.connection.timeout = 1000
+amqp.connection.frame_max = 131072
+
+amqp.connection.ssl.enabled = no
+
+;  ----------------------------------------------------------
+;  SSL cert information
+;
+;  ca_cert - Path to ca certificate file
+;  client_key - Path to client key file
+;  client_cert - Path to client certificate file
+;
+;  amqp.connection.ssl.ca_cert = ${SYSCONFDIR}/ssl/bundle.crt
+;  amqp.connection.ssl.client_key = ${SYSCONFDIR}/ssl/client.key
+;  amqp.connection.ssl.client_cert = ${SYSCONFDIR}/ssl/client.crt
+;  ----------------------------------------------------------
+
+
+

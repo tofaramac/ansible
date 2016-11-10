@@ -1,0 +1,5 @@
+---
+# defaults file for generic
+github_repo: ssh://git_enbaya@enbaya.git.cloudforge.com/generic.git
+
+clone_dest: /home/{{ user }}/project/generic

@@ -1,0 +1,32 @@
+---
+# tasks file for python-pip
+- name: install python
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - python-software-properties
+    - python-pip
+    - python-dev
+    - python-mysqldb
+    - python-apt
+    - python-simplejson
+    - python-httplib2
+    - python-pycurl
+    - python-netaddr
+  tags: [ 'packages' ]
+
+- name: install python-libvirt when kvm-server
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - python-libvirt
+  when: "'{{ inventory_hostname_short }}' in groups['kvm-servers']"
+  tags: [ 'packages' ]
+  
+- name: remove python-libvirt when not a kvm-server
+  apt: name={{item}} state=absent update_cache=yes cache_valid_time=86400
+  with_items:
+    - python-libvirt
+  tags: [ 'packages' ]
+
+# using pip is slow and prone to error only use if absolute must
+#- name: remove python-pip
+#  pip: name=python-pip state=absent

@@ -1,0 +1,5 @@
+---
+# tasks file for app_devdocs
+- name: git clone devdocs
+  git: repo={{ github_repo }} dest={{ clone_dest }} accept_hostkey=yes
+  become_user: "{{ user }}"

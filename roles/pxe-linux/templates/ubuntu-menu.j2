@@ -1,0 +1,16 @@
+# { ansible_managed }
+LABEL 2 
+        MENU LABEL Ubuntu 16.04 LTS (server)
+        KERNEL ubuntu/16/server/amd64/vmlinuz
+        APPEND  iso initrd=ubuntu/16/server/amd64/ubuntu-16.04-server-amd64.iso raw 
+        TEXT HELP
+        Boot the Ubuntu 16.04 LTS 64-bit 
+        ENDTEXT
+
+LABEL 2
+        MENU LABEL Ubuntu 16.04 LTS (desktop)
+        KERNEL ubuntu/16/desktop/amd64/vmlinuz.efi
+        APPEND  boot=casper  inst=ks ks=http://192.168.1.21/ubuntu/desktop/kickstart.cfg initrd=ubuntu/16/desktop/amd64/initrd.lz
+        TEXT HELP
+        Boot the Ubuntu 16.04 LTS 64-bit 
+        ENDTEXT

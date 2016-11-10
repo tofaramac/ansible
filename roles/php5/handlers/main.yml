@@ -1,0 +1,11 @@
+---
+- hosts: "{{Target}}"
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Ensure php5-fpm start
+      service: name=php5-fpm state=started
+
+    - name: Restart php5-fpm
+      service: name=php5-fpm state=restarted
+

@@ -1,0 +1,10 @@
+---
+# handlers file for dhcp
+- name: dhcp restart
+  service: name=isc-dhcp-server state=restarted
+  
+- name: dhcp start
+  service: name=isc-dhcp-server state=started
+  
+- name: dhcp stop
+  service: name=isc-dhcp-server state=stopped

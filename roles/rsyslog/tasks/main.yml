@@ -1,0 +1,14 @@
+---
+# tasks file for rsyslog
+- name: rsyslog receiving client config
+  template: src=client.rsyslog.conf.j2 dest=/etc/rsyslog.conf backup=yes
+  notify: rsyslog restart
+  when: "'{{hostname}}' in groups['rsyslog-client-servers']"
+  
+- name: rsyslog sending servers config
+  template: src=server.10-rsyslog.conf.j2 dest=/etc/rsyslog.d/10-rsyslog.conf
+  notify: rsyslog restart
+  when: "'{{hostname}}' not in groups['rsyslog-client-servers']"
+
+- name: check rsyslog status
+  service: name=rsyslog state=running enabled=true

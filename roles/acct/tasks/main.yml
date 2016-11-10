@@ -1,0 +1,11 @@
+---
+# tasks file for acct
+- name: process accounting install
+  apt: name=acct state=present update_cache=yes cache_valid_time=86400
+
+- name: create acct log file
+  file: path=/var/log/wtmp state=touch
+
+- name: cron pacct-report
+  copy: src=pacct-report dest=/etc/cron.weekly/pacct-report mode=755
+

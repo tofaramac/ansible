@@ -1,0 +1,36 @@
+---
+# tasks file for smokeping
+- name: smokeping install
+  apt: name=smokeping state=present update_cache=true cache_valid_time=86400
+  notify: smokeping restart
+  
+- name: link smokeping apache2.conf to apache2
+  file: src=/etc/smokeping/apache2.conf 
+    dest=/etc/apache2/conf-available/smokeping.conf state=link
+
+- name: enable apache mods
+  apache2_module: name=cgid state=present
+  notify: apache2 reload
+
+- name: enable apache smokeping conf
+  command: a2enconf smokeping
+  notify: apache2 reload
+  
+- name: smokeping general config
+  template: src=General.j2 dest=/etc/smokeping/config.d/General
+  notify: smokeping restart
+
+- name: smokeping pathnames config
+  template: src=pathnames.j2 dest=/etc/smokeping/config.d/pathnames
+  notify: smokeping restart
+
+- name: smokeping alerts config
+  template: src=Alerts.j2 dest=/etc/smokeping/config.d/Alerts
+  notify: smokeping restart
+
+- name: smokeping targets config
+  template: src=Targets.j2 dest=/etc/smokeping/config.d/Targets
+  notify: smokeping restart
+
+- name: smokeping check status
+  service: name=smokeping state=running enabled=true

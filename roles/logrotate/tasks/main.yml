@@ -1,0 +1,4 @@
+---
+# tasks file for logrotate
+- name: config logrotate
+  template: src=logrotate.conf.j2 dest=/etc/logrotate.conf

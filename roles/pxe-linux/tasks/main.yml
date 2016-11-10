@@ -1,0 +1,40 @@
+---
+# tasks file for pxe-linux
+- name: pxe install
+  apt: name=pxelinux state=present update_cache=yes cache_valid_time=86400
+  
+- name: create pxelinux.cfg directory 
+  file: path="/var/lib/tftpboot/pxelinux.cfg" state=directory 
+
+- name: copy required files to tftpboot directory
+  copy: src={{item.src}} dest={{ item.dest }} remote_src=True 
+    owner=root group=root mode=0644
+  with_items:
+    - { src: "{{ com32_dir }}/libutil.c32", dest: "{{ tftp_boot_dir }}" }
+    - { src: "{{ com32_dir }}/vesamenu.c32", dest: "{{ tftp_boot_dir }}" }
+    - { src: "{{ com32_dir }}/libcom32.c32", dest: "{{ tftp_boot_dir }}" }
+    - { src: "{{ com32_dir }}/ldlinux.c32", dest: "{{ tftp_boot_dir }}" }
+    - { src: "{{ com32_dir }}/menu.c32", dest: "{{ tftp_boot_dir }}" }
+    - { src: "{{ pxelinux_dir }}/pxelinux.0", dest: "{{ tftp_boot_dir }}" }
+    - { src: "{{ kernel_dir }}/vmlinuz", dest: "{{ tftp_boot_dir }}/ubuntu/16/server/amd64" }
+    - { src: "{{ boot_dir }}/initrd.gz", dest: "{{ tftp_boot_dir }}/ubuntu/16/server/amd64" }
+    - { src: "{{ casper_dir }}/initrd.lz", dest: "{{ tftp_boot_dir }}/ubuntu/16/desktop/amd64" }
+    - { src: "{{ casper_dir }}/vmlinuz.efi", dest: "{{ tftp_boot_dir }}/ubuntu/16/desktop/amd64" }
+
+    
+
+  
+
+
+    
+    
+
+  
+  
+  
+  
+  
+  
+  
+  
+

@@ -1,0 +1,13 @@
+---
+# handlers file for asterisk
+- name: asterisk stop
+  service: name=asterisk state=stopped
+
+- name: asterisk start
+  service: name=bind9 state=started
+
+- name: asterisk restart
+  service: name=asterisk state=restarted
+
+- name: asterisk status
+  service: name=asterisk state=running

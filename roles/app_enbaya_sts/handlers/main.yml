@@ -1,0 +1,10 @@
+---
+# handlers file for enbaya-sts
+- name: enbayasts start 
+  service: name=enbayasts state=started
+  
+- name: enbayasts stop
+  service: name=enbayasts state=stop
+  
+- name: enbayasts restart
+  service: name=enbayasts state=restarted

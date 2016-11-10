@@ -1,0 +1,10 @@
+---
+# handlers file for nrpe-agent
+- name: nrpe restart
+  service: name=nagios-nrpe-server state=restarted
+  
+- name: nrpe start
+  service: name=nagios-nrpe-server state=started
+
+- name: nrpe stop
+  service: name=nagios-nrpe-server state=stopped

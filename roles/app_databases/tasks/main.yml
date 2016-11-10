@@ -1,0 +1,29 @@
+---
+# tasks file for app_databases
+#- name: create databases
+#  mysql_db: name={{item}} login_user="{{ clr_db_user }}" login_password="{{ clr_db_user_pass }}"
+#    state=present
+#  with_items:
+#    - audit
+#    - archive
+#    - aurora
+#    - aurorabackup
+#    - crescendo
+#    - enbayabackups
+#    - enbayasts
+#    - archive
+#  notify: mysql stop
+#  tags: [ 'config' ]
+# /var/rsync/db/hourly/var/rsync/db/hourly/crescendo-hourly-201608051600.sql.gz  
+- name: fetch prd db archive
+  fetch: src=/var/rsync/db/hourly/crescendo-hourly-201608051600.sql.gz dest=/tmp/fetched/ flat=yes
+
+#- name: drop existing local databases
+
+#- name: extract archive
+
+#- name: restore db
+
+#- name: scrub db
+
+#- name: apply views

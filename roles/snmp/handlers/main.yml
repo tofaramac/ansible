@@ -1,0 +1,19 @@
+---
+# handlers file for snmp
+- name: snmp start
+  service: name=snmp state=start
+
+- name: snmp stop
+  service: name=snmp state=stop
+
+- name: snmp restart
+  service: name=snmp state=restarted
+
+- name: snmpd start
+  service: name=snmpd state=start
+
+- name: snmpd stop
+  service: name=snmpd state=stop
+
+- name: snmpd restart
+  service: name=snmpd state=restarted

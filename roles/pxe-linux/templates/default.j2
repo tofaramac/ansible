@@ -1,0 +1,18 @@
+# { ansible_managed }
+
+DEFAULT vesamenu.c32
+TIMEOUT 600
+ONTIMEOUT BootLocal
+PROMPT 0
+#MENU INCLUDE pxelinux.cfg/pxe.conf
+MENU BEGIN Ubuntu xenial
+MENU TITLE Ubuntu xenial
+        LABEL Previous
+        MENU LABEL Previous Menu
+        TEXT HELP
+        Return to previous menu
+        ENDTEXT
+        MENU EXIT
+        MENU SEPARATOR
+        MENU INCLUDE ubuntu/ubuntu.menu
+MENU END

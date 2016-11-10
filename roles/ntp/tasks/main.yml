@@ -1,0 +1,13 @@
+---
+# tasks file for ntp
+- name: ntp install
+  apt: name=ntp state=present update_cache=yes cache_valid_time=86400
+  tags: [ 'packages' ]
+
+- name: ntp conf
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf owner=root group=root mode=0644
+  notify: ntp restart
+  tags: [ 'config' ]
+
+- name: ntp status
+  service: name=ntp state=started enabled=true

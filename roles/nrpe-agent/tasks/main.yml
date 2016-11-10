@@ -1,0 +1,16 @@
+---
+# tasks file for nrpe-agent
+- name: nagios-nrpe-plugin install
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+   - nagios-nrpe-server
+   - nagios-plugins
+   - nagios-plugins-basic
+   - nagios-plugins-standard
+
+- name: deploy nrpe-server config
+  template: src=nrpe.cfg.j2 dest=/etc/nagios/nrpe.cfg
+  notify: nrpe restart
+  
+- name: nrpe-server status
+  service: name=nagios-nrpe-server state=started enabled=yes

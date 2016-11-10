@@ -1,0 +1,88 @@
+# {{ ansible_managed }}
+
+global
+  maxconn 2500
+  # ssl-server-verify none
+  # lower your record size to improve Time to First Byte (TTFB)
+  # tune.ssl.maxrecord 1400
+  # set inactivity timeout to reset record size (in ms)
+  # tune.idletimer 1000
+  log /log local0
+  log /log local1 notice
+  stats socket /tmp/haproxy.sock level admin
+  user haproxy
+  group haproxy
+
+listen mysql-cluster
+    bind 127.0.0.1:3306
+    mode tcp
+    option mysql-check user haproxy_check
+    balance roundrobin
+    server mysql-1 192.168.0.16:3306 check
+    server mysql-2 192.168.239.4:3306 check
+    server mysql-3 192.168.0.11:3306 check
+
+defaults
+  timeout connect 10s
+  timeout client 300s
+  timeout server 300s
+  timeout check 5s
+  timeout http-request 300s
+  timeout queue 300s
+  timeout http-keep-alive 1s
+
+  option http-server-close
+  option forwardfor
+  option allbackups
+  retries 4
+  option httplog
+  option dontlognull
+  option redispatch
+  option tcp-smart-accept
+  option tcp-smart-connect
+  log global
+
+  stats enable
+  stats hide-version
+  stats refresh 30s
+  stats show-node
+  stats auth admin:Tok3ns1234!
+  stats uri  /haproxy?stats
+
+listen admin
+  mode http
+  bind *:8080
+  stats enable
+
+frontend www
+  mode http
+  bind *:80
+
+  acl hostcrm hdr(host) -i crm.prepaidmeters.co.za
+#  acl cookie_use_server_01 req.cook(use_this_server)  -m str -i crm01
+
+  use_backend crm_http if hostcrm
+#  use_backend srv_http_webserver01 if cookie_use_server_01
+
+  default_backend srv_http
+
+backend srv_http
+  mode http
+  balance source
+
+  server webserver01 192.168.239.2:80 check maxconn 64 rise 2
+  server webserver02 192.168.0.20:80 check maxconn 64 rise 2
+
+backend srv_http_webserver01
+  mode http
+  server webserver01 192.168.239.2:80 check maxconn 64 rise 2
+
+backend srv_http_webserver02
+  mode http
+  server webserver02 192.168.0.20:80 check maxconn 64 rise 2
+
+backend crm_http
+  mode http
+  balance source
+
+  server crm01 192.168.0.17:80 check maxconn 64 rise 2

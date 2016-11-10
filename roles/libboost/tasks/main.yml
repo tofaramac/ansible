@@ -1,0 +1,4 @@
+---
+# tasks file for libboost
+- name: lib-libboost install
+  apt: name=libboost-all-dev state=present update_cache=yes cache_valid_time=86400

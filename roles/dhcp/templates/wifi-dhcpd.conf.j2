@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+#
+ddns-updates on;
+ddns-update-style interim;
+update-static-leases on;
+allow unknown-clients;
+use-host-decl-names on;
+default-lease-time 1200;
+max-lease-time 7200;
+authoritative;
+log-facility local7;
+
+{% if ansible_default_ipv4.network == '192.168.20.0' %}
+
+subnet {{ ansible_default_ipv4.network }} netmask {{ ansible_default_ipv4.netmask }} {
+  range 192.168.20.10 192.168.20.252; 
+  option subnet-mask {{ ansible_default_ipv4.netmask }};
+  option broadcast-address {{ ansible_default_ipv4.broadcast }};
+  option routers {{ ansible_default_ipv4.gateway }};
+  option domain-name-servers {{ jhb_dns_nameserver }};
+  option domain-name "{{ ppm_local_domain_name }}";
+  option ntp-servers {{ jhb_ntp_servers }}, {{ dbn_ntp_servers }};
+  ddns-domainname "{{ppm_local_domain_name}}.";
+  ddns-rev-domainname "in-addr.arpa.";
+}
+# ubnt-wifi-jhb
+{% for host in groups['ubnt-wifi-jhb']%}
+host {{ hostvars[host]['inventory_hostname_short'] }} { hardware ethernet {{ hostvars[host].mac }}; fixed-address {{ hostvars[host].ansible_ssh_host }}";}
+{% endfor%}
+{% endif %}
+

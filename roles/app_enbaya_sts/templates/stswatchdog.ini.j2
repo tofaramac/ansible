@@ -1,0 +1,21 @@
+; {{ ansible_managed }}
+;  ----------------------------------------------------------
+;  APP SPECIFIC CONFIGURATIONS
+;  ----------------------------------------------------------
+
+include = node.ini; amqp.ini; logging.ini;
+
+
+
+;  WATCHDOG INFORMATION
+
+watchdog.apps = stscrypt, stsif
+watchdog.restarts.tolerance = 60
+watchdog.restarts.penalty = 10
+watchdog.restarts.max_delay = 600
+watchdog.restarts.max_restarts = 60
+
+;  APP SPECIFIC SETTINGS
+
+watchdog.specific.stsif.startup_delay = 5
+

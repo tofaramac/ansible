@@ -1,0 +1,52 @@
+// {{ ansible_managed }}
+// Do any local configuration here
+//
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+{% if ansible_default_ipv4.network == '192.168.1.0' %}
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "z7H9desctnyZTIQfZWzldw==";
+};
+controls {
+  inet 127.0.0.1 allow { localhost; 192.168.1.29; } keys { "rndc-key"; };
+};
+zone "{{ppm_local_domain_name}}" {
+        type master;
+        file "/var/lib/bind/{{ ppm_local_domain_name }}.zone";
+        allow-update { key rndc-key; };
+        allow-transfer { "trusted"; };         # ns2
+        notify yes;
+};
+zone "1.168.192.in-addr.arpa" {
+        type master;
+        file "/var/lib/bind/{{ ppm_local_domain_name }}.rev.zone";
+        allow-update { key rndc-key; };
+        allow-transfer { "trusted"; };         # ns2
+        notify yes;
+};
+{% endif %}
+{% if ansible_default_ipv4.network == '192.168.3.0' %}
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "GV3YqUm0DzaTBMq/navN6Q==";
+};
+controls {
+  inet 127.0.0.1 allow { localhost; 192.168.3.20; } keys { "rndc-key"; };
+};
+zone "{{ppm_local_domain_name}}" {
+        type master;
+        file "/var/lib/bind/{{ ppm_local_domain_name }}.zone";
+        allow-update { key rndc-key; };
+        allow-transfer { "trusted"; };         # ns1
+        notify yes;
+};
+zone "3.168.192.in-addr.arpa" {
+        type master;
+        file "/var/lib/bind/{{ ppm_local_domain_name }}.rev.zone";
+        allow-update { key rndc-key; };
+        allow-transfer { "trusted"; };         # ns1
+        notify yes;
+};
+{% endif %}

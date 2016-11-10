@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+DBDriver mysql
+DBDParams "host=127.0.0.1 port=3306 user={{ vault_clr_db_user }} pass={{ vault_clr_db_pass }}"
+DBDMin  2
+DBDKeep 4
+DBDMax  10
+DBDExptime 300

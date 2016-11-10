@@ -1,0 +1,13 @@
+---
+# defaults file for easy-rsa
+easy_rsa_ca_dir: /etc/easy-rsa
+easy_rsa_key_dir: "{{ easy_rsa_ca_dir }}/keys"
+
+easy_rsa_key_city: "Johannesburg"
+easy_rsa_key_country: "za"
+easy_rsa_key_email: "{{ email_systems }}"
+easy_rsa_key_expire: 3650
+easy_rsa_key_name: "{{inventory_hostname_short}}"
+easy_rsa_key_org: "{{ org_name }}"
+easy_rsa_key_ou: "systems"
+easy_rsa_key_province: "GP"

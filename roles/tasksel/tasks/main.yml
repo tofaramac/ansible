@@ -1,0 +1,11 @@
+---
+# tasks file for tasksel
+
+- name: check if tasksel installed
+  stat: path=/usr/bin/tasksel
+  register: tasksel
+  
+- name: tasksel install
+  apt: name=tasksel state=present update_cache=true cache_valid_time=86400
+  when: tasksel.stat.exists == False
+  tags: [ 'packages' ]

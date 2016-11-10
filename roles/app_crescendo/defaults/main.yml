@@ -1,0 +1,5 @@
+---
+# defaults file for crescendo
+github_repo: git@github.com:PrepaidMeters/crescendo.git
+
+clone_dest: /home/{{ user }}/project/crescendo_cake

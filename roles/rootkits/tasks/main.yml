@@ -1,0 +1,101 @@
+---
+# tasks file for rootkits
+- name: install chkrootkit
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - chkrootkit
+
+- name: chkrootkit configure
+  template: src=chkrootkit.conf.j2 dest=/etc/chkrootkit.conf backup=yes
+
+- name: check chkrootkit daily run cron folder
+  stat: path=/etc/cron.daily/chkrootkit
+  register: chkrootkit_run
+  
+- name: move chkrootkit daily to weekly
+  command: mv /etc/cron.daily/chkrootkit /etc/cron.weekly/
+  when: chkrootkit_run.stat.isfile is defined
+  
+############################
+# Source: https://www.digitalocean.com/community/articles/how-to-use-rkhunter-to-guard-against-rootkits-on-an-ubuntu-vps
+
+# It is important to have the latest version of rkhunter installed because critical
+# security patches are added regularly. Ununtu repositories tend to get outdated,
+# so install from source
+- name: install rkhunter from source
+  get_url:
+    url=http://downloads.sourceforge.net/project/rkhunter/rkhunter/{{rkhunter_version}}/rkhunter-{{rkhunter_version}}.tar.gz
+    dest=/tmp/rkhunter.tar.gz
+
+- name: extract rkhunter archive
+#  command: tar -xzf rkhunter.tar.gz chdir=/tmp/ creates=/tmp/rkhunter-{{rkhunter_version}}
+  unarchive: src=/tmp/rkhunter.tar.gz dest=/tmp/
+    copy=no
+
+- name: run rkhunter installer
+  command: ./installer.sh --layout /usr --install
+    chdir=/tmp/rkhunter-{{rkhunter_version}}
+  changed_when: false
+
+# Install utilities needed for full functionality
+
+- name: run apt-get rkhunter upgrade
+  apt: upgrade=full
+  when: rkhunter_update_apt|bool
+
+#- name: update rkhunter data files
+#  command: rkhunter --update
+#  when: rkhunter_update|bool
+
+- name: Update rkhunter configuration
+  template: src=etc_rkhunter.conf.j2 dest=/etc/rkhunter.conf 
+    owner=root group=root mode=0644
+
+# NOTE: This should only be run when config files are known to be good
+#- name: set baseline file properties
+#  command: rkhunter --propupd
+#  when: rkhunter_propupd|bool
+
+#- name: run checks
+#  command: rkhunter -c --skip-keypress
+#  when: rkhunter_run_checks|bool
+#  ignore_errors: yes
+
+# TODO: Perform configuration check: sudo rkhunter -C
+# Right, now getting error output: "Unknown configuration file option: "
+# But rkhunter seems to be running correctly
+  
+############################
+
+- name: add rkhunter cronjob
+  copy: src=etc_cron.sh dest="/etc/cron.{{ rkhunter_cron_frequency }}/rkhunter"
+    mode=0755
+
+#- name: rkhunter configure
+#  template: src=rkhunter.j2 dest=/etc/default/rkhunter backup=yes
+#  notify: rkhunter update
+  
+#- name: check rkhunter weekly update cron folder
+#  stat: path=/etc/cron.weekly/rkhunter
+#  register: rkhunter_update
+
+#- name: check rkhunter daily run cron folder
+#  stat: path=/etc/cron.weekly/rkhunter
+#  register: rkhunter_run
+  
+#- name: move rkhunter update daily to weekly
+#  command: mv /etc/cron.weekly/rkhunter /etc/cron.weekly/rkhunter_update
+#  when: rkhunter_update.stat.isfile is defined
+
+#- name: move rkhunter run daily to weekly
+#  command: mv /etc/cron.daily/rkhunter /etc/cron.weekly/rkhunter_run
+#  when: rkhunter_run.stat.isfile is defined
+
+- name: remove rkhunter tar.gz
+  file: path=/tmp/rkhunter.tar.gz state=absent
+  
+- name: remove rkhunter folder
+  file: path=/tmp/rkhunter-{{rkhunter_version}} state=absent
+  
+
+

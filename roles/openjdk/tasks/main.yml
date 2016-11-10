@@ -1,0 +1,6 @@
+---
+# tasks file for openjdk
+- name: openjdk install (default-jre)
+  apt: name=default-jre state=present update_cache=yes cache_valid_time=86400
+  when: "'{{inventory_hostname_short}}' in groups['ubiquity-servers'] or groups['dev']"
+  tags: [ 'packages' ]

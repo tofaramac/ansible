@@ -1,0 +1,13 @@
+---
+# handlers file for app_icinga
+- name: icinga2 stop
+  service: name=icinga2 state=stopped
+
+- name: icinga2 restart
+  service: name=icinga2 state=restarted
+  
+- name: icinga2 start
+  service: name=icinga2 state=started
+  
+- name: apache2 restart
+  service: name=apache2 state=restarted

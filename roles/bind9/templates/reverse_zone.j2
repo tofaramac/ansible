@@ -1,0 +1,41 @@
+; Reverse zone file for {{inventory_hostname_short}}.{{ppm_local_domain_name}}
+; {{ ansible_managed }}
+
+$TTL	604800
+@	IN	SOA	{{inventory_hostname_short}}.{{ppm_local_domain_name}}. (
+		     2016080200      	; Serial
+			  28800         ; refresh (8 hours)
+			   3600         ; retry (1 hour)
+			 604800         ; expire (1 week)
+			  38400         ; minimum (10 hours 40 minutes)
+				
+
+        IN      A       192.168.1.29
+;
+@	IN	NS	{{inventory_hostname_short}}.{{ppm_local_domain_name}}.
+@	IN	A	127.0.0.1
+@	IN	AAAA	::1
+NS      IN      A       192.168.1.29
+@       IN      PTR  {{inventory_hostname_short}}.{{ppm_local_domain_name}}.
+
+; INFRA SERVERS
+; Below the A records for hosts
+{% for host in groups['infra-servers'] %}
+{{ hostvars[host]['ansible_ssh_host'] }} IN  PTR  {{ hostvars[host]['inventory_hostname_short'] }}.
+{% endfor %}
+
+
+; TST
+; Below the A records for hosts
+{% for host in groups['tst'] %}
+{{ hostvars[host]['ansible_ssh_host'] }} IN  PTR  {{ hostvars[host]['inventory_hostname_short'] }}.
+{% endfor %}
+
+
+; WORKSTATIONS
+; Below the A records for hosts
+{% for host in groups['workstations'] %}
+{{ hostvars[host]['ansible_ssh_host'] }} IN  PTR  {{ hostvars[host]['inventory_hostname_short'] }}.
+{% endfor %}
+
+

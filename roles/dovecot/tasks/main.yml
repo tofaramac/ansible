@@ -1,0 +1,67 @@
+---
+
+- name: Install Dovecot packages
+  apt:
+    pkg: '{{ item }}'
+    state: 'present'
+    install_recommends: 'no'
+  with_items:
+    - dovecot-core
+    - dovecot-imapd
+    - dovecot-pop3d
+    
+- name: Dovecot | Create certificates directory
+  file: path=/etc/dovecot/certs/ owner=dovecot group=dovecot state=directory
+
+- name: Dovecot | Create cacert file
+  copy: dest=/etc/dovecot/certs/mail-cacert.pem owner=dovecot group=dovecot content="/C=US/ST=Oregon/L=Portland/O=IT/CN=${ansible_fqdn}"
+
+- name: Dovecot | Create self-signed certificates
+  command: openssl req -new -nodes -x509 -subj "/C=ZA/ST=Johannesburg/L=Randburg/O=IT/CN=${ansible_fqdn}" -days 3650 -keyout /etc/dovecot/certs/mail_key.pem -out /etc/dovecot/certs/mail_cert.pem -extensions v3_ca creates=/etc/dovecot/certs/mail_cert.pem
+
+- name: Dovecot |  Set permission for self-signed certificates
+  file: path=/etc/dovecot/certs/{{ item }} state=touch owner=dovecot group=dovecot
+  with_items:
+    - mail_key.pem
+    - mail_cert.pem    
+    
+- name: Dovecot | Copy dovecot config-mail
+  template: src=10-mail.conf.j2 dest=/etc/dovecot/conf.d/10-mail.conf
+  notify: restart dovecot
+  
+- name: Dovecot | Config | pop3_client_workarounds
+  lineinfile: "dest=/etc/dovecot/conf.d/20-pop3.conf state=present insertafter='^#pop3_client_workarounds =' line='pop3_client_workarounds = outlook-no-nuls oe-ns-eoh'"
+  notify: restart dovecot
+  
+- name: Dovecot | Config | pop3_uidl_format
+  lineinfile: "dest=/etc/dovecot/conf.d/20-pop3.conf state=present insertafter='^#pop3_uidl_format = %08Xu%08Xv' line='pop3_uidl_format = %08Xu%08Xv'"
+  notify: restart dovecot    
+  
+- name: Dovecot | Config | Set auth_mechanisms
+  lineinfile: "dest=/etc/dovecot/conf.d/10-auth.conf state=present  line='auth_mechanisms = plain login'"
+  notify: restart dovecot
+  
+- name: Dovecot | Config | Allo plain text authorization
+  lineinfile: "dest=/etc/dovecot/conf.d/10-auth.conf state=present insertafter='^#disable_plaintext_auth = yes' line='disable_plaintext_auth = no'"
+  notify: restart dovecot
+
+- name: Dovecot | Config | Enable syslog
+  lineinfile: "dest=/etc/dovecot/conf.d/10-logging.conf state=present insertafter='^#log_path = syslog' line='log_path = syslog'"
+  notify: restart dovecot
+
+- name: Dovecot | Config | Set syslog facility
+  lineinfile: "dest=/etc/dovecot/conf.d/10-logging.conf state=present insertafter='^#syslog_facility = mail' line='syslog_facility = mail'"
+  notify: restart dovecot
+
+- name: Dovecot | Config | Enable auth debug
+  lineinfile: "dest=/etc/dovecot/conf.d/10-logging.conf state=present insertafter='^#auth_debug = no' line='auth_debug = yes'"
+  notify: restart dovecot
+
+- name: Dovecot | Config | Set ssl cert public key path
+  lineinfile: "dest=/etc/dovecot/conf.d/10-ssl.conf state=present regexp='^ssl_cert' line='ssl_cert = </etc/dovecot/certs/mail_cert.pem'"
+  notify: restart dovecot
+
+- name: Dovecot | Config | Set ssl cert private key path 
+  lineinfile: "dest=/etc/dovecot/conf.d/10-ssl.conf state=present regexp='^ssl_key' line='ssl_key = </etc/dovecot/certs/mail_key.pem'"
+  notify: restart dovecot
+

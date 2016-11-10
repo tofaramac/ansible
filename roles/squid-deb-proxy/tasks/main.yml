@@ -1,0 +1,64 @@
+---
+# tasks file for squid-deb-proxy
+- name: squid-deb-proxy server install
+  apt: name={{ item }} state=present update_cache=true cache_valid_time=86400
+  with_items:
+    - squid-deb-proxy
+  when: "'{{ inventory_hostname_short }}' in groups['squid-proxy-servers']" 
+  tags: ['packages']
+
+- name: squid-deb-proxy-client install
+  apt: name={{ item }} state=present update_cache=true cache_valid_time=86400
+  with_items:
+    - squid-deb-proxy-client
+  when: "'{{ inventory_hostname_short }}' not in groups['prd']" 
+  tags: ['packages']
+
+- name: create include directory
+  file: path=/etc/squid-deb-proxy/{{ item }} owner=root group=root mode=0755
+        state=directory
+  with_items:
+    - allowed-networks-src.acl.d
+    - mirror-dstdomain.acl.d
+    - pkg-blacklist.d
+  when: "'{{ inventory_hostname_short }}' in groups['squid-proxy-servers']" 
+
+- name: add allowed-networks-src.acl
+  template: src=allowed-networks-src.acl.j2
+            dest=/etc/squid-deb-proxy/allowed-networks-src.acl
+  when: "'{{ inventory_hostname_short }}' in groups['squid-proxy-servers']" 
+  notify: squid-deb-proxy restart
+
+- name: add allowed-networks-src.acl.d/10-default
+  template: src=allowed-networks-src.acl.d.10-default.j2
+            dest=/etc/squid-deb-proxy/allowed-networks-src.acl.d/10-default
+  when: "'{{ inventory_hostname_short }}' in groups['squid-proxy-servers']" 
+  notify: squid-deb-proxy restart
+  
+- name: add mirror-dstdomain.acl
+  template: src=mirror-dstdomain.acl.j2
+            dest=/etc/squid-deb-proxy/mirror-dstdomain.acl
+  when: "'{{ inventory_hostname_short }}' in groups['squid-proxy-servers']" 
+  notify: squid-deb-proxy restart
+  
+- name: add mirror-dstdomain.acl.d/10-default
+  template: src=mirror-dstdomain.acl.d.10-default.j2
+            dest=/etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
+  when: "'{{ inventory_hostname_short }}' in groups['squid-proxy-servers']" 
+  notify: squid-deb-proxy restart
+
+- name: add pkg-blacklist.d/10-default
+  template: src=pkg-blacklist.d.10-default.j2
+            dest=/etc/squid-deb-proxy/pkg-blacklist.d/10-default
+  when: "'{{ inventory_hostname_short }}' in groups['squid-proxy-servers']" 
+  notify: squid-deb-proxy restart
+
+- name: Deploy squid-deb-proxy.conf
+  template: src=squid-deb-proxy.conf.j2
+            dest=/etc/squid-deb-proxy/squid-deb-proxy.conf
+  when: "'{{ inventory_hostname_short }}' in groups['squid-proxy-servers']" 
+  notify: squid-deb-proxy restart
+
+- name: squid-deb-proxy status
+  service: name=squid-deb-proxy state=running enabled=true
+  when: "'{{ inventory_hostname_short }}' in groups['squid-proxy-servers']" 

@@ -1,0 +1,91 @@
+<VirtualHost *:80>
+    ServerAdmin systems@prepaidmeters.com
+    ServerName local.erp.prepaidmeters.co.za
+
+    SetEnv constantsfile /var/www/erp/trunk/includes/incgenericincludes.php
+
+    DocumentRoot /var/www/erp/trunk/
+    DirectoryIndex index.php
+
+    <Directory /var/www/erp/trunk>
+        Options FollowSymLinks
+        AllowOverride All
+    </Directory>
+
+    <Directory /var/www/erp/trunk/>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Order allow,deny
+        allow from all
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
+    # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+    LogLevel notice
+
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    Alias /doc/ "/usr/share/doc/"
+    <Directory "/usr/share/doc/">
+        Options Indexes MultiViews FollowSymLinks
+        AllowOverride None
+        Order deny,allow
+        Deny from all
+        Allow from 127.0.0.0/255.0.0.0 ::1/128
+    </Directory>
+
+   <Files ~ "^\.ht">
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files ~ "\.inc">
+        Order allow,deny
+        Deny from all
+    </Files>
+
+    <Files ~ "\.sql">
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files ~ "\.sh">
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files ~ "\.pl">
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files ~ "\.zip">
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files ~ "\.gz">
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files ~ "\.tar">
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files ~ "~">
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files ~ "git">
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files *.ini>
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files ~ "zzz">
+        Order allow,deny
+        Deny from all
+    </Files>
+    <Files ~ "bak">
+        Order allow,deny
+        Deny from all
+    </Files>
+</VirtualHost>

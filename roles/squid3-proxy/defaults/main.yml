@@ -1,0 +1,9 @@
+---
+# defaults file for squid-proxy
+squid3_http_port: 8888
+
+
+squid3_delay_pools: 1
+squid3_delay_class: 1 1
+squid3_delay_access: 1 allow localnet
+squid3_delay_parameters: 1 512000/512000 512000/512000

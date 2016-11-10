@@ -1,0 +1,10 @@
+---
+# handlers file for openvpn
+- name: openvpn restart
+  service: name=openvpn state=restarted
+  
+- name: openvpn start
+  service: name=openvpn state=started
+  
+- name: openvpn stop
+  service: name=openvpn state=stop

@@ -1,0 +1,5 @@
+---
+# defaults file for app_devdocs
+github_repo: ssh://git_enbaya@enbaya.git.cloudforge.com/devdocs.git
+
+clone_dest: /home/{{ user }}/project/devdocs

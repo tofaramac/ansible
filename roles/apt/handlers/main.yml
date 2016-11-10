@@ -1,0 +1,7 @@
+---
+# handlers file for apt
+- name: apt-get update
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: apt-get dist-upgrade
+  apt: upgrade=dist autoremove=yes

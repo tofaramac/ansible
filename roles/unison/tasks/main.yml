@@ -1,0 +1,19 @@
+---
+# tasks file for unison
+- name: unison install
+  apt: name=unison state=present update_cache=true cache_valid_time=86400
+  
+- name: create unison user directory
+  file: path="{{ unison_config_path }}" owner={{ unison_user }} 
+    group={{ unison_user }} state=directory mode=0755
+
+- name: unison preference files
+  template: src={{ item }}.j2 dest={{ unison_config_path }}/{{ item }}.prf 
+    owner={{ unison_user }} group={{ unison_user }} mode=0644
+  with_items:
+    - www-file-0-file-1.prf
+    - www-file-0-file-jhb.prf
+  when: (unison == "hub")
+  # above only logical for prd as no jhb in stg or tst
+  
+  # next define the crons

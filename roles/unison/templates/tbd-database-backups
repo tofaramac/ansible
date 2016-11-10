@@ -1,0 +1,49 @@
+# Roots of the synchronization
+# from file-0
+    root = /var/nfs/prd-ppm-clr-0
+# to file-1
+    root = ssh://192.168.239.5:201//var/nfs/prd-ppm-clr-0
+
+# Roots of the synchronization
+# from file-0
+    root = /var/nfs/prd-ppm-clr-2
+# to file-1
+    root = ssh://192.168.239.5:201//var/nfs/prd-ppm-clr-2
+
+# Roots of the synchronization
+# from file-0
+    root = /var/nfs/prd-ppm-clr-1
+# to file-1
+    root = ssh://192.168.239.5:201//var/nfs/prd-ppm-clr-1
+
+# Roots of the synchronization
+# from file-0
+    root = /var/nfs/prd-ppm-clr-3
+# to file-1
+    root = ssh://192.168.239.5:201//var/nfs/prd-ppm-clr-3
+
+
+
+# Roots of the synchronization
+# from file-0
+    root = /var/nfs/prd-ppm-clr-0
+# to file-jhb
+    root = ssh://192.168.1.28:201//var/nfs/prd-ppm-clr-0
+
+# Roots of the synchronization
+# from file-0
+    root = /var/nfs/prd-ppm-clr-2
+# to file-jhb
+    root = ssh://192.168.1.28:201//var/nfs/prd-ppm-clr-2
+
+# Roots of the synchronization
+# from file-0
+    root = /var/nfs/prd-ppm-clr-1
+# to file-jhb
+    root = ssh://192.168.1.28:201//var/nfs/prd-ppm-clr-1
+
+# Roots of the synchronization
+# from file-0
+    root = /var/nfs/prd-ppm-clr-3
+# to file-jhb
+    root = ssh://192.168.1.28:201//var/nfs/prd-ppm-clr-3

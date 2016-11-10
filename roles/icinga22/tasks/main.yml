@@ -1,0 +1,97 @@
+---
+# tasks file for app_icinga
+- name: icinga2 install
+  apt: name={{ item }} state=present update_cache=true cache_valid_time=86400
+  with_items:
+    - icinga2
+    - icinga2-ido-mysql
+    - vim-icinga2
+    - nagios-plugins
+    - nagios-snmp-plugins
+    - pnp4nagios
+  notify: icinga2 restart
+
+- name: create icinga2 database
+  mysql_db: name=icinga2 login_user="{{ vault_clr_db_user }}" login_password="{{ vault_clr_db_pass }}"
+    state=present
+
+- name: create icinga2 user
+  mysql_user: name=icinga2 password=4iStrVAOzWxB 
+    priv="*.*:ALL" 
+    login_user="{{ vault_clr_db_user }}" login_password="{{ vault_clr_db_pass }}"
+    state=present
+
+- name: deploy icinga2-ido-mysql config
+  template: src=icinga2-ido-mysql.conf.j2 dest=/etc/dbconfig-common/icinga2-ido-mysql.conf
+
+- name: icinga2 feature enable
+  command: icinga2 feature enable ido-mysql
+  notify: icinga2 restart
+
+- name: create icinga2 web interface database
+  mysql_db: name=icinga2webdb login_user="{{ vault_clr_db_user }}" login_password="{{ vault_clr_db_pass }}"
+    state=present
+
+- name: create icinga2web user
+  mysql_user: name=icinga2web password=4iStrVAOzWxB 
+    priv="*.*:ALL" 
+    login_user="{{ vault_clr_db_user }}" login_password="{{ vault_clr_db_pass }}"
+    state=present
+
+- name: icinga2web install
+  apt: name={{ item }} state=present update_cache=true cache_valid_time=86400
+  with_items:
+    - icingaweb2
+
+- name: set apache php.ini date.timezone
+  lineinfile: dest=/etc/php/7.0/apache2/php.ini regexp="^;date.timezone"
+    line=";date.timezone = Africa/Johannesburg"
+  notify: apache2 restart
+
+- name: setup config directory icingaweb2
+  command: icingacli setup config directory --group icingaweb2;
+  
+- name: deploy base configuration
+  template: src={{ item }}.j2 dest=/etc/icingaweb2/{{ item }}
+  with_items:
+  - icingaweb2-config.ini
+  - icingaweb2-authentication.ini
+  - icingaweb2-resources.ini
+
+- name: deploy modules monitoring configuration
+  template: src={{ item }}.j2 dest=/etc/icingaweb2/modules/monitoring/{{ item }}
+  with_items:
+  - icingaweb2-backends.ini
+  - icingaweb2-commandtransports.ini
+  - icingaweb2-mon-config.ini
+
+- name: enable icinga2 command addon
+  command: icinga2 feature enable command
+  
+- name: load conf.d directory
+  template: src={{ item }}.j2 dest=/etc/icingaweb2/modules/monitoring/{{ item }}
+  with_items:
+  - app.conf.j2
+  - apt.conf.j2
+  - commands.conf.j2
+  - downtimes.conf.j2
+  - groups.conf.j2
+  - hosts.conf.j2
+  - notifications.conf.j2
+  - satellite.conf.j2
+  - services.conf.j2
+  - templates.conf.j2
+  - timeperiods.conf.j2
+  - users.conf.j2
+
+# Add more here
+# http://docs.icinga.org/icinga2/latest/doc/module/icinga2/toc#!/icinga2/latest/doc/module/icinga2/chapter/addons#addons  
+#- name: enable icinga2 graphing addon - pnp
+#  command: icinga2 feature enable command  
+
+- name: icinga2 check status
+  service: name=icinga2 state=started enabled=true
+  
+# Things to do
+# https://github.com/Icinga/icinga2-ansible
+

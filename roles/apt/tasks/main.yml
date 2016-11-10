@@ -1,0 +1,152 @@
+---
+# tasks file for apt
+###
+- name: check /etc/apt/sources.list.d exists
+  file: path=/etc/apt/sources.list.d state=directory
+  
+- name: cleanout sources.list.d
+  file: path=/etc/apt/sources.list.d/* state=absent
+  
+- name: update workstation sources.list
+  template: src=wks-sources.list.j2 dest=/etc/apt/sources.list backup=yes
+  when: "'{{ inventory_hostname_short }}' in groups['workstations']"
+  notify: apt-get update
+  tags: [ 'config' ]
+  
+- name: update server sources.list
+  template: src=srv-sources.list.j2 dest=/etc/apt/sources.list backup=yes
+  when: "'{{ inventory_hostname_short }}' in groups['infra-servers-jhb']"
+  notify: apt-get update
+  tags: [ 'config' ]
+  
+  # DO NOT PUSH A CACH_VALID ON THIS. WE WANT A FULL FORCED UPDATE
+- name: apt-get update
+  apt: update_cache=yes
+
+#- name: apt-get dist-upgrade
+#  apt: upgrade=dist autoremove=yes
+###  
+#- name: get percona repo install deb
+#  get_url: url=https://repo.percona.com/apt/percona-release_0.1-3.xenial_all.deb
+#    dest=/tmp/
+#  notify: apt-get update
+#  when: "'{{ inventory_hostname_short }}' in groups['percona-xtradb-servers'] or groups['sysops-servers']"
+#  tags: [ 'config' ]
+
+#- name: install percona repo package
+#  apt: deb=/tmp/percona-release_0.1-3.xenial_all.deb
+#  notify: apt-get update
+#  when: "'{{ inventory_hostname_short }}' in groups['percona-xtradb-servers'] or groups['sysops-servers']"
+#  tags: [ 'config' ]
+  
+#- name: remove percona repo install deb
+#  file: path=/tmp/percona-release_0.1-3.xenial_all.deb state=absent
+#  when: "'{{ inventory_hostname_short }}' in groups['percona-xtradb-servers'] or groups['sysops-servers']"
+#  tags: [ 'config' ]
+###
+
+- name: ansible ppa add
+  apt_repository: repo='ppa:ansible/ansible' state=present
+  when: "'{{ inventory_hostname_short }}' in groups['ansible-controllers']"
+  notify: apt-get update
+  tags: [ 'config' ]
+  
+- name: add openjdk-7-jre-headless repo
+  apt_repository: repo='ppa:openjdk-r/ppa'  state=present 
+  when: "'{{ inventory_hostname_short }}' in groups['ubiquity-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]
+  
+###
+- name: mariadb-server key add
+  apt_key: keyserver=keyserver.ubuntu.com id=C74CD1D8 state=present
+  when: "'{{ inventory_hostname_short }}' in groups['mariadb-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]
+
+- name: mariadb repo add
+  shell: echo 'deb [arch=amd64,i386] http://nyc2.mirrors.digitalocean.com/mariadb/repo/10.1/ubuntu xenial main' | tee /etc/apt/sources.list.d/mariadb.list
+  when: "'{{ inventory_hostname_short }}' in groups['mariadb-servers']"
+  notify: apt-get update
+  tags: [ 'config' ] 
+###  
+- name: webupd8 ppa add
+  apt_repository: repo='ppa:webupd8team/java' state=absent
+  when: "'{{ inventory_hostname_short }}' in groups['oracle-java-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]
+  
+#- name: wine ppa add
+#  apt_repository: repo='ppa:ubuntu-wine/ppa' state=present
+#  when: "'{{ inventory_hostname_short }}' in groups['development']"
+#  notify: apt-get update
+#  tags: [ 'config' ]
+###
+- name: add mangodb apt-key
+  apt_key: keyserver=keyserver.ubuntu.com id=EA312927 state=present
+  when: "'{{ inventory_hostname_short }}' in groups['ubiquity-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]
+   
+- name: add repo for mangodb
+  apt_repository: repo="deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse"  state=present
+  when: "'{{ inventory_hostname_short }}' in groups['ubiquity-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]
+###  
+- name: jsvc repo add
+  apt_repository: repo="deb http://us.archive.ubuntu.com/ubuntu vivid main universe" state=present
+  when: "'{{ inventory_hostname_short }}' in groups['ubiquity-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]  
+  
+- name: php add ppa
+  apt_repository: repo="ppa:ondrej/php" state=present
+  when: "'{{ inventory_hostname_short }}' in groups['apache2-servers'] or groups['dev'] or groups['sysops-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]
+###  
+- name: ubiquiti repo add
+  shell: echo 'deb http://www.ubnt.com/downloads/unifi/debian stable ubiquiti' | tee /etc/apt/sources.list.d/100-ubnt.list
+  when: "'{{ inventory_hostname_short }}' in groups['ubiquity-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]  
+  
+- name: ubiquiti key add
+  apt_key: keyserver=keyserver.ubuntu.com id=C0A52C50 state=present
+  when: "'{{ inventory_hostname_short }}' in groups['ubiquity-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]
+  
+- name: icinga ppa add
+  apt_repository: repo="ppa:formorer/icinga" state=present
+  when: "'{{ inventory_hostname_short }}' in groups['sysops-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]
+
+- name: icinga key add
+  apt_key: keyserver=keyserver.ubuntu.com id=36862847 state=present
+  when: "'{{ inventory_hostname_short }}' in groups['sysops-servers']"
+  notify: apt-get update
+  tags: [ 'config' ]
+  
+#- name: Add MySQL Server repository
+#  apt_repository: repo='deb http://repo.mysql.com/apt/debian/ jessie mysql-5.6' state=present  
+#  when: "'{{ inventory_hostname_short }}' in groups['dev']"
+#  notify: apt-get update
+#  tags: [ 'config' ]
+  
+# Unattended Upgrades
+- name: unattended allowed origins
+  template: src=50unattended-upgrades.j2 
+    dest=/etc/apt/apt.conf.d/50unattended-upgrades backup=yes
+  when: "'{{ inventory_hostname_short }}' in groups['workstations']"
+
+- name: unattended time schedule
+  template: src=10periodic.j2 dest=/etc/apt/apt.conf.d/10periodic backup=yes
+  when: "'{{ inventory_hostname_short }}' in groups['workstations']"
+
+# squid deb proxy discover
+- name: auto discover squid-deb-proxy
+  template: src=30autoproxy.j2 dest=/etc/apt/apt.conf.d/30autoproxy backup=yes
+  when: "'{{ inventory_hostname_short }}' in groups['workstations']"

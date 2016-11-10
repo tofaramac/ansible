@@ -1,0 +1,26 @@
+;  ----------------------------------------------------------
+;  logging configuration per application
+;  ----------------------------------------------------------
+;
+;  Available log levels are:
+;
+;  	none					(no logging at all)
+;  	fatal
+;  	critical
+;  	error
+;  	warning
+;  	notice
+;  	information
+;  	debug
+;  	trace
+;
+
+
+logging.config.history.enabled = yes
+logging.config.history.lines = 10000
+
+logging.config.local.enabled = yes
+logging.config.local.level = trace
+
+include = logging_local.ini;
+

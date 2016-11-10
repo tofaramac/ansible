@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Kevin Brebanov
+  description: Installs Rundeck
+  company:
+  license: BSD
+  min_ansible_version: 1.9
+  github_branch: master
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty
+  galaxy_tags:
+    - system
+dependencies:
+  - { role: kbrebanov.java, java_implementation: openjdk, java_openjdk_version: 7 }

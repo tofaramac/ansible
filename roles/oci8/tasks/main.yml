@@ -1,0 +1,8 @@
+---
+# tasks file for oci8
+- name: install oracle-instantclient
+  apt:  name="{{ item }}" state=present force=yes
+  with_items:
+    - oracle-instantclient12.1-basic
+    - oracle-instantclient12.1-devel
+  tags: [ 'packages' ]

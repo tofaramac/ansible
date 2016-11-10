@@ -1,0 +1,70 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+#Accept loopback connections
+-A INPUT -i lo -j ACCEPT
+#Rate limit new connections to 20 new connections per 30 seconds
+-A INPUT ! -p udp -m state --state NEW -m recent --name new_limit --set
+-A INPUT ! -p udp -m state --state NEW -m recent --name new_limit --rcheck --seconds 30 --hitcount 20 -m limit --limit 2/min -j LOG --log-prefix "new_limit_"
+-A INPUT ! -p udp -m state --state NEW -m recent --name ssh_limit --rcheck --seconds 30 --hitcount 20 -j DROP
+#Accept ICMP ping requests at limited rate
+-A INPUT -p icmp --icmp-type echo-request -m limit --limit 60/minute --limit-burst 120 -j ACCEPT
+-A INPUT -p icmp --icmp-type echo-request -m limit --limit 1/minute --limit-burst 2 -j LOG
+-A INPUT -p icmp --icmp-type echo-request -j DROP
+#Allow ongoing connections
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+#Allow incoming SSH connections.  Hopefully denyhosts will take care of bruteforce attacks
+-A INPUT -m state --state NEW -p tcp -m tcp --dport 22 -j ACCEPT
+#Allow incoming HTTP, HTTPS connection
+-A INPUT -m state --state NEW -p tcp -m tcp --dport 80 -j ACCEPT
+-A INPUT -m state --state NEW -p tcp -m tcp --dport 443 -j ACCEPT
+#Allow incoming NRPE queries for nagios
+-A INPUT -m state --state NEW -p tcp -m tcp --dport 5666 -j ACCEPT
+#Allow SNMP queries for cacti
+-A INPUT -p udp -m udp --dport 161 -j ACCEPT
+-A INPUT -p udp -m udp --dport 162 -j ACCEPT
+#These UDP ports receive too much spam and hence we do not need to log "blocked_input_" for them
+-A INPUT -p udp -m udp --dport 67 -j DROP
+-A INPUT -p udp -m udp --dport 137 -j DROP
+-A INPUT -p udp -m udp --dport 138 -j DROP
+-A INPUT -p udp -m udp --dport 17500 -j DROP
+#Do not log igmp connections either
+-A INPUT -p igmp -j DROP
+#Log all other "blocked_input_" attempts
+-A INPUT -m state --state NEW -m limit --limit 2/min -j LOG --log-prefix "blocked_input_"
+#Reply with proper ICMP error message and reject the connection
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+#For VMs NAT or bridge access
+-A FORWARD -j ACCEPT
+#
+#
+##Output rules
+#Allow outgoing connections to localhost
+-A OUTPUT -o lo -j ACCEPT
+#Allow ongoing connections
+-A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+#Allow DNS queries
+-A OUTPUT -p udp -m udp --dport 53 -j ACCEPT
+#Allow server to send emails.  Required for receiving logwatch emails
+-A OUTPUT -p tcp -m tcp --dport 25 -j ACCEPT
+#Allow DHCP queries
+-A OUTPUT -p udp -m udp --dport 67 -j ACCEPT
+##Allow server to contact web-servers.  Required for yum update and installation
+#For restrictive configurations this can be disabled after install
+-A OUTPUT -p tcp -m tcp --dport 80 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --dport 443 -j ACCEPT
+#Allow outgoing requests to LDAP server
+-A OUTPUT -p tcp -m tcp --dport 389 -j ACCEPT
+#Allow outgoing requests to LDAPS server
+#-A OUTPUT -p tcp -m tcp --dport 636 -j ACCEPT
+#Allow ping requests
+-A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+#Allow outgoing connections to OSSEC server
+-A OUTPUT -p udp -m udp --dport 1514 -j ACCEPT
+#Log all other "blocked_output_" attempts
+-A OUTPUT -m state --state NEW -m limit --limit 2/min -j LOG --log-prefix "blocked_output_"
+#Reply with proper ICMP error message and reject the connection
+-A OUTPUT -j REJECT --reject-with icmp-host-prohibited
+COMMIT
+#

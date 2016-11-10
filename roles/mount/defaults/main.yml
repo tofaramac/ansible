@@ -1,0 +1,9 @@
+---
+# defaults file for mount
+nfspath: /var/nfs
+nfsmountpoint: /mnt/nfs
+nfsmount: /mnt/nfs/var/nfs
+nfsfstype: nfs
+
+nfsmountopts_apache2: "defaults,uid=33,gid=33"
+nfsmountopts_db: "defaults"

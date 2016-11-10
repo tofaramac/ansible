@@ -1,0 +1,199 @@
+---
+- name: ensure spamassassin packages are installed
+  apt: 
+    pkg: "{{ item }}" 
+    state: latest 
+    update_cache: yes 
+    cache_valid_time: 600
+  with_items:
+    - cpanminus
+    - fuzzyocr
+    - giflib-tools
+    - gifsicle
+    - gocr
+    - imagemagick
+    - libc6-dev
+    - libcrypt-ssleay-perl
+    - libdbi-perl
+    - libencode-detect-perl
+    - libgeo-ip-perl
+    - libhtml-format-perl
+    - libio-socket-ip-perl
+    - libio-socket-ssl-perl
+    - libmail-dkim-perl
+    - libmail-spf-perl
+    - libmailtools-perl
+    - libmldbm-sync-perl
+    - libnet-ident-perl
+    - libnet-patricia-perl
+    - libstring-approx-perl
+    - netpbm
+    - ocrad
+    - pyzor
+    - razor
+    - re2c
+    - sa-compile
+    - spamass-milter
+    - spamassassin
+    - spamassassin-heatu
+    - spamassassin-rules-ja
+    - tesseract-ocr
+
+- name: update /etc/default/spamassassin from template
+  template:
+    src: etc/default/spamassassin
+    dest: /etc/default/spamassassin
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart spamassassin
+
+- name: update /etc/spamassassin/init.pre from template
+  template:
+    src: etc/spamassassin/init.pre
+    dest: /etc/spamassassin/init.pre
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart spamassassin
+
+- name: update /etc/spamassassin/local.cf from template
+  template:
+    src: etc/spamassassin/local.cf
+    dest: /etc/spamassassin/local.cf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart spamassassin
+
+- name: ensure Digest::SHA1 is installed from cpan (not included in Ubuntu)
+  command: cpanm -i "Digest::SHA1"
+  register: cpanm_result
+  changed_when: not cpanm_result.stdout.startswith("Digest::SHA1 is up to date")
+
+- name: run pyzor discover...
+  sudo_user: debian-spamd
+  command: pyzor discover
+           creates=/var/lib/spamassassin/.pyzor/servers
+  notify:
+    - restart spamassassin
+
+- name: ensure /var/lib/spamassassin/.razor exists and has correct permissions
+  file:
+    path: /var/lib/spamassassin/.razor
+    owner: debian-spamd
+    group: debian-spamd
+    mode: 0700
+    state: directory
+
+- name: run razor-admin create...
+  sudo_user: debian-spamd
+  command: razor-admin -home=/var/lib/spamassassin/.razor -create
+           creates=/var/lib/spamassassin/.razor/razor-agent.conf
+  notify:
+    - restart spamassassin
+
+- name: run razor-admin register...
+  sudo_user: debian-spamd
+  command: razor-admin -home=/var/lib/spamassassin/.razor -register
+           creates=/var/lib/spamassassin/.razor/identity
+  notify:
+    - restart spamassassin
+
+- name: update /etc/spamassassin/FuzzyOcr.cf from template
+  template:
+    src: etc/spamassassin/FuzzyOcr.cf
+    dest: /etc/spamassassin/FuzzyOcr.cf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart spamassassin
+
+# FIXME: seems to be an issue with github CDN certificates?
+- name: download Mail::SpamAssassin::Plugin::dspam from github (not included in Ubuntu)
+  get_url:
+    url: https://raw.githubusercontent.com/elubow/dspam-spamassassin/master/dspam.pm
+    dest: /usr/share/perl5/Mail/SpamAssassin/Plugin/
+    validate_certs: no
+
+- name: ensure /usr/share/perl5/Mail/SpamAssassin/Plugin/dspam.pm has correct permissions
+  file:
+    path: /usr/share/perl5/Mail/SpamAssassin/Plugin/dspam.pm
+    owner: root
+    group: root
+    mode: 0644
+    state: file
+
+- name: download configuration file for SpamAssassin dspam plugin
+  get_url:
+    url: https://raw.githubusercontent.com/elubow/dspam-spamassassin/master/dspam.cf
+    dest: /etc/spamassassin/
+    validate_certs: no
+
+- name: ensure /etc/spamassassin/dspam.cf has correct permissions
+  file:
+    path: /etc/spamassassin/dspam.cf
+    owner: root
+    group: root
+    mode: 0644
+    state: file
+
+- name: download gpg key for Sought ruleset
+  get_url:
+    url: http://yerp.org/rules/GPG.KEY
+    dest: /etc/spamassassin/sought_ruleset.key
+
+- name: import gpg key for Sought ruleset
+  sudo_user: debian-spamd
+  register: gpg_import
+  command: gpg -v --homedir /var/lib/spamassassin/sa-update-keys --import /etc/spamassassin/sought_ruleset.key
+  changed_when: 'gpg_import.stderr.find("imported") != -1'
+
+- name: update /etc/cron.daily/spamassassin-sought from template
+  template:
+    src: etc/cron.daily/spamassassin-sought
+    dest: /etc/cron.daily/spamassassin-sought
+    owner: root
+    group: root
+    mode: 0755
+
+- name: update sought rules
+  sudo_user: debian-spamd
+  command: sa-update --gpghomedir /var/lib/spamassassin/sa-update-keys --gpgkey 6C6191E3 --channel sought.rules.yerp.org
+  register: sa_update_yerp
+  changed_when: "sa_update_yerp.rc == 0"
+  failed_when: "sa_update_yerp.rc > 1"
+  notify:
+    - restart spamassassin
+
+- name: update regular spamassassin rules
+  sudo_user: debian-spamd
+  command: sa-update --gpghomedir /var/lib/spamassassin/sa-update-keys
+  register: sa_update
+  changed_when: "sa_update.rc == 0"
+  failed_when: "sa_update.rc > 1"
+  notify:
+    - restart spamassassin
+
+- name: update /etc/default/spamass-milter from template
+  template:
+    src: etc/default/spamass-milter
+    dest: /etc/default/spamass-milter
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart spamassassin
+
+- name: ensure spamassassin services are started and enabled
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - spamassassin
+    - spamass-milter

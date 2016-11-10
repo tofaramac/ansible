@@ -1,0 +1,29 @@
+---
+# tasks file for asterisk
+- name: install asterisk
+  apt: name={{ item}} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+   - asterisk
+   - sip-dev
+  
+- name: set ownershipto asterisk user to all asterisk directories
+  file: dest="{{ item }}" state=directory  owner=asterisk group=asterisk mode=755 recurse=true
+  with_items: 
+   - "/var/spool/asterisk" 
+   - "/var/run/asterisk" 
+   - "/etc/asterisk" 
+   - "/var/{lib,log,spool}/asterisk" 
+   - "/usr/lib/asterisk"
+   
+- name: ensure asterisk start as user 
+  template: src=default.j2 dest=/etc/default/asterisk
+   owner=asterisk group=asterisk
+  tags: [ 'config' ]
+  
+- name: configure runuser and rungroup for asterisk
+  template: src=asterisk.conf.j2 dest=/etc/asterisk/asterisk.conf
+   owner=asterisk group=asterisk
+  tags: [ 'config' ]
+  
+- name: asterisk status
+  service: name=asterisk state=running enabled=yes

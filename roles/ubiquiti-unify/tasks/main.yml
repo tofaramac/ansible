@@ -1,0 +1,31 @@
+## YAML Template.
+---
+- name: install openjdk-7-jre-headless
+  action: apt name='openjdk-7-jre-headless' state=present
+  
+- name: Install mangodb
+  apt: name={{item}} state=present 
+  with_items:
+   - mongodb-server
+   - mongodb-clients
+   - libpcrecpp0v5
+  tags: [ 'packages' ] 
+ 
+- name: run mongodb
+  service: name=mongodb state=started enabled=yes
+  tags: mongodb 
+  
+- name: Allow unauthenticated packages to install
+  copy: content='APT::Get::AllowUnauthenticated "true";' dest=/etc/apt/apt.conf.d/99temp owner=root group=root mode=0644
+
+- name: Install Unifi Controller and jsvc 
+  apt: name={{ item }} state=present update_cache=true cache_valid_time=86400
+  with_items:
+    - unifi-controller
+    - jsvc
+    
+- name: check unifi status
+  service: name=unifi state=started enabled=true
+  
+- name: remove allows unauthenticated packages to install
+  file: path=/etc/apt/apt.conf.d/99temp state=absent

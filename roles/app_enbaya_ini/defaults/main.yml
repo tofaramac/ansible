@@ -1,0 +1,42 @@
+---
+
+alertemailto: ""
+alertemailcronto: ""
+ppmaccountsemailaddress: ""
+ppmsupportemailaddress: ""
+auroraproductowneremailaddress: ""
+ppmdevelopmentemailaddress: ""
+cleandatabaseemailto: ""
+
+debug: 1
+
+rootpass: 12345678
+aurorapassword: 12345678
+crmpassword: 12345678
+erppassword: 12345678
+genericpassword: 12345678
+joomlapassword: 12345678
+satecpassword: 12345678
+propertywarepassword: 12345678
+dbhost: localhost
+dbhostreads: localhost
+dbcontrol: localhost
+dbhostcrm: localhost
+replicationuser: replication 
+replicationpass: 12345678
+
+stsip1: localhost
+stsip2: localhost
+
+ppmwww0ip: localhost
+ppmwww1ip: localhost
+ppmwww2ip: localhost
+ppmdb0ip: localhost
+ppmdb1ip: localhost
+
+propertywaregooglekey: ""
+propertywaregooglesecret: ""
+propertywaregoogleemail: ""
+propertywarefacebookkey: ""
+propertywarefacebooksecret: ""
+propertywarefacebookemail: ""

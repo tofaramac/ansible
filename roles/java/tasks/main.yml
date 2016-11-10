@@ -1,0 +1,14 @@
+---
+# tasks file for java
+
+- name: Include distribution specific variables
+  include_vars: "{{ ansible_distribution }}.yml"
+  tags: java
+
+- include: CentOS.yml
+  when: ansible_distribution == "CentOS"
+  tags: java
+
+- include: Ubuntu.yml
+  when: ansible_distribution == "Ubuntu"
+  tags: java

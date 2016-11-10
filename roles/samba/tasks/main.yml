@@ -1,0 +1,22 @@
+---
+# tasks file for samba
+- name: samba install
+  apt: name=samba state=present update_cache=true
+  tags: [ 'packages' ]
+
+- name: samba scan directory
+  file: path=/srv/samba/scan state=directory mode=0755
+  tags: [ 'config' ]
+
+- name: samba scan directory
+  file: path=/srv/samba/manager state=directory mode=0755
+  tags: [ 'config' ]
+  
+- name: samba conf
+  template: src=smb.conf.j2 dest=/etc/samba/smb.conf owner=root group=root mode=0755
+  notify: samba restart
+  tags: [ 'config' ]
+  
+- name: samba status
+  service: name=samba state=running enabled=true
+    

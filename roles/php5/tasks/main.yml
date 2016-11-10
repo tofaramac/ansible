@@ -1,0 +1,97 @@
+---
+- hosts: "{{Target}}"
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Get current timezone from the host
+      slurp:
+        src: '/etc/timezone'
+      register: php5_etc_timezone
+
+    - name: Make sure PHP5-FPM support is installed
+      apt: name={{item}} state=latest update_cache=yes
+      with_items: 
+       - php5-fpm
+       - php5-cli 
+    
+#    - name: Check with_flattened
+#      debug:
+#        msg: 'with_flattened is {{ item }}'
+#      with_flattened:
+#       - php5_packages
+#       - php5_base_packages
+#       - php5_group_packages
+#       - php5_host_packages
+
+    - name: Install PHP5 packages
+      apt: name={{item}} state=latest update_cache=yes 
+      with_flattened:
+       - parser3
+       - php5-cgi
+       - php5-common
+       - libapache2-mod-php5
+       - php5-fpm
+       - php5-cgi
+      notify: restart php5-fpm
+
+    - name: Create directory for php5-fpm logs
+      file:
+        path: '/var/log/php5-fpm'
+        state: 'directory'
+        owner: 'root'
+        group: 'root'
+        mode: '0700'
+
+    - name: Check existence of php5-fpm-reopenlogs
+      stat:
+        path: '/usr/lib/php5/php5-fpm-reopenlogs'
+      register: php5_register_reopenlogs
+
+    - name: Configure logrotate for php5-fpm
+      template:
+        src: 'etc/logrotate.d/php5-fpm.j2'
+        dest: '/etc/logrotate.d/php5-fpm'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+
+    - name: Configure php.ini for php5-fpm
+      template:
+        src: 'etc/php5/fpm/php.ini.j2'
+        dest: '/etc/php5/fpm/php.ini'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      notify: Restart php5-fpm
+
+    - name: Check if pool-available.d/ directory exists
+      stat:
+        path: '/etc/php5/fpm/pool-available.d'
+      register: pool_available_d
+
+    - name: Remove default php5-fpm pool if exists
+      file:
+        path: '/etc/php5/fpm/pool.d/www.conf'
+        state: absent
+      when: pool_available_d.stat.exists is defined and pool_available_d.stat.exists == False
+
+    - name: Create pool-available.d/ directory for php5-fpm
+      file:
+        path: '/etc/php5/fpm/pool-available.d'
+        state: 'directory'
+        owner: 'root'
+        group: 'root'
+        mode: '0755'
+
+    - name: Ensure pool.d/ directory for php5-fpm exists
+      # Just for the case it has been deleted manually
+      file:
+        path: '/etc/php5/fpm/pool.d'
+        state: 'directory'
+        owner: 'root'
+        group: 'root'
+        mode: '0755'
+
+    - include: php5_pools.yml
+      when: php5_manage_pools is defined and php5_manage_pools == True
+

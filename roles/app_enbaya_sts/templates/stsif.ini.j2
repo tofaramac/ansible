@@ -1,0 +1,41 @@
+; {{ ansible_managed }}
+;  ----------------------------------------------------------
+;  APP SPECIFIC CONFIGURATIONS
+;  ----------------------------------------------------------
+
+include = node.ini; amqp.ini; database.ini; logging.ini;
+
+
+;  ----------------------------------------------------------
+;  HTTP INTERFACE
+;  ----------------------------------------------------------
+
+httpif.listen_ip = 0.0.0.0
+httpif.listen_port = 8345
+httpif.max_threads = 16
+httpif.max_queue = 100
+
+httpif.ssl.enabled = no
+
+openSSL.server.privateKeyFile = ${SYSCONFDIR}/ssl/mycert.key
+openSSL.server.certificateFile = ${SYSCONFDIR}/ssl/mycert.crt
+openSSL.server.caConfig = ${SYSCONFDIR}/ssl/rootcert.pem
+openSSL.server.verificationMode = relaxed
+openSSL.server.verificationDepth = 9
+openSSL.server.loadDefaultCAFile = true
+openSSL.server.cypherList = ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH
+
+openSSL.server.privateKeyPassphraseHandler.name = KeyFileHandler
+openSSL.server.privateKeyPassphraseHandler.options.password = test
+
+openSSL.server.invalidCertificateHandler.name = ConsoleCertificateHandler
+openSSL.server.cacheSessions = true
+
+openSSL.server.sessionIdContext = someString
+openSSL.server.sessionCacheSize = 0
+openSSL.server.sessionTimeout = 0
+openSSL.server.extendedVerification = true
+openSSL.server.requireTLSv1 = true
+openSSL.fips = false
+
+

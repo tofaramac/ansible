@@ -1,0 +1,6 @@
+---
+# tasks file for ssh-keys
+- name: add public key to netadmin
+  authorized_key: user=netadmin 
+    key="{{ lookup('file', 'files/id_rsa.netadmin.pub') }}"
+  tags: [ 'config' ]

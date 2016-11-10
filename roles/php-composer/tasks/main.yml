@@ -1,0 +1,8 @@
+---
+# tasks file for composer
+- name: composer install
+  get_url: url=https://getcomposer.org/composer.phar dest=/usr/local/bin/composer 
+    mode=0755 validate_certs=no
+  when: "'{{ inventory_hostname_short }}' in groups['tst'] or groups['stg']"
+  tags: [ 'packages' ]
+    

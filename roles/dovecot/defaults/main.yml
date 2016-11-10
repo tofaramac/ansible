@@ -1,0 +1,144 @@
+---
+# Default variables
+# =================
+
+# .. contents:: Sections
+#    :local:
+#
+# ---------------------------------
+#   General Dovecot configuration
+# ---------------------------------
+
+
+# .. envvar:: dovecot_protocols
+#
+# List of protocols which should be installed and enabled. Supported are:
+# ``imap``, ``pop3``, ``managesieve``, ``lmtp``
+dovecot_protocols: [ 'imap','pop3' ]
+
+
+# .. envvar:: dovecot_auth
+#
+# List of authentication mechanisms enabled. So far supported are:
+# ``plain``, ``login``
+dovecot_auth_mechanisms: [ 'plain', 'login' ]
+
+
+# .. envvar:: dovecot_dependencies
+#
+# Should the Dovecot role manage it's own dependencies?
+dovecot_dependencies: True
+
+
+# ---------------------------------------
+#   User database/mailbox configuration
+# ---------------------------------------
+
+# .. envvar:: dovecot_user_accounts
+#
+# User account lookup. So far supported are:
+#
+# - ``system``: Mail users are Linux system users
+#
+dovecot_user_accounts: [ 'system' ]
+
+
+# .. envvar:: dovecot_deny_users
+#
+# List of users for which mail acess is disabled.
+dovecot_deny_users: [ 'root' ]
+
+
+# .. envvar:: dovecot_mail_location
+#
+# Mailbox location. For maildir set something like ``maildir:~/Maildir``.
+# For more information about the supported format, check `Dovecot Mail
+# Location <http://wiki2.dovecot.org/MailLocation>`_
+dovecot_mail_location: 'mbox:~/mail:INBOX=/var/mail/%u'
+
+
+# --------------------------------
+#   Dovecot custom configuration
+# --------------------------------
+
+# .. envvar:: dovecot_imap_listeners
+#
+# List of IMAP ``inet_listeners`` which will be enabled. See
+# :ref:`dovecot_imap_listeners` for more details.
+dovecot_imap_listeners: [ 'imap', 'imaps' ]
+
+
+# .. envvar:: dovecot_imap_config_map
+#
+# Custom IMAP configuration properties. See :ref:`dovecot_imap_config_map`
+# for more details.
+dovecot_imap_config_map: {}
+
+
+# .. envvar:: dovecot_pop3_listeners
+#
+# List of POP3 ``inet_listeners`` which will be enabled. See
+# :ref:`dovecot_pop3_listeners` for more details.
+dovecot_pop3_listeners: [ 'pop3', 'pop3s' ]
+
+
+# .. envvar:: dovecot_pop3_config_map
+#
+# Custom POP3 configuration properties. See :ref:`dovecot_pop3_config_map`
+# for more details.
+dovecot_pop3_config_map: {}
+
+
+# .. envvar:: dovecot_managesieve_listeners
+#
+# List of ManageSieve ``inet_listeners`` which will be enabled. See
+# :ref:`dovecot_managesieve_listeners` for more details.
+#dovecot_managesieve_listeners: [ 'sieve' ]
+
+
+# .. envvar:: dovecot_managesieve_config_map
+#
+# Custom ManageSieve configuration properties. See :ref:`dovecot_managesieve_config_map`
+# for more details.
+#dovecot_managesieve_config_map: {}
+
+
+# .. envvar:: dovecot_lda_config_map
+#
+# Custom LDA configuration properties. See :ref:`dovecot_lda_config_map`
+# for more details.
+dovecot_lda_config_map: {}
+
+
+# .. envvar:: dovecot_lmtp_listeners
+#
+# List of LMTP ``inet_listeners`` or ``unix_listeners`` which will be enabled.
+# See :ref:`dovecot_lmtp_listeners` for more details.
+dovecot_lmtp_listeners: [ '/var/spool/postfix/private/dovecot-lmtp' ]
+
+
+# .. envvar:: dovecot_lmtp_config_map
+#
+# Custom LMTP configuration properties. See :ref:`dovecot_lmtp_config_map`
+# for more details.
+dovecot_lmtp_config_map:
+  service:
+    unix_listener:
+      /var/spool/postfix/private/dovecot-lmtp:
+        user: 'postfix'
+        group: 'postfix'
+        mode: 0600
+
+
+# .. envvar:: dovecot_postfix_transport
+#
+# Postfix mail transport target if LMTP is enabled. For more details see
+# :ref:`dovecot_postfix_transport`.
+dovecot_postfix_transport: 'lmtp:unix:private/dovecot-lmtp'
+
+
+# .. envvar:: dovecot_custom_localconf
+#
+# Dovecot custom configuration added at the end of ``/etc/dovecot/local.conf``
+# in a text block format
+dovecot_custom_localconf: False
