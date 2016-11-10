@@ -1,0 +1,22 @@
+ansible_ssh_host: 192.168.122.11
+ppm_env: infra
+hostname: "{{ inventory_hostname_short }}"
+
+#dbn lan
+network: 192.168.122.0
+netmask: 255.255.255.0
+gateway: 192.168.122.254
+broadcast: 192.168.122.255
+dns_nameservers: 8.8.8.8 8.8.4.4 192.168.10.252
+
+# firewall
+external_map: none
+
+# rsyslog receiving client
+rsyslog_receive: local
+
+# percona-cluster info
+clr_controller: no
+
+# unison info
+unison: spoke

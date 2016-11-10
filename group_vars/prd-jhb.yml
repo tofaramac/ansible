@@ -1,0 +1,24 @@
+## YAML Template.
+---
+list_haproxy:
+  - prd-ppm-ha-jhb
+list_apache2:
+  - prd-ppm-www-jhb
+list_cluster:
+  - prd-ppm-clr-0
+  - prd-ppm-clr-1
+#  - prd-ppm-clr-2
+  - prd-ppm-clr-3
+  - prd-ppm-clr-jhb
+list_sts:
+  - prd-ppm-sts-jhb
+list_file:
+  - prd-ppm-file-jhb
+list_infra:
+  - prd-ppm-infra-jhb
+list_mail:
+  - prd-ppm-mail-jhb
+list_voip:
+  - prd-ppm-voip-jhb
+
+cluster_name: prd-ppm-clr

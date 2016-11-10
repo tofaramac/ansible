@@ -1,0 +1,18 @@
+## YAML Template.
+---
+list_authkeys:
+  - {alias: "netcash_account", key: "{{ netcash_account_key }}"}
+  - {alias: "netcash_debit_order", key: "{{ netcash_debit_order_key }}"}
+  - {alias: "netcash_creditor_payment", key: "{{ netcash_creditor_payment_key }}"}
+  - {alias: "getresponse_api", key: "{{ getresponse_api_key }}"}
+
+list_google_authkeys:
+  - {alias: "propertyware_google", key: "{{ propertyware_google_key }}", secret: "{{ propertyware_google_secret }}", option: ""}
+  - {alias: "google_plus", key: "{{ google_plus_key }}", secret: "{{ google_plus_secret }}",  option: ""}
+  
+list_google_keyfiles:
+  - {alias: "google_api", id: "{{ google_api_id }}", keyfile: "{{ google_api_keyfile }}"}
+
+list_facebook_authkeys:
+  - {alias: "propertyware_facebook", key: "{{ propertyware_facebook_key }}", secret: "{{ propertyware_facebook_secret }}"}
+

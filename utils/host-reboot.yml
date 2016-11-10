@@ -1,0 +1,28 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  tasks:
+      
+  - name: shutdown command
+    command: shutdown -r now
+
+#  - name: wait for 30 second
+#    pause: seconds=30
+
+#- hosts: 127.0.0.1
+#  tasks:
+#
+#  - name: ping host
+#    local_action: command ansible -m ping {{ target }}
+#    register: result
+#    until: result.rc == 0
+#    retries: 10
+#    delay: 30
+
+#  - name: uptime check
+#    shell: /usr/bin/uptime
+#    register: uptime
+  
+#  - debug: msg="{{ target }} is up"
+#    when: uptime|succeeded

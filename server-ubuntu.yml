@@ -1,0 +1,24 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  roles:
+    - apt
+    - mailutils
+    - tasksel
+    - grub
+    - network
+    - nrpe-agent
+    - nfs
+    - mount
+    - bash
+    - server
+    - logwatch
+    - acct
+    - logrotate
+    - python
+    - git
+    - openssh
+    - rsyslog
+#    - ufw fails on 16.04
+    - rootkits

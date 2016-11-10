@@ -1,0 +1,6 @@
+## YAML Template.
+---
+github:
+  app_crescendo: git@github.com:PrepaidMeters/crescendo.git
+  app_ansible: git@github.com:PrepaidMeters/ansible2.git
+  app_enbayahd: git@github.com:PrepaidMeters/enbayahd.git

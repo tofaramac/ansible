@@ -1,0 +1,13 @@
+## YAML Template.
+---
+list_openvpn_clients:
+  - sean
+  - llewellyn
+  - tofara
+  - andries
+  - joe
+  - durand
+  - karen
+  
+list_openvpn_clients_revoke:
+  

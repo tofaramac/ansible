@@ -1,0 +1,5 @@
+## YAML Template.
+---
+list_apis:
+  - {alias: "clickatellza", apiid: "{{ clickatellza_apiid }}", user: "{{ clickatellza_user }}", password: "{{ clickatellza_pass }}"}
+  - {alias: "clickatellau", apiid: "{{ clickatellau_apiid }}", user: "{{ clickatellau_user }}", password: "{{ clickatellau_pass }}"}

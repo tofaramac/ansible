@@ -1,0 +1,4 @@
+## YAML Template.
+---
+list_webservices:
+  - {alias: "vcs_webservice", user: "{{ vcs_webservice_user }}", password: "{{ vcs_webservice_pass }}"}

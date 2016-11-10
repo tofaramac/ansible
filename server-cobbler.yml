@@ -1,0 +1,11 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  
+  roles:
+    - syslinux
+    - apache2
+    - cobbler
+  
+      

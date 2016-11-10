@@ -1,0 +1,38 @@
+## YAML Template.
+---
+google_dns_1: 8.8.8.8
+google_dns_2: 8.8.4.4
+
+#dc terraco
+terraco_network: 192.168.0.0
+terraco_netmask: 255.255.255.0
+terraco_gateway: 192.168.0.1
+terraco_broadcast: 192.168.0.255
+terraco_dns_nameservers: 8.8.8.8 8.8.4.4 41.87.234.77
+
+#dc vodacom
+vodacom_network: 192.168.239.0
+vodacom_netmask: 255.255.255.0
+vodacom_gateway: 192.168.239.1
+vodacom_broadcast: 192.168.239.255
+vodacom_dns_nameservers: 8.8.8.8 8.8.4.4 41.87.234.77
+
+#jhb lan
+jhb_network: 192.168.1.0
+jhb_netmask: 255.255.255.0
+jhb_gateway: 192.168.1.254
+jhb_broadcast: 192.168.1.255
+jhb_dns_nameserver: 192.168.1.29
+
+stg_dns_nameserver: 192.168.1.217
+tst_dns_nameserver: 192.168.1.202
+    
+#dbn lan
+dbn_network: 192.168.3.0
+dbn_netmask: 255.255.255.0
+dbn_gateway: 192.168.3.254
+dbn_broadcast: 192.168.3.255
+dbn_dns_nameserver: 192.168.3.20
+
+## APN VODACOM
+apn_vodacom_scope: 10.0.0.0/24

@@ -1,0 +1,16 @@
+ansible_ssh_host: 192.168.239.19
+ppm_env: prd
+hostname: "{{ inventory_hostname_short }}"
+
+# vodacom network
+network: 192.168.239.0
+netmask: 255.255.255.0
+gateway: 192.168.239.1
+broadcast: 192.168.239.255
+dns_nameservers: 8.8.8.8 8.8.4.4 41.87.234.77
+
+# firewall
+external_map: none
+
+# rsyslog receiving client
+rsyslog_receive: 192.168.0.12

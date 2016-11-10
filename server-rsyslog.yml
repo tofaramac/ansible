@@ -1,0 +1,6 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  roles:
+    - rsyslog

@@ -1,0 +1,17 @@
+ansible_ssh_host: 192.168.1.174
+# Person using host
+user: hlamalani
+
+# resolution
+hostname: "{{ inventory_hostname_short }}"
+resolv: local
+mac: 4c:cc:6a:02:95:43
+
+#jhb lan
+jhb_network: 192.168.1.0
+netmask: 255.255.255.0
+gateway: 192.168.1.254
+broadcast: 192.168.1.255
+dns_nameservers: 8.8.8.8 8.8.4.4 192.168.1.29
+# firewall
+external_map: none

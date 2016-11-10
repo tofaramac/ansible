@@ -1,0 +1,30 @@
+## YAML Template.
+---
+strata: tst
+
+list_haproxy:
+  - tst-ppm-ha-0
+  - tst-ppm-ha-1
+list_apache2:
+  - tst-ppm-www-0
+  - tst-ppm-www-1
+list_cluster:
+  - tst-ppm-clr-0
+  - tst-ppm-clr-1
+  - tst-ppm-clr-2
+  - tst-ppm-clr-3
+list_sts:
+  - tst-ppm-sts-0
+  - tst-ppm-sts-1
+list_file:
+  - tst-ppm-file-0
+  - tst-ppm-file-1
+list_infra:
+  - tst-ppm-infra-0
+  - tst-ppm-infra-0    
+list_mail:
+  - tst-ppm-mail-0
+list_voip:
+  - tst-ppm-voip-0
+
+cluster_name: tst-ppm-clr

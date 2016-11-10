@@ -1,0 +1,14 @@
+## YAML Template.
+---
+list_msisdns:
+  - {alias: "executive1", msisdn: "0768877775"}
+  - {alias: "executive2", msisdn: "0768877775"}
+  - {alias: "manager1", msisdn: "0793686552"}
+  - {alias: "manager2", msisdn: "0793686552"}
+  - {alias: "electrician1", msisdn: "0828300968"}
+  - {alias: "electrician2", msisdn: "0828300968"}
+  - {alias: "plumber1", msisdn: "0793686552"}
+  - {alias: "plumber2", msisdn: "0793686552"}
+  - {alias: "cigicell", msisdn: "0834588279"}
+  
+  

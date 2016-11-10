@@ -1,0 +1,30 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: yes
+  roles:
+    - tasksel
+    - grub
+    - apt
+    - nfs
+    - bash
+    - desktop
+    - python
+    - git
+    - firefox
+    - meld
+    - libboost
+    - libmodbus
+    - network
+    - mariadb-server
+    - apache2
+    - php
+#    - app_databases
+    - app_crescendo
+    - app_aurora
+    - app_generic
+    - app_erp
+#    - app_enbaya_sts
+    - nrpe-agent
+    

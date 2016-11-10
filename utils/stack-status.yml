@@ -1,0 +1,41 @@
+## YAML Template.
+---
+- hosts: webservers
+  become: true
+  gather_facts: false
+  tasks:
+    - name: apache2 status
+      command: service apache2 status
+    
+    - name: verify apache2 listening
+      wait_for: host={{ ansible_eth0.ipv4.address }} port=80 timeout=1
+
+- hosts: databases
+  become: true
+  tasks:
+    - name: mysql status
+      command: service mysql status
+    
+    - name: verify 3306 listening
+      wait_for: host={{ ansible_eth0.ipv4.address }} port=3306 timeout=1
+      
+    #- name: verify 4444 listening
+    #  wait_for: port=4444 timeout=1
+      
+    #- name: verify 4567 listening
+    #  wait_for: port=4567 timeout=1
+      
+    #- name: verify 4568 listening
+    #  wait_for: port=4568 timeout=1
+
+- hosts: control
+  gather_facts: false
+  tasks:
+    - name: verify end-to-end http response
+      uri: url=http://{{item}} return_content=yes
+      with_items: '{{groups.webservers}}'
+      register: page_index
+      
+    - fail: msg="failed to return content"
+      when: "'Apache2 Ubuntu Default Page' not in item.content"
+      with_items: "{{page_index.results}}"

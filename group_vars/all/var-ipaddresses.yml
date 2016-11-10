@@ -1,0 +1,8 @@
+## YAML Template.
+---
+list_ipaddress_external:
+  - {alias: "impactpublicip", ip: "196.214.184.98"}
+
+list_ipaddress_internal:
+  - {alias: "masterdatabaseserver", ip: "192.168.0.16"}
+

@@ -1,0 +1,6 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  
+  roles:
+    - ../roles/app_databases

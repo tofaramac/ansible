@@ -1,0 +1,12 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+
+  tasks:
+  
+  - name: upgrade
+    command: apt-get autoclean
+
+  - name: remove
+    apt: name=rkhunter update_cache=yes cache_valid_time=86400

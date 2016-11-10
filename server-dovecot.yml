@@ -1,0 +1,6 @@
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: True
+  roles:
+    - dovecot

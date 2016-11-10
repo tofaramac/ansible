@@ -1,0 +1,58 @@
+/* {{ ansible_managed }}
+ *
+ * Host definitions with object attributes
+ * used to apply rules for Service, Notification,
+ * Dependency and ScheduledDowntime objects.
+ *
+ * Tip: Use `icinga2 object list --type Host` to
+ * list all host objects after running
+ * configuration validation (`icinga2 daemon -C`).
+ */
+
+object Host "{{ ansible_fqdn }}" {
+/* Import the default host template defined in `templates.conf`. */
+  import "generic-host"
+
+/* Specify the address attributes for checks e.g. `ssh` or `http`. */
+  address = "{{ ansible_default_ipv4.address }}"
+
+/* Set custom attribute `os` for hostgroup assignment in `groups.conf`. */
+  vars.os = "{{ ansible_system }}"
+  vars.os_family = "{{ ansible_os_family }}"
+
+{% if inventory_hostname_short in groups['apache2-servers'] %}
+/* Define http vhost attributes for service apply rules in `services.conf`. */
+  vars.http_vhosts["http"] = {
+    http_uri = "/"
+  }
+{% endif %}
+
+{% if inventory_hostname_short in groups['haproxy-servers'] %}
+/* Define http vhost attributes for service apply rules in `services.conf`. */
+  vars.http_vhosts["http"] = {
+    http_uri = "/"
+  }
+{% endif %}
+
+{% if inventory_hostname_short in groups['sysops-servers'] %}
+/* Uncomment if you've sucessfully installed Icinga Web 2. */
+  vars.http_vhosts["Icinga Web 2"] = {
+  http_uri = "/icingaweb2"
+  }
+{% endif %}
+
+/* Define disks and attributes for service apply rules in `services.conf`. */
+  vars.disks["disk"] = {
+    /* No parameters. */
+  }
+  vars.disks["disk /"] = {
+    disk_partitions = "/"
+  }
+
+/* Define notification mail attributes for notification apply rules in `notifications.conf`. */
+  vars.notification["mail"] = {
+    /* The UserGroup `icingaadmins` is defined in `users.conf`. */
+    groups = [ "icingaadmins" ]
+  }
+}
+

@@ -1,0 +1,17 @@
+ansible_ssh_host: 192.168.3.20
+ppm_env: infra
+hostname: "{{ inventory_hostname_short }}"
+mac: 00:14:22:11:ac:a7
+
+#dbn lan
+network: 192.168.3.0
+netmask: 255.255.255.0
+gateway: 192.168.3.254
+broadcast: 192.168.3.255
+dns_nameservers: 192.168.3.20 8.8.8.8
+
+# firewall
+external_map: none
+
+# rsyslog receiving client
+rsyslog_receive: 192.168.1.20

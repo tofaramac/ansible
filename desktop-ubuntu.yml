@@ -1,0 +1,17 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: yes
+  roles:
+    - tasksel
+    - grub
+    - apt
+    - nfs
+    - bash
+    - desktop
+    - firefox
+#    - ssh
+    - network
+    - nrpe-agent
+    

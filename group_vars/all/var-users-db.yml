@@ -1,0 +1,25 @@
+## YAML Template.
+---
+# definition of user and password are defined in vault
+
+list_users_db:
+  - {alias: "user1", user: "{{prd_user1_user}}", password: "{{prd_user1_pass}}"}
+  - {alias: "user2", user: "{{prd_user2_user}}", password: "{{prd_user2_pass}}"}
+  - {alias: "user3", user: "{{prd_user3_user}}", password: "{{prd_user3_pass}}"}
+  - {alias: "user4", user: "{{prd_user4_user}}", password: "{{prd_user4_pass}}"}
+  - {alias: "user5", user: "{{prd_user5_user}}", password: "{{prd_user5_pass}}"}
+  - {alias: "user6", user: "{{prd_user6_user}}", password: "{{prd_user6_pass}}"}
+  - {alias: "user7", user: "{{prd_user7_user}}", password: "{{prd_user7_pass}}"}
+  - {alias: "user8", user: "{{prd_user8_user}}", password: "{{prd_user8_pass}}"}
+  - {alias: "user9", user: "{{prd_user9_user}}", password: "{{prd_user9_pass}}"}
+  - {alias: "user10", user: "{{prd_user10_user}}", password: "{{prd_user10_pass}}"}
+  - {alias: "user11", user: "{{prd_user11_user}}", password: "{{prd_user11_pass}}"}
+  - {alias: "user12", user: "{{prd_user12_user}}", password: "{{prd_user12_pass}}"}
+  - {alias: "user13", user: "{{prd_user13_user}}", password: "{{prd_user13_pass}}"}
+  - {alias: "user14", user: "{{prd_user14_user}}", password: "{{prd_user14_pass}}"}
+  - {alias: "user15", user: "{{prd_user15_user}}", password: "{{prd_user15_pass}}"}
+  - {alias: "user16", user: "{{prd_user16_user}}", password: "{{prd_user16_pass}}"}
+  - {alias: "user17", user: "{{prd_user17_user}}", password: "{{prd_user17_pass}}"}
+  - {alias: "user18", user: "{{prd_user18_user}}", password: "{{prd_user18_pass}}"}
+  - {alias: "user19", user: "{{prd_user19_user}}", password: "{{prd_user19_pass}}"}
+

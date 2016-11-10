@@ -1,0 +1,19 @@
+## YAML Template.
+---
+list_usernames_cloud:
+  - {alias: "git_hub_user", username: "ppmsystems"}
+
+list_usernames_external:
+  - {alias: "git_hub_user", username: "ppmsystems"}
+  - {alias: "impact_ftp_user", username: "water"}
+  - {alias: "clickatell_aurora_mobile_user", username: "clickatellws"}
+  - {alias: "cigicell_aurora_mobile_user", username: "cigicellws"}
+  - {alias: "impact_id_user", username: "45602"}
+  
+list_usernames_internal:
+  - {alias: "alias", username: "username"}
+  - {alias: "crm_soap_user", username: "netmin"}
+  - {alias: "route_sms_user", username: "prepaidsms"}
+  - {alias: "hexing_webservice_user", username: "juice"}
+  
+  

@@ -1,0 +1,4 @@
+## YAML Template.
+---
+list_counters:
+  - {alias: "alias", count: "count"}

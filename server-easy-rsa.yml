@@ -1,0 +1,7 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  
+  roles:
+    - easy-rsa

@@ -1,0 +1,9 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  gather_facts: no
+  become: false
+  tasks:
+
+  - name: run ssh-keyscan to add keys to known_hosts
+    local_action: shell ssh-keyscan -p 201 {{ ansible_ssh_host }} >> ~/.ssh/known_hosts

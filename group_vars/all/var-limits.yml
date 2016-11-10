@@ -1,0 +1,5 @@
+## YAML Template.
+---
+list_limits:
+  - {alias: "testtokenkwhmax", limit: "5"}
+  - {alias: "testtokenkwhmaxadmin", limit: "999"}

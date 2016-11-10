@@ -1,0 +1,14 @@
+## YAML Template.
+---
+list_database_names:
+  - {alias: "crm", dbname: "{{ crm_dbname }}"}
+  - {alias: "crescendo", dbname: "{{ crescendo_dbname }}"}
+  - {alias: "aurora", dbname: "{{ aurora_dbname }}"}
+  - {alias: "archive", dbname: "{{ archive_dbname }}"}
+  - {alias: "audit", dbname: "{{ audit_dbname }}"}
+  - {alias: "aurorabackup", dbname: "{{ aurorabackup_dbname }}"}
+  - {alias: "enbayabackups", dbname: "{{ enbayabackups_dbname }}"}
+  - {alias: "enbayasts", dbname: "{{ enbayasts_dbname }}"}
+  - {alias: "AuroraMovedToCrescendo", dbname: "{{ AuroraMovedToCrescendo_dbname }}"}
+  - {alias: "joomla", dbname: "{{ joomla_dbname }}"}
+  - {alias: "propertyware", dbname: "{{ propertyware_dbname }}"}

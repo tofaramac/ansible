@@ -1,0 +1,74 @@
+## YAML Template.
+---
+# external emails
+external_emails:
+  - {alias: "impactemailto", email: "cron@amps.co.za"}
+  - {alias: "mrprepaidemail", email: "subs@mrprepaid.co.za"}
+  - {alias: "propertywaregoogleemail", email: "549092841382-gr89lf4l5lv58iha2efj0j4s7bh6hppt@developer.gserviceaccount.com"}
+  - {alias: "googleapiserviceaccount", email: "549092841382-5qr2c0k9odmqtn55gtjh2al66u3rmt9r@developer.gserviceaccount.com"}
+  - {alias: "propertywarefacebookemail", email: "cc381fc9072caa89f6619c96b1fd8c7e"}
+
+other_emails:
+  - {alias: "getresponseuser", email: "netmin@prepaidmeters.com"}
+  - {alias: "netcashemailaddress", email: "netcash@prepaidmeters.co.za"}
+  - {alias: "emailfrom", email: "noreply@prepaidmeters.net"}
+  - {alias: "alertemailfrom", email: "noreply@prepaidmeters.net"}
+  - {alias: "cronemailto", email: "systems@prepaidmeters.com"}
+  - {alias: "cronemailfrom", email: "systems@prepaidmeters.com"}
+
+# prd emails
+live_group_emails:
+  - {alias: "systems", email: "systems@prepaidmeters.com"}
+  - {alias: "sales", email: "sales@prepaidmeters.com"}
+  - {alias: "support", email: "support@prepaidmeters.com"}
+  - {alias: "testing", email: "testing@prepaidmeters.com"}
+  - {alias: "development", email: "llewellyn@prepaidmeters.com"}
+  - {alias: "accounts", email: "accounts@prepaidmeters.com"}
+  - {alias: "accounts-warnings", email: "accounts-warnings@prepaidmeters.com"}
+  - {alias: "product", email: "product@prepaidmeters.com"}
+  - {alias: "alerts", email: "alerts@prepaidmeters.com"}
+  - {alias: "backups", email: "backups@prepaidmeters.com"}
+  - {alias: "tickets", email: "godfrey@prepaidmeters.com"}
+  - {alias: "cigicell", email: "cigicell@prepaidmeters.com"}
+
+# stg emails
+strata_group_emails:
+  - {alias: "{{strata}}-systems", email: "{{strata}}-systems@prepaidmeters.com"}
+  - {alias: "{{strata}}-sales", email: "{{strata}}-sales@prepaidmeters.com"}
+  - {alias: "{{strata}}-support", email: "{{strata}}-support@prepaidmeters.com"}
+  - {alias: "{{strata}}-testing", email: "{{strata}}-testing@prepaidmeters.com"}
+  - {alias: "{{strata}}-development", email: "{{strata}}-development@prepaidmeters.com"}
+  - {alias: "{{strata}}-accounts", email: "{{strata}}-accounts@prepaidmeters.com"}
+  - {alias: "{{strata}}-accounts-warnings", email: "{{strata}}-accounts-warnings@prepaidmeters.com"}
+  - {alias: "{{strata}}-product", email: "{{strata}}-product@prepaidmeters.com"}
+  - {alias: "{{strata}}-alerts", email: "{{strata}}-alerts@prepaidmeters.com"}
+  - {alias: "{{strata}}-backups", email: "{{strata}}-backups@prepaidmeters.com"}
+  - {alias: "{{strata}}-cigicell", email: "{{strata}}cigicell@prepaidmeters.com"}
+
+# tst emails
+#tst_group_emails:
+#  - {alias: "tst-systems", email: "tst-systems@prepaidmeters.com"}
+#  - {alias: "tst-sales", email: "tst-sales@prepaidmeters.com"}
+#  - {alias: "tst-support", email: "tst-support@prepaidmeters.com"}
+#  - {alias: "tst-testing", email: "tst-testing@prepaidmeters.com"}
+#  - {alias: "tst-development", email: "tst-development@prepaidmeters.com"}
+#  - {alias: "tst-accounts", email: "tst-accounts@prepaidmeters.com"}
+#  - {alias: "tst-accounts-warnings", email: "tst-accounts-warnings@prepaidmeters.com"}
+#  - {alias: "tst-product", email: "tst-product@prepaidmeters.com"}
+#  - {alias: "tst-alerts", email: "tst-alerts@prepaidmeters.com"}
+#  - {alias: "tst-backups", email: "tst-backups@prepaidmeters.com"}
+
+# dev emails
+#dev_group_emails:
+#  - {alias: "dev-systems", email: "{{ useremail }}"}
+#  - {alias: "dev-sales", email: "{{ useremail }}"}
+#  - {alias: "dev-support", email: "{{ useremail }}"}
+#  - {alias: "dev-testing", email: "{{ useremail }}"}
+#  - {alias: "dev-development", email: "{{ useremail }}"}
+#  - {alias: "dev-accounts", email: "{{ useremail }}"}
+#  - {alias: "dev-accounts-warnings", email: "{{ useremail }}"}
+#  - {alias: "dev-product", email: "{{ useremail }}"}
+#  - {alias: "dev-alerts", email: "{{ useremail }}"}
+#  - {alias: "dev-backups", email: "{{ useremail }}"}
+
+

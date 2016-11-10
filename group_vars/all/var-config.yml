@@ -1,0 +1,4 @@
+## YAML Template.
+---
+list_smtps:
+  - {alias: "ppm_smtp", host: "mail.prepaidmeters.co.za", port: "25", user: "{{ ppm_smtp_user }}", password: "{{ ppm_smtp_pass }}", crypt: "tls", auth: "True"}

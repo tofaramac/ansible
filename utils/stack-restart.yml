@@ -1,0 +1,28 @@
+## YAML Template.
+---
+# bring down stack
+- hosts: webservers
+  become: true
+  tasks:
+    - service: name=apache2 state=stopped
+    - wait_for: host={{ ansible_eth0.ipv4.address }} port=80 state=drained
+
+- hosts: databases
+  become: true
+  tasks:
+    - service: name=mysql state=stopped
+    - wait_for: host={{ ansible_eth0.ipv4.address }} port=3306 state=stopped
+
+# bring stack up
+- hosts: databases
+  become: true
+  tasks:
+    - command: /etc/init.d/mysql bootstrap-pxc
+    - wait_for: host={{ ansible_eth0.ipv4.address }} port=3306 state=started
+    
+- hosts: webservers
+  become: true
+  tasks:
+    - service: name=apache2 state=started
+    - wait_for: host={{ ansible_eth0.ipv4.address }} port=80 state=started
+

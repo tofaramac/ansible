@@ -1,0 +1,8 @@
+## YAML Template.
+---
+ppm_local_domain_name: prepaidmeters.local
+ppm_tst_domain_name: prepaidmeters.test
+ppm_stg_domain_name: prepaidmeters.example
+ppm_coza_domain_name: prepaidmeters.co.za
+ppm_com_domain_name: prepaidmeters.com
+ppm_net_domain_name: prepaidmeters.net

@@ -1,0 +1,14 @@
+ansible_ssh_host: 192.168.1.110
+hostname: "{{ inventory_hostname_short }}"
+mac: 00:a5:05:00:f0:d5
+
+#jhb lan
+jhb_network: 192.168.1.0
+netmask: 255.255.255.0
+gateway: 192.168.1.254
+broadcast: 192.168.1.255
+dns_nameservers: 8.8.8.8 8.8.4.4 192.168.1.29
+
+# firewall
+external_map: none
+

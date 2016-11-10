@@ -1,0 +1,17 @@
+ansible_ssh_host: 192.168.0.17
+ppm_env: prd
+hostname: "{{ inventory_hostname_short }}"
+
+# terraco network
+network: 192.168.0.0
+netmask: 255.255.255.0
+gateway: 192.168.0.1
+broadcast: 192.168.0.255
+dns_nameservers: 8.8.8.8 8.8.4.4 41.87.234.77
+
+# firewall
+external_map: 41.85.145.57
+
+# rsyslog receiving client
+rsyslog_receive: 192.168.0.12
+

@@ -1,0 +1,9 @@
+## YAML Template.
+---
+list_fqdns_external:
+  - {alias: "impactftpserver", fqdn: "ftp.amps.co.za"}
+  
+list_fqdns_internal:
+  - {alias: "ppmmailserver", fqdn: "mail.prepaidmeters.co.za"}
+  
+  

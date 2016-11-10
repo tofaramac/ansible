@@ -1,9 +1,8 @@
+## YAML Template.
 ---
 - hosts: '{{ target }}'
   become: true
   gather_facts: True
-  vars:
-    bind_zone_master_server_ip: 192.168.122.119
 
   roles:
-    - bind9
+    - smokeping

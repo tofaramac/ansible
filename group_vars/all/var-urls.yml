@@ -1,0 +1,5 @@
+## YAML Template.
+---
+list_urls:
+  - {alias: "crmurl", url: "http://crm.prepaidmeters.co.za"}
+  - {alias: "devdatabasesourceurl", url: "http://preprod.generic.prepaidmeters.co.za/databasesamples/"}

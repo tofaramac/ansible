@@ -1,0 +1,5 @@
+## YAML Template.
+---
+jhb_ntp_servers: 192.168.1.20
+    
+dbn_ntp_servers: 192.168.3.20

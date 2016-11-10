@@ -1,0 +1,9 @@
+## YAML Template.
+---
+
+list_cluster_sysops:
+  - ppm-jhb-infra-1
+  - prd-ppm-infra-0
+  - prd-ppm-infra-1
+
+cluster_name_sysops: ppm-infra-clr

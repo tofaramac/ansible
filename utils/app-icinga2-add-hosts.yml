@@ -1,0 +1,10 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  
+  tasks:
+  - name: copy host definitions
+    template: src=app-icinga2-host-template.j2 dest=/etc/icinga2/conf.d/{{ ansible_fqdn }}.conf 
+      owner=root group=root mode=0644
+    delegate_to: 192.168.1.21

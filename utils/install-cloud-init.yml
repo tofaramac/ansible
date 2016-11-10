@@ -1,0 +1,9 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: no
+  tasks:
+  - name: install cloud-init
+    raw: apt -y install cloud-init
+ 

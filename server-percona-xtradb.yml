@@ -1,9 +1,7 @@
+## YAML Template.
 ---
 - hosts: '{{ target }}'
   become: true
-  gather_facts: True
-  vars:
-    bind_zone_master_server_ip: 192.168.122.119
-
+  gather_facts: true
   roles:
-    - bind9
+    - percona-xtradb

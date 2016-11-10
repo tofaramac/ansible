@@ -1,0 +1,4 @@
+## YAML Template.
+---
+list_specials:
+  - {alias: "eskomdebtorno", special: "0000006903"}

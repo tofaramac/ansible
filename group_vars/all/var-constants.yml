@@ -1,0 +1,4 @@
+## YAML Template.
+---
+list_constants:
+    - {alias: "googleapiwhitelabelza", constant: "ZA"}

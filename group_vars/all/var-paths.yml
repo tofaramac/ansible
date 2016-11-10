@@ -1,0 +1,34 @@
+## YAML Template.
+---
+apache2_root: /var/www
+
+list_paths_folders:
+  - {alias: "crescendo", path: "{{ apache2_root }}/crescendo"}
+  - {alias: "aurora", path: "{{ apache2_root }}/aurora/trunk/"}
+  - {alias: "erp", path: "{{ apache2_root }}/erp/trunk/"}
+  - {alias: "generic", path: "{{ apache2_root }}/generic/trunk/"}
+  - {alias: "aurora_cake", path: "{{ apache2_root }}/aurora_cake/trunk/"}
+  - {alias: "erp_cake", path: "{{ apache2_root }}/erp_cake/trunk/"}
+  - {alias: "generic_cake", path: "{{ apache2_root }}/generic_cake/trunk/"}
+  - {alias: "documentsfolder", path: "{{ apache2_root }}/documents/trunk/"}
+  - {alias: "documentsfolderdynamic", path: "{{ apache2_root }}/documentsdynamic/"}
+  - {alias: "devdatabasedestinationfolder", path: "{{ apache2_root }}/generic/trunk/databasesamples/"}
+  - {alias: "temp", path: "/tmp/"}
+  - {alias: "enbayacronrootlogdir", path: "/var/log/enbaya/"}
+  - {alias: "rsyncfolder", path: "/run/ppm/"}
+  - {alias: "backupfolder", path: "/var/backups/mysql/"}
+  - {alias: "backuprestorefolder", path: "/var/backups/mysql/work/"}
+  - {alias: "databasebackupfolder", path: "/var/rsync/db/"}
+  - {alias: "devdatabaseworkfolder", path: "${devdatabasedestinationfolder}/work/"}
+  - {alias: "pathtovoicerecordings", path: "/var/tmp"}
+  - {alias: "impactftpdirectory", path: "prepaid/"}
+
+list_paths_files:
+  - {alias: "enbayaini", file: "{{ apache2_root }}/enbaya.ini"}
+  - {alias: "maintenancemodewebservers", file: "{{ apache2_root }}/maintenancemode.ini"}
+  - {alias: "maintenancemodedatabaseservers", file: "/run/ppm/maintenancemode.ini"}
+  - {alias: "enbayacronrootlog", file: "/var/log/enbaya/enbayacronroot.log"}
+  - {alias: "cronlogwwwdata=", file: "/var/log/enbaya/enbayacronwwwdata.log"}
+  - {alias: "cronreports", file: "/tmp/cronreports.txt"}
+  - {alias: "customhosts", file: "/root/customhosts"}
+  - {alias: "customapapcheconf", file: "/root/customapapcheconf.conf"}

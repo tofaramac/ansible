@@ -1,0 +1,7 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: true
+  roles:
+    - mariadb-server

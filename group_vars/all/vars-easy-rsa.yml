@@ -1,0 +1,4 @@
+## YAML Template.
+---
+easy_rsa_ca_expire: 3650
+easy_rsa_key_size: 2048

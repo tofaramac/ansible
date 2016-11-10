@@ -1,0 +1,40 @@
+## YAML Template.
+---
+# restores virt images on infra-kvm hosts back to basic img
+# basic img files are stored in /home/netadmin/virtimgbackup/ on each host
+
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: yes
+  tasks:
+    - name: get vm list
+      virt: command=list_vms
+      register: vmlist
+      when: "'{{hostname}}' in groups['infra-servers-farm']"
+    
+    - name: stop vms
+      virt: name={{item}} state=shutdown
+      with_items:
+        - "{{vmlist.list_vms}}"
+      when: "'{{hostname}}' in groups['infra-servers-farm']"
+    
+    - name: wait for hosts to stop
+      pause: minutes=1
+    
+    - name: remove existing img files
+      file: path=/var/lib/libvirt/images/{{item}}.img state=absent
+      with_items:
+        - "{{vmlist.list_vms}}"
+      when: "'{{hostname}}' in groups['infra-servers-farm']"
+      
+    - name: copy in backed up image files 
+      copy: src=/mnt/nfs/var/nfs/kvmimages/template-ubuntu-1404-lts-64.img dest=/var/lib/libvirt/images/{{item}}.img
+      with_items: 
+        - "{{vmlist.list_vms}}"
+      when: "'{{hostname}}' in groups['infra-servers-farm']"
+    
+    - name: start vms
+      virt: name={{item}} state=running
+      with_items:
+        - "{{vmlist.list_vms}}"
+      when: "'{{hostname}}' in groups['infra-servers-farm']"

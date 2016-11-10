@@ -1,3 +1,4 @@
+## YAML Template.
 ---
 - hosts: '{{ target }}'
   become: true

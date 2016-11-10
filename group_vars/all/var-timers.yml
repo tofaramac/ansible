@@ -1,0 +1,6 @@
+## YAML Template.
+---
+list_timers:
+  - {alias: "maintenancemodeminutes", seconds: "300"}
+  - {alias: "clickatellduplicatetransactioncheckinminutes", seconds: "180"}
+  - {alias: "unipinduplicatetransactioncheckinminutes", seconds: "3600"}

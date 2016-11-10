@@ -1,0 +1,7 @@
+## YAML Template.
+---
+- hosts: localhost
+  become: true
+  gather_facts: true
+  roles:
+    - cssh

@@ -1,0 +1,5 @@
+## YAML Template.
+---
+du  -h -c /var/cache/apt/archives
+
+du -h -c /var/tmp/

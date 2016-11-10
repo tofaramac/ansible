@@ -1,0 +1,6 @@
+## YAML Template.
+---
+list_crypts:
+  - {alias: "url_md5", token: "{{ url_md5_token }}"}
+  - {alias: "tx", token: "{{ tx_token }}"}
+  - {alias: "password", token: "{{ password_token }}"}
