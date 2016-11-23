@@ -1,0 +1,1 @@
+none kbd-scrollock kbd-numlock [kbd-capslock] kbd-kanalock kbd-shiftlock kbd-altgrlock kbd-ctrllock kbd-altlock kbd-shiftllock kbd-shiftrlock kbd-ctrlllock kbd-ctrlrlock ACAD-online BAT0-charging-or-full BAT0-charging BAT0-full BAT0-charging-blink-full-solid usb-gadget usb-host cpu0 cpu1 cpu2 cpu3 cpu4 cpu5 cpu6 cpu7 mmc0 rfkill0 phy0rx phy0tx phy0assoc phy0radio 

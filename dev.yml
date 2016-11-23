@@ -1,0 +1,31 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: true
+  serial: 2
+  roles:
+  - boostrap
+# base host
+#  - network
+  - apt
+  - users
+  - ssh-keys
+  - bash
+  - server-base
+  - postfix
+  - nrpe-agent
+  - nfs
+  - mount
+  - logwatch
+  - acct
+  - logrotate
+  - python
+  - git
+# - rsyslog
+# - ufw fails on 16.04
+  - chrootkit
+  - maldetect
+  - rkhunter
+# services
+  

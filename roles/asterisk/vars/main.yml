@@ -1,2 +1,54 @@
 ---
 # vars file for asterisk
+ubuntu_packages:
+
+  - mariadb-server
+  - mariadb-client
+  - php7.0 
+  - php7.0-curl 
+  - php7.0-cli 
+  - php7.0-common
+  - php7.0-mysql 
+  - php7.0-dev
+  - php7.0-cgi
+  - php-pear 
+  - php7.0-gd 
+  - php7.0-mbstring
+  - php7.0-xml
+  - apache2
+  - postfix
+  - sox
+  - libtiff-dev
+  - subversion
+  - git
+  - wget
+  - vim
+  - net-tools
+  - gnutls-dev
+  - php-pear
+  - build-essential  
+  - libncurses5-dev 
+  - libssl-dev 
+  - libmysqlclient-dev 
+  - mpg123 
+  - libxml2-dev 
+  - libnewt-dev 
+  - sqlite3
+  - libsqlite3-dev 
+  - pkg-config 
+  - automake 
+  - libtool 
+  - autoconf 
+  - unixodbc-dev 
+  - uuid 
+  - uuid-dev
+  - libapache2-mod-php7.0 
+  - libasound2-dev 
+  - libogg-dev 
+  - libvorbis-dev 
+  - libcurl4-openssl-dev 
+  - libical-dev 
+  - libneon27-dev 
+  - libsrtp0-dev
+  - libspandsp-dev 
+  

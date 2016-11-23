@@ -1,0 +1,2 @@
+INTERFACE=vboxnet3
+IFINDEX=16

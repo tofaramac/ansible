@@ -1,0 +1,2 @@
+INTERFACE=vboxnet11
+IFINDEX=12

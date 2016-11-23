@@ -1,0 +1,4 @@
+---
+# tasks file for boostrap
+- name: install ansible depends 
+  raw: apt -y install python python-simplejson

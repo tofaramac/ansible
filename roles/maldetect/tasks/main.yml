@@ -1,0 +1,38 @@
+---
+# tasks file for maldetect
+- name: check if maldetect already installed
+  stat: path="/usr/local/maldetect/conf.maldet"
+  register: maldetect
+  
+- name: create maldetect (download) directory
+  file: path="/tmp/maldetect" state=directory owner=root group=root mode=0755
+  when: maldetect.stat.exists == False
+  
+- name: download maldetect
+  get_url: url="http://www.rfxn.com/downloads/maldetect-current.tar.gz" 
+    dest="/tmp/maldetect/maldetect-current.tar.gz" owner=root group=root mode=0755
+  when: maldetect.stat.exists == False
+
+- name: extract maldetect
+  unarchive: src=/tmp/maldetect/maldetect-current.tar.gz dest=/tmp/maldetect/ 
+    copy=no
+  when: maldetect.stat.exists == False
+    
+- name: find extracted maldetect folder name
+  find: paths="/tmp/maldetect/" pattern="maldetect-*" file_type=directory
+  register: maldetect_folder
+  when: maldetect.stat.exists == False
+    
+- name: run maldetect_installer
+  command: ./install.sh chdir="{{ maldetect_folder.files[0].path }}"
+  changed_when: false
+  when: maldetect.stat.exists == False
+
+- name: remove maldetect folder
+  file: path="/tmp/maldetect" state=absent
+  changed_when: false
+  when: maldetect.stat.exists == False
+  
+- name: deploy maldetect config
+  template: src=conf.maldetect.j2 dest=/usr/local/maldetect/conf.maldet
+  when: maldetect.stat.exists == False

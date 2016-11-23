@@ -1,0 +1,38 @@
+---
+# defaults file for rkhunter
+
+rkhunter_mail_on_warnings: "{{ emails[0].email }}"
+
+rkhunter_scriptwhitelist:
+- "/bin/egrep"
+- "/bin/fgrep"
+- "/bin/which"
+- "/usr/bin/groups"
+- "/usr/bin/ldd"
+- "/usr/bin/lwp-request"
+- "/usr/sbin/adduser"
+- "/usr/sbin/prelink"
+- "/usr/bin/unhide.rb"
+
+rkhunter_allowdevfiles:
+- "/dev/.udev/rules.d/root.rules"
+- "/dev/shm/pulse-shm-*"
+- "/dev/shm/sem.ADBE_*"
+
+rkhunter_allowedhiddenfiles:
+- "/usr/share/man/man1/..1.gz"
+- "/usr/bin/.fipscheck.hmac"
+- "/usr/bin/.ssh.hmac"
+- "/usr/lib/.libfipscheck.so.1.1.0.hmac"
+- "/usr/lib/hmaccalc/sha1hmac.hmac"
+- "/usr/lib/hmaccalc/sha256hmac.hmac"
+- "/usr/sbin/.sshd.hmac"
+- "/dev/.blkid.tab"
+- "/dev/.blkid.tab.old"
+- "/dev/.initramfs"
+
+rkhunter_allowhiddendir:
+- "/etc/.java"
+- "/dev/.udev"
+- "/dev/.udevdb"
+- "/dev/.mdadm"

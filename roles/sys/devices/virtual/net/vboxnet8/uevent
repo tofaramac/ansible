@@ -1,0 +1,2 @@
+INTERFACE=vboxnet8
+IFINDEX=21

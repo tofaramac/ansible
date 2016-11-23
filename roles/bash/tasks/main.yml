@@ -3,40 +3,21 @@
 - name: enable skel color
   lineinfile: dest=/etc/skel/.bashrc regexp="^#force_color_prompt" 
     line="force_color_prompt=yes" state=present
-  notify: reload bash
-  tags: [ 'config' ]
   
-#- name: enable sean color
-#  lineinfile: dest=/home/sean/.bashrc regexp="^#force_color_prompt" 
-#    line="force_color_prompt=yes" state=present
-#  notify: reload bash
-#  tags: [ 'config' ]
-    
 - name: enable root user color
   lineinfile: dest=/root/.bashrc regexp="^#force_color_prompt" 
     line="force_color_prompt=yes" state=present
-  notify: reload bash
-  tags: [ 'config' ]
   
 - name: enable root user color red
   lineinfile: dest=/root/.bashrc regexp="^PS1" 
     line="PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '" 
     state=present
-  notify: reload bash
-  tags: [ 'config' ]
   
-#- name: enable root netadmin color
-#  lineinfile: dest=/home/netadmin/.bashrc regexp="^#force_color_prompt" 
-#    line="force_color_prompt=yes" state=present
-#  notify: reload bash
-#  tags: [ 'config' ]
-  
-- name: find home directories
-  command: ls -1 /home
+- name: find exiting users home directories
+  find: paths="/home" patterns="*" file_type=directory
   register: homedirs
-   
-- name: enable user color
-  lineinfile: dest="/home/{{ item }}/.bashrc" regexp="^#force_color_prompt" 
+  
+- name: enable exiting users color
+  lineinfile: dest="{{ item.path }}/.bashrc" regexp="^#force_color_prompt" 
     line="force_color_prompt=yes" state=present
-  with_items: "{{ homedirs.stdout_lines }}"
-  notify: reload bash
+  with_items: "{{ homedirs.files }}"

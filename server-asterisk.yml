@@ -5,5 +5,5 @@
   gather_facts: yes
 
   roles:
-    - freepbx
-    
+    - asterisk
+  

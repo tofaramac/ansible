@@ -1,0 +1,16 @@
+---
+# tasks file for rootkits
+- name: install chkrootkit
+  apt: name=chkrootkit state=present update_cache=yes cache_valid_time=86400
+
+- name: chkrootkit configure
+  template: src=chkrootkit.conf.j2 dest=/etc/chkrootkit.conf
+
+- name: check chkrootkit daily run cron folder
+  stat: path=/etc/cron.daily/chkrootkit
+  register: chkrootkit_run
+  
+- name: move chkrootkit daily to weekly
+  command: mv /etc/cron.daily/chkrootkit /etc/cron.weekly/
+  when: chkrootkit_run.stat.isfile is defined
+  

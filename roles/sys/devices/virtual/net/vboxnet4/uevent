@@ -1,0 +1,2 @@
+INTERFACE=vboxnet4
+IFINDEX=17

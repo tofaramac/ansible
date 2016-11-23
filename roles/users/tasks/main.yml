@@ -1,0 +1,10 @@
+---
+# tasks file for users
+- name: user add admins
+  user: name={{ item.username }} comment={{ item.user_full }} shell={{ item.shell }} 
+    groups={{ item.groups }} append=yes state=present
+  with_items: "{{ users }}"
+  
+- name: user add normal
+  user: name={{ user }} comment={{ user_first_surname }} shell={{ user_shell }}
+    groups={{ user_groups }} append=yes state=present

@@ -1,0 +1,2 @@
+INTERFACE=vboxnet0
+IFINDEX=9

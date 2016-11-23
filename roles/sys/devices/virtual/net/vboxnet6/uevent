@@ -1,0 +1,2 @@
+INTERFACE=vboxnet6
+IFINDEX=19

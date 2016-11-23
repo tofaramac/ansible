@@ -1,0 +1,2 @@
+DRIVER=vboxdrv
+MODALIAS=platform:vboxdrv

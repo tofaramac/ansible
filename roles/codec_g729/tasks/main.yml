@@ -1,0 +1,25 @@
+---
+# tasks file for codec_g729
+- name: asterisk | install core g729 sounds
+  unarchive:
+    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-core-sounds-en-g729-current.tar.gz'
+    dest: '/var/lib/asterisk/sounds'
+    copy: no
+
+- name: asterisk | install extra g729 sounds
+  unarchive:
+    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-g729-current.tar.gz'
+    dest: '/var/lib/asterisk/sounds'
+    copy: no
+    
+- name: asterisk | install core wav sounds
+  unarchive:
+    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-core-sounds-en-wav-current.tar.gz'
+    dest: '/var/lib/asterisk/sounds'
+    copy: no
+
+- name: asterisk | install extra wav sounds
+  unarchive:
+    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-wav-current.tar.gz'
+    dest: '/var/lib/asterisk/sounds'
+    copy: no

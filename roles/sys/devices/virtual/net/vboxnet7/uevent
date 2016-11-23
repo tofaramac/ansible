@@ -1,0 +1,2 @@
+INTERFACE=vboxnet7
+IFINDEX=20

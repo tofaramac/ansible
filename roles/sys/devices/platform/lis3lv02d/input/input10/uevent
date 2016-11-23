@@ -1,0 +1,7 @@
+PRODUCT=19/0/0/0
+NAME="ST LIS3LV02DL Accelerometer"
+PHYS="lis3lv02d/input0"
+PROP=0
+EV=9
+ABS=7
+MODALIAS=input:b0019v0000p0000e0000-e0,3,kra0,1,2,mlsfw

@@ -1,3 +1,5 @@
 ---
 # defaults file for apt
-apt_ubuntu_archive: http://us.archive.ubuntu.com/ubuntu/
+apt_archive: us.archive.ubuntu.com
+
+apt_lsb_release: xenial

@@ -1,0 +1,10 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: yes
+
+  roles:
+    - asterisk
+    - freepbx
+    - codec_g729

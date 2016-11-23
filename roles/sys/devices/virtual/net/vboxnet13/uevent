@@ -1,0 +1,2 @@
+INTERFACE=vboxnet13
+IFINDEX=24
