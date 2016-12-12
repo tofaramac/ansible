@@ -8,47 +8,68 @@
     - bind9-doc
     - dnsutils
   notify: bind9 restart
-  tags: [ 'packages' ]
+
 
 - name: bind to ipv4
-  template: src=bind9.j2 dest=/etc/default/bind9 backup=yes
-  tags: [ 'config' ]
+  template: src=bind9.j2 dest=/etc/default/bind9
+ # when: inventory_hostname in groups.bind
   
 - name: acl bind9
   template: src=named.conf.options.j2 dest=/etc/bind/named.conf.options 
    owner=root group=bind
-  tags: [ 'config' ]
+ # when: inventory_hostname in groups.bind
 
-- name: define forward and reverse zone
+- name: define forward and reverse zones
   template: src=named.conf.local.j2 dest=/etc/bind/named.conf.local 
    owner=root group=bind
-   
-- name: clean existing zone databse
-  file: path=/var/lib/bind/* state=absent
+ # when: inventory_hostname in groups.bind
+  
+- name: check /etc/bind/zones exists
+  stat: path="/etc/bind/zones"
+  register: zones_folder
+  #when: inventory_hostname in groups.bind
+  
+- name: check /etc/bind/slaves exists
+  stat: path="/etc/bind/slaves"
+  register: slaves_folder
+ # when: inventory_hostname in groups.bind
 
-- name: create forward zone
-  template: src=prepaidmeters.local.zone.j2 dest=/var/lib/bind/prepaidmeters.local.zone 
+- name: if /etc/bind/zones does not exist create it
+  file: path="/etc/bind/zones" state=directory
+ # when: "inventory_hostname in groups.bind and zones_folder.stat.exists == False"
+  
+- name: clean out /etc/bind/zones
+  file: path="/etc/bind/zones/*" state=absent
+  #when: "inventory_hostname in groups.bind and zones_folder.stat.exists == True"
+  
+- name: if /etc/bind/slaves does not exist create it
+  file: path="/etc/bind/slaves" state=directory
+  #when: "inventory_hostname in groups.bind and slaves_folder.stat.exists == False"
+  
+- name: clean out /etc/bind/slaves
+  file: path="/etc/bind/slaves/*" state=absent
+ # when: "inventory_hostname in groups.bind and slaves_folder.stat.exists == True"
+
+- name: create zones db.{{ domains[0].domain }}.{{ tld[0].tld }} from db.local
+  template: src=db.local.fwd.j2 dest=/etc/bind/zones/db.{{ domains[0].domain }}.{{ tld[0].tld }}
     owner=root group=bind
-  
-<<<<<<< HEAD
-- name: create reverse zone jhb
-  template: src=prepaidmeters.local.jhb.rev.zone.j2 dest=/var/lib/bind/prepaidmeters.local.jhb.rev.zone 
-   owner=root group=bind backup=yes
-  notify: bind9 restart
+  #when: "inventory_hostname in groups.bind and '0' in inventory_hostname"
 
-- name: create forward zone dbn
-  template: src=prepaidmeters.local.dbn.zone.j2 dest=/var/lib/bind/prepaidmeters.local.dbn.zone 
-    owner=root group=bind backup=yes
+- name: create slaves db.{{ domains[0].domain }}.{{ tld[0].tld }} from db.local
+  template: src=db.local.fwd.j2 dest=/etc/bind/slaves/db.{{ domains[0].domain }}.{{ tld[0].tld }}
+    owner=root group=bind
+  #when: "inventory_hostname in groups.bind and '1' in inventory_hostname"
+    
+- name: create zones db.192.168 from db.local.arpa
+  template: src=db.local.rev.j2 dest=/etc/bind/zones/db.192.168 
+    owner=root group=bind
+  #when: "inventory_hostname in groups.bind and '0' in inventory_hostname"
   
-- name: create reverse zone dbn
-  template: src=prepaidmeters.local.dbn.rev.zone.j2 dest=/var/lib/bind/prepaidmeters.local.dbn.rev.zone 
-   owner=root group=bind backup=yes
-=======
-- name: create reverse zone
-  template: src=prepaidmeters.local.rev.zone.j2 dest=/var/lib/bind/prepaidmeters.local.rev.zone 
-   owner=root group=bind
->>>>>>> 024dfebe0b7048489f92b4d04795280f0aa4e73d
-  notify: bind9 restart
+- name: create slaves db.192.168 from db.local.arpa
+  template: src=db.local.rev.j2 dest=/etc/bind/slaves/db.192.168 
+    owner=root group=bind
+  #when: "inventory_hostname in groups.bind and '1' in inventory_hostname"
 
-- name: bind9 status
-  service: name=bind9 state=running enabled=yes
+- name: bind9 check
+  service: name=bind9 state=restarted enabled=true
+  #when: inventory_hostname in groups.bind

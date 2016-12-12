@@ -1,0 +1,11 @@
+# { ansible_managed}
+# /etc/default/tftpd-hpa
+
+TFTP_USERNAME="tftp"
+TFTP_DIRECTORY="{{ tftp_boot_dir }}"
+#TFTP_ADDRESS="[::]:69"
+TFTP_ADDRESS="0.0.0.0:69"
+TFTP_OPTIONS="--secure"
+# added
+RUN_DAEMON="yes"
+OPTIONS="-l -s {{ tftp_boot_dir }}"

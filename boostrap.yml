@@ -1,7 +1,6 @@
-## YAML Template.
 ---
 - hosts: '{{ target }}'
   become: true
-  
+  gather_facts: True
   roles:
-    - tftpd-hpa 
+    - lsb-core

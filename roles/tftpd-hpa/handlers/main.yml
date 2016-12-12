@@ -1,0 +1,10 @@
+---
+# handlers file for tftpd-hpa
+- name: tftpd-hpa stop
+  service: name=tftpd-hpa state=stopped
+
+- name: tftpd-hpa start
+  service: name=tftpd-hpa state=started
+  
+- name: tftpd-hpa restart
+  service: name=tftpd-hpa state=restarted

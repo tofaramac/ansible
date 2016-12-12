@@ -1,0 +1,8 @@
+## YAML Template.
+---
+- hosts: '{{ target }}'
+  become: true
+  gather_facts: no
+  tasks:
+  - name: install ansible depends 
+    raw: apt -y install python python-simplejson

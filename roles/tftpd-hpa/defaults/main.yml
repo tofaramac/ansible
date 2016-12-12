@@ -1,0 +1,3 @@
+---
+# defaults file for tftpd-hpa
+tftp_boot_dir: /var/lib/tftpboot

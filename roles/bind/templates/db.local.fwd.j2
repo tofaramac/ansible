@@ -1,0 +1,42 @@
+$TTL    604800
+{% if ansible_default_ipv4.address == infra[0].ipaddress %}
+@       IN      SOA     ns0.{{ domains[0].domain }}.{{ tld[0].tld }}. root.{{ domains[0].domain }}. (
+{% endif %}
+
+{% if ansible_default_ipv4.address == infra[1].ipaddress %}
+@       IN      SOA     ns1.{{ domains[0].domain }}.{{ tld[0].tld }}. root.{{ domains[0].domain }}. (
+{% endif %}
+                             12         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+
+; name servers - NS records
+@       IN      NS      ns0.{{ domains[0].domain }}.{{ tld[0].tld }}.
+ns0     IN      A       {{ infra[0].ipaddress }}
+@       IN      NS      ns1.{{ domains[0].domain }}.{{ tld[0].tld }}.
+ns1     IN      A       {{ infra[1].ipaddress }}
+
+; {{ ansible_default_ipv4.network }} - A records
+{{ haproxy[0].hostname }}        IN      A      {{ haproxy[0].ipaddress }}
+{{ apache2[0].hostname }}       IN      A      {{ apache2[0].ipaddress }}
+{{ mariadb[0].hostname }}        IN      A      {{ mariadb[0].ipaddress }}
+{{ mariadb[2].hostname }}        IN      A      {{ mariadb[2].ipaddress }}
+{{ file[0].hostname }}        IN      A      {{ file[0].ipaddress }}
+{{ sts[0].hostname }}        IN      A      {{ sts[0].ipaddress }}
+{{ infra[0].hostname }}        IN      A      {{ infra[0].ipaddress }}
+{{ mail[0].hostname }}        IN      A      {{ mail[0].ipaddress }}
+{{ voip[0].hostname }}        IN      A      {{ voip[0].ipaddress }}
+
+{{ haproxy[1].hostname }}        IN      A      {{ haproxy[1].ipaddress }}
+{{ apache2[1].hostname }}       IN      A      {{ apache2[1].ipaddress }}
+{{ mariadb[1].hostname }}        IN      A      {{ mariadb[1].ipaddress }}
+{{ mariadb[3].hostname }}        IN      A      {{ mariadb[3].ipaddress }}
+{{ file[1].hostname }}        IN      A      {{ file[1].ipaddress }}
+{{ sts[1].hostname }}        IN      A      {{ sts[1].ipaddress }}
+{{ infra[1].hostname }}        IN      A      {{ infra[1].ipaddress }}
+{{ mail[1].hostname }}        IN      A      {{ mail[1].ipaddress }}
+{{ voip[1].hostname }}        IN      A      {{ voip[1].ipaddress }}
+

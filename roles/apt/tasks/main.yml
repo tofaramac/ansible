@@ -65,7 +65,15 @@
   when: inventory_hostname in groups.oracle_java
   notify: apt-get update
   
-
+###
+- name: syncthing key add
+  shell: curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
+  when: inventory_hostname in groups.syncthing
+  notify: apt-get update
+    
+- name: syncthing repo add  
+  shell: echo "deb http://apt.syncthing.net/ syncthing release" | sudo tee /etc/apt/sources.list.d/syncthing-release.list
+  when: inventory_hostname in groups.syncthing
   
 ###  
 - name: unison ppa add

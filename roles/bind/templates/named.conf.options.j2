@@ -1,37 +1,21 @@
 // # {{ ansible_managed }}
 acl "trusted" {
-    192.168.1.29; #ns1.prepaidmeters.local
-    192.168.3.20; #ns2.prepaidmeters.local
-    192.168.0.0/24;
-    192.168.239.0/24;
-    192.168.1.0/24;
-    192.168.3.0/24;
+    {{ infra[0].ipaddress }};
+    {{ infra[1].ipaddress }};
+    {{ networks[0].network }}/24;
+    {{ networks[1].network }}/24;
 };
 
 options {
     directory "/var/cache/bind";
 
+    recursion yes;
+    allow-recursion { trusted; };
+    listen-on { {{ ansible_default_ipv4.address }}; };
+    allow-transfer { none; };
+
     forwarders {
-            {{ google_dns_1 }};
-            {{ google_dns_2 }};
+        {{ dns[0].ipaddress }};
+        {{ dns[1].ipaddress }};
     };
-
-    allow-query { 
-      trusted; 
-    };
-    
-    allow-recursion {
-      trusted;
-    };
-
-    allow-transfer {
-      trusted;
-    };
-
-    dnssec-enable no;
-    
-    auth-nxdomain no;    # conform to RFC1035
-    
-    listen-on-v6 { any; };
 };
-

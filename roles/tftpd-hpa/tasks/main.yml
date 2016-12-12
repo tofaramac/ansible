@@ -1,0 +1,67 @@
+---
+# tasks file for tftpd-hpa
+- name: tftpd-hpa install 
+  apt: name=tftpd-hpa state=present update_cache=yes  cache_valid_time=86400
+  ignore_errors: yes
+  
+- name: deploy tftpd-hpa conf
+  template: src=tftpd-hpa.j2 dest=/etc/default/tftpd-hpa owner=root group=root 
+    mode=0644
+  notify: tftpd-hpa restart
+    
+- name: create tftp directory
+  file: path="{{ tftp_boot_dir }}" state=directory
+
+- name: create a mount point for ppm-nas-1
+  file: path=/mnt/nfs/ppm-nas-1 state=directory mode=755
+
+- name: mount ppm-nas-1 ops directory on /mnt/nfs/ppm-nas-1
+  mount: name=/mnt/nfs/ppm-nas-1 src="192.168.1.16:/volume1/ops" fstype=nfs opts="rw" state=mounted 
+  
+- name: create ubuntu directory organisation
+  file: path="{{ tftp_boot_dir }}/{{item}}"  state=directory 
+  with_items:
+      - ubuntu/16.04/server/amd64
+      - ubuntu/16.04/desktop/amd64
+      
+- name: get server bootable file names to copy
+  command: "find /mnt/nfs/ppm-nas-1/volume1/ops/distros/ubuntu/16.04/amd64/server/install/netboot -type f"
+  register: server_files_to_copy
+  
+- name: copy server bootable files
+  copy: src="{{ item }}" dest="{{ tftp_boot_dir }}/ubuntu/16.04/server/amd64" remote_src=True
+  with_items:
+   - "{{ server_files_to_copy.stdout_lines }}"
+   
+- name: copy server bootable files to root of tftpboot
+  copy: src="{{ item }}" dest="{{ tftp_boot_dir }}" remote_src=True
+  with_items:
+   - "{{ server_files_to_copy.stdout_lines }}"
+
+# Incorrect path
+#- name: get desktop bootable file names to copy
+#  command: "find /mnt/nfs/ppm-nas-1/volume1/ops/distros/ubuntu/16.04/amd64/desktop/install/netboot -type f"
+#  register: desktop_files_to_copy
+   
+#- name: copy desktop bootable files
+#  copy: src="{{ item }}" dest="{{ tftp_boot_dir }}/ubuntu/16.04/server/amd64" remote_src=True
+#  with_items:
+#   - "{{ desktop_files_to_copy.stdout_lines }}"
+
+#- name: deploy kickstart conf files
+#  template: src={{item.src}} dest={{ item.dest }} owner=root group=root mode=0644
+#  with_items:
+#    - { src: 'templates/serverks.cfg.j2', dest: "{{ serverks_dir }}/kickstart.cfg" }
+#    - { src: 'templates/desktopks.cfg.j2', dest: "{{ desktopks_dir }}/kickstart.cfg" }
+    
+#- name: deploy ubuntu menu conf
+#  template: src=ubuntu-menu.j2 dest="{{ tftp_boot_dir }}/ubuntu/ubuntu.menu"  
+   
+#- name: deploy pxelinux default
+#  template: src=default.j2 dest="{{ tftp_boot_dir }}/pxelinux.cfg/default"
+
+- name: link to the mounted source in apache2 http directory
+  file: src="/mnt/nfs/ppm-nas-1/volume1/ops/distros" dest="/var/www/html/distros" state=link
+
+- name: check tftp status
+  service: name=tftpd-hpa enabled=true state=restarted

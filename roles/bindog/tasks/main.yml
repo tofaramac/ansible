@@ -1,0 +1,54 @@
+---
+# tasks file for bind
+- name: bind9 install
+  apt: name={{ item }} state=present update_cache=true
+  with_items:
+    - bind9
+    - bind9utils
+    - bind9-doc
+    - dnsutils
+  notify: bind9 restart
+  tags: [ 'packages' ]
+
+- name: bind to ipv4
+  template: src=bind9.j2 dest=/etc/default/bind9 backup=yes
+  tags: [ 'config' ]
+  
+- name: acl bind9
+  template: src=named.conf.options.j2 dest=/etc/bind/named.conf.options 
+   owner=root group=bind
+  tags: [ 'config' ]
+
+- name: define forward and reverse zone
+  template: src=named.conf.local.j2 dest=/etc/bind/named.conf.local 
+   owner=root group=bind
+   
+- name: clean existing zone databse
+  file: path=/var/lib/bind/* state=absent
+
+- name: create forward zone
+  template: src=prepaidmeters.local.zone.j2 dest=/var/lib/bind/prepaidmeters.local.zone 
+    owner=root group=bind
+  
+<<<<<<< HEAD
+- name: create reverse zone jhb
+  template: src=prepaidmeters.local.jhb.rev.zone.j2 dest=/var/lib/bind/prepaidmeters.local.jhb.rev.zone 
+   owner=root group=bind backup=yes
+  notify: bind9 restart
+
+- name: create forward zone dbn
+  template: src=prepaidmeters.local.dbn.zone.j2 dest=/var/lib/bind/prepaidmeters.local.dbn.zone 
+    owner=root group=bind backup=yes
+  
+- name: create reverse zone dbn
+  template: src=prepaidmeters.local.dbn.rev.zone.j2 dest=/var/lib/bind/prepaidmeters.local.dbn.rev.zone 
+   owner=root group=bind backup=yes
+=======
+- name: create reverse zone
+  template: src=prepaidmeters.local.rev.zone.j2 dest=/var/lib/bind/prepaidmeters.local.rev.zone 
+   owner=root group=bind
+>>>>>>> 024dfebe0b7048489f92b4d04795280f0aa4e73d
+  notify: bind9 restart
+
+- name: bind9 status
+  service: name=bind9 state=running enabled=yes

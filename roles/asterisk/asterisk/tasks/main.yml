@@ -1,0 +1,212 @@
+---
+# tasks file for asterisk
+- name: install required packages  
+  apt: name={{ item }} state=present update_cache=true
+  with_items: '{{ ubuntu_packages }}'
+  notify: enable mariadb
+  when: inventory_hostname in groups.asterisk
+
+- name: install Pear Packages
+  pear: name=Console_Getopt state=present
+  when: inventory_hostname in groups.asterisk
+
+- name: mariadb | remove anonymous users
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - DELETE FROM mysql.user WHERE User=''
+  changed_when: False
+  when: inventory_hostname in groups.asterisk
+
+- name: mariadb | forbid remote root login
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')
+  changed_when: False
+  when: inventory_hostname in groups.asterisk
+
+- name: mariadb | reload privilege tables
+  command: 'mysql -ne "{{ item }}"'
+  with_items:
+    - FLUSH PRIVILEGES
+  ignore_errors: True
+  when: inventory_hostname in groups.asterisk
+
+- name: dahdi download
+  unarchive:
+    src: 'http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz'
+    dest: '/usr/src'
+    copy: no
+  when: inventory_hostname in groups.asterisk
+    
+- name: dahdi Install  
+  command: '{{ item }}'
+  args:
+    chdir: /usr/src/dahdi-linux-complete-2.11.1
+  with_items:
+    - make all
+    - make install
+    - make config
+  when: inventory_hostname in groups.asterisk
+    
+- name: libpri | Download
+  unarchive:
+    src : 'http://downloads.asterisk.org/pub/telephony/libpri/libpri-current.tar.gz'
+    dest: '/usr/src'
+    copy: no
+  when: inventory_hostname in groups.asterisk
+    
+- name: libpri | Install
+  command: '{{ item }}'
+  args:
+    chdir: /usr/src/libpri-1.5.0
+  with_items:
+    - make
+    - make install
+  when: inventory_hostname in groups.asterisk
+
+- name: pjproject  | Download
+  unarchive:
+    src : 'http://www.pjsip.org/release/2.4/pjproject-2.4.tar.bz2'
+    dest: '/usr/src'
+    copy: no
+  when: inventory_hostname in groups.asterisk
+
+- name: pjproject | Install
+  command: '{{ item }}'
+  args:
+    chdir: /usr/src/pjproject-2.4
+  environment:
+    CFLAGS: '-DPJ_HAS_IPV6=0'
+  with_items:
+    - ./configure --prefix=/usr --enable-shared --disable-sound --disable-resample --disable-video --disable-opencore-amr --libdir=/usr/lib64
+    - make dep
+    - make
+    - make install
+  when: inventory_hostname in groups.asterisk
+   
+- name: Jansson | Download
+  unarchive:
+    src : 'https://github.com/akheron/jansson/archive/v2.7.tar.gz'
+    dest: '/usr/src/'
+    copy: no
+  when: inventory_hostname in groups.asterisk
+
+- name: Jansson | Install
+  command: '{{ item }}'
+  args:
+    chdir: /usr/src/jansson-2.7
+  with_items:
+    - autoreconf -i
+    - ./configure --libdir=/usr/lib64
+    - make
+    - make install
+  when: inventory_hostname in groups.asterisk
+    
+- name: add the Asterisk user
+  user: name=asterisk comment=asterisk user createhome=no system=no    
+  when: inventory_hostname in groups.asterisk
+
+- name: asterisk | download
+  unarchive:
+    src : 'http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-14-current.tar.gz'
+    dest: '/usr/src/'
+    copy: no
+
+- name: rename asterisk-14.2.0
+  command: mv /usr/src/asterisk-14.2.0  /usr/src/asterisk
+  register: asterisk_dir
+  when: inventory_hostname in groups.asterisk
+  
+#- name: asterisk | register the src dir into ansible
+#  command: ls -d /usr/src/asterisk-*
+#  register: asterisk_dir
+
+- name: asterisk | configure
+  command: ' {{ item }}'
+  args:
+    chdir: '{{ asterisk_dir.stdout }}'
+  with_items:
+    - ./contrib/scripts/install_prereq install 
+    - ./configure --libdir=/usr/lib
+    - ./contrib/scripts/get_mp3_source.sh
+  when: inventory_hostname in groups.asterisk
+  
+- name: asterisk | compile
+  command: ' {{ item }}'
+  args:
+    chdir: '{{ asterisk_dir.stdout }}'
+  with_items:
+    - make
+    - make install
+    - make config
+    - ldconfig
+  notify: asterisk stop
+  when: inventory_hostname in groups.asterisk
+  
+- name: asterisk | install core wav sounds
+  unarchive:
+    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-core-sounds-en-wav-current.tar.gz'
+    dest: '/var/lib/asterisk/sounds'
+    copy: no
+  when: inventory_hostname in groups.asterisk
+  
+- name: asterisk | install extra wav sounds
+  unarchive:
+    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-wav-current.tar.gz'
+    dest: '/var/lib/asterisk/sounds'
+    copy: no
+  when: inventory_hostname in groups.asterisk
+  
+- name: asterisk | install core g729 sounds
+  unarchive:
+    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-core-sounds-en-g729-current.tar.gz'
+    dest: '/var/lib/asterisk/sounds'
+    copy: no
+  when: inventory_hostname in groups.asterisk
+  
+- name: asterisk | install extra g729 sounds
+  unarchive:
+    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-g729-current.tar.gz'
+    dest: '/var/lib/asterisk/sounds'
+    copy: no
+  when: inventory_hostname in groups.asterisk
+  
+- name: asterisk fix permissions
+  file: path={{ item }} state=directory owner=asterisk group=asterisk mode=775 recurse=yes
+  with_items:
+    - /var/run/asterisk
+    - /etc/asterisk
+    - /var/lib/asterisk
+    - /var/log/asterisk
+    - /var/spool/asterisk
+    - /usr/lib/asterisk
+    - /var/www
+  
+- name: configure odbcinst.ini
+  template: src=odbcinst.ini.j2 dest=/etc/odbcinst.ini
+  tags: [ congigs ]
+  when: inventory_hostname in groups.asterisk
+  
+- name: configure odbc.ini
+  template: src=odbc.ini.j2 dest=/etc/odbc.ini
+  tags: [ configs ]
+  when: inventory_hostname in groups.asterisk
+  
+- name: configure asterisk etc default file
+  template: scr=default.j2 dest=/etc/default/asterisk
+  tags: [ configs ]
+  when: inventory_hostname in groups.asterisk
+  
+- name: set apache2 to use asterisk for user and group
+  template: scr=envvars.j2 dest=/etc/apache2/envvars 
+  tags: [ configs ]
+  notify:
+    - restart apache2
+  when: inventory_hostname in groups.asterisk
+  
+- name: asterisk remove
+  apt: name=asterisk state=absent purge=yes 
+  when: inventory_hostname not in groups.asterisk
+
+
+  

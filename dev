@@ -1,11 +1,11 @@
 [ppm-virt-tst-0]
-ppm-virt-tst-0 ansible_ssh_host=192.168.122.213
+ppm-virt-tst-0 ansible_ssh_host=192.168.1.165 
 
 [ppm-virt-tst-1]
-ppm-virt-tst-1 ansible_ssh_host=192.168.122.182
+ppm-virt-tst-1 ansible_ssh_host=192.168.22.182
 
 [ppm-virt-tst-2]
-ppm-virt-tst-2 ansible_ssh_host=192.168.1.161
+ppm-virt-tst-2 ansible_ssh_host=192.168.1.169
 
 [database]
 database ansible_ssh_host=192.168.122.143

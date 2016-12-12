@@ -1,0 +1,50 @@
+$TTL    604800
+{% if ansible_default_ipv4.address == infra[0].ipaddress %}
+@       IN      SOA     ns0.{{ domains[0].domain }}.{{ tld[0].tld }}. root.{{ domains[0].domain }}. (
+{% endif %}
+
+{% if ansible_default_ipv4.address == infra[1].ipaddress %}
+@       IN      SOA     ns1.{{ domains[0].domain }}.{{ tld[0].tld }}. root.{{ domains[0].domain }}. (
+{% endif %}
+                             12         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+
+; name servers - NS records
+{% if ansible_default_ipv4.address == infra[0].ipaddress %}
+@        IN      NS      ns0.
+{{ infra[0].revaddr }}        IN      PTR     ns0.{{ domains[0].domain }}.{{ tld[0].tld }}.  ; {{ infra[0].ipaddress }}
+{% endif %}
+
+{% if ansible_default_ipv4.address == infra[1].ipaddress %}
+@        IN      NS      ns1.
+{{ infra[1].revaddr }}        IN      PTR     ns1.{{ domains[0].domain }}.{{ tld[0].tld }}.  ; {{ infra[1].ipaddress }}
+{% endif %}
+
+; PTR records
+{% if ansible_default_ipv4.address == infra[0].ipaddress %}
+{{ haproxy[0].revaddr }}        IN      PTR     {{ haproxy[0].hostname }}  ; {{ haproxy[0].ipaddress }}
+{{ apache2[0].revaddr }}        IN      PTR     {{ apache2[0].hostname }}  ; {{ apache2[0].ipaddress }}
+{{ mariadb[0].revaddr }}        IN      PTR     {{ mariadb[0].hostname }}  ; {{ mariadb[0].ipaddress }}
+{{ mariadb[2].revaddr }}        IN      PTR     {{ mariadb[2].hostname }}  ; {{ mariadb[2].ipaddress }}
+{{ file[0].revaddr }}           IN      PTR     {{ file[0].hostname }}  ; {{ file[0].ipaddress }}
+{{ sts[0].revaddr }}            IN      PTR     {{ sts[0].hostname }}  ; {{ sts[0].ipaddress }}
+{{ infra[0].revaddr }}          IN      PTR     {{ infra[0].hostname }}  ; {{ infra[0].ipaddress }}
+{{ mail[0].revaddr }}           IN      PTR     {{ mail[0].hostname }}  ; {{ mail[0].ipaddress }}
+{{ voip[0].revaddr }}           IN      PTR     {{ voip[0].hostname }}  ; {{ voip[0].ipaddress }}
+{% endif %}
+
+{% if ansible_default_ipv4.address == infra[1].ipaddress %}
+{{ haproxy[1].revaddr }}        IN      PTR     {{ haproxy[1].hostname }}  ; {{ haproxy[1].ipaddress }}
+{{ apache2[1].revaddr }}        IN      PTR     {{ apache2[1].hostname }}  ; {{ apache2[1].ipaddress }}
+{{ mariadb[1].revaddr }}        IN      PTR     {{ mariadb[1].hostname }}  ; {{ mariadb[1].ipaddress }}
+{{ mariadb[3].revaddr }}        IN      PTR     {{ mariadb[3].hostname }}  ; {{ mariadb[3].ipaddress }}
+{{ file[1].revaddr }}           IN      PTR     {{ file[1].hostname }}  ; {{ file[1].ipaddress }}
+{{ sts[1].revaddr }}            IN      PTR     {{ sts[1].hostname }}  ; {{ sts[1].ipaddress }}
+{{ infra[1].revaddr }}          IN      PTR     {{ infra[1].hostname }}  ; {{ infra[1].ipaddress }}
+{{ mail[1].revaddr }}           IN      PTR     {{ mail[1].hostname }}  ; {{ mail[1].ipaddress }}
+{{ voip[1].revaddr }}           IN      PTR     {{ voip[1].hostname }}  ; {{ voip[1].ipaddress }}
+{% endif %}
