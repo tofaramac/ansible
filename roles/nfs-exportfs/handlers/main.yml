@@ -1,0 +1,22 @@
+---
+# handlers file for nfs
+- name: nfs-kernel-server start
+  service: name=nfs-kernel-server state=started
+
+- name: nfs-kernel-server restart
+  service: name=nfs-kernel-server state=restarted
+  
+- name: nfs-kernel-server stop
+  service: name=nfs-kernel-server state=stopped
+  
+- name: idmapd start
+  service: name=idmapd state=started
+
+- name: idmapd restart
+  service: name=idmapd state=restarted
+  
+- name: idmapd stop
+  service: name=idmapd state=stopped
+
+- name: export filesystem
+  command: exportfs -a

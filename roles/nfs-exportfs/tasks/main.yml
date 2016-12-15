@@ -1,0 +1,20 @@
+---
+# tasks file for nfs
+- name: install nfs-kernel-server
+  apt: name=nfs-kernel-server state=present update_cache=yes cache_valid_time=86400
+  notify: nfs-kernel-server restart
+  when: inventory_hostname in groups.nfs_exportfs
+  
+- name: check if exports folder exists {{ exports[0].export }}
+  stat: path="{{ exports[0].export }}"
+  register: export_folder
+  when: inventory_hostname in groups.nfs_exportfs
+  
+- name: create folder exporting
+  file: path="{{ exports[0].export }}" state=directory owner=nobody group=nogroup mode=0777
+  when: inventory_hostname in groups.nfs_exportfs and export_folder.stat.exists == False
+
+- name: configure export file
+  template: src=exports.j2 dest=/etc/exports
+  notify: export filesystem
+  when: inventory_hostname in groups.nfs_exportfs

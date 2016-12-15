@@ -1,2 +1,4 @@
 ---
 # vars file for codec_g729
+codec_dir: /mnt/nfs/prd-jhb-voip-0/codec_g729
+modules_dir: /usr/lib/asterisk/modules

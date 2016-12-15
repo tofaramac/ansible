@@ -1,0 +1,54 @@
+---
+# tasks file for server
+- name: install linux standards base (lsb-core)
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - lsb-core
+
+- name: install basic programs to support later dependencies
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - debconf
+    - debconf-utils
+    - libxml2-dev
+    - libxslt1-dev
+    - pkg-config
+    - binutils
+    - libreadline5
+    - ruby
+    - ssl-cert
+    - unhide.rb
+    - curl
+
+- name: install administration tools
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - htop
+    - ncdu
+    - iwatch
+    - lynx
+    - pv
+    - aptitude
+    - grc
+    - inotify-tools
+
+- name: install dns management tools
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - netcat
+    - traceroute
+    - whois
+    - dnsutils
+
+- name: install archive management tools
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - xz-utils
+    - tar
+    - gzip
+    - zip
+    - unzip
+    - bzip2
+    - p7zip
+    - rar
+    - unrar

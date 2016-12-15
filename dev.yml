@@ -2,30 +2,120 @@
 ---
 - hosts: '{{ target }}'
   become: true
-  gather_facts: true
-  serial: 2
+#  gather_facts: True
+#  serial: 2
   roles:
-  - boostrap
-# base host
-#  - network
+# base
+  - network
   - apt
+  - squid-deb-proxy
   - users
-  - ssh-keys
   - bash
-  - server-base
-  - postfix
-  - nrpe-agent
-  - nfs
-  - mount
-  - logwatch
-  - acct
-  - logrotate
+  - base-srv
+  - base-wks
   - python
-  - git
-# - rsyslog
-# - ufw fails on 16.04
-  - chrootkit
-  - maldetect
-  - rkhunter
+  - java-default
+  - java-oracle
+  - apparmor
+  - nfs-exportfs
+  - autofs
+#- mount???
+#- snmp
+
 # services
-  
+  - acct
+#- apache2
+#- apache2-modevasive
+#- apache2-modsecurity
+#- apache2-php
+#- bind
+#- cups
+#- cloud-init
+#- dhcp
+#- easy-rsa
+#  - fsniper
+#  - git
+#- inetutils-inetd
+#- kvm
+#- ntp
+#- samba
+#- oci8
+#- openssh
+#- ssh-config
+#- ssh-keys
+#- openldap
+#- openvpn
+#- postfix
+#- rsync
+#- rsyslog
+#- syslinux
+#- logrotate
+#- logwatch
+#  - mariadb
+#- nrpe-agent
+#- pxe-linux
+#- unattended-upgrades
+#- dovecot
+#- haproxy
+#- rabbitmq
+#- tftpd-hpa
+#- xinetd
+
+# applications
+#- cssh
+#- firefox
+#- netbeans-ide
+#- ansible
+#- asterisk
+
+#- php-composer
+#- ssl-cert
+#- elasticsearch
+#- wkhtmltopdf
+#- freepbx
+#- icinga
+#- jenkins-ci
+#- openaudit
+#- rundeck
+#- smokeping
+#- spamassassin
+#- squid3-proxy
+#- syncthing
+#- ubiquiti-unify
+
+# security
+#- ufw
+#- chkrootkit
+#- rkhunter
+#- maldetect
+#- cisofy-lynis
+
+# enbaya
+#- app_databases
+#- app_documents
+#- app_documents_dynamic
+#- app_devdocs
+#- app_aurora
+#- app_crescendo
+#- app_erp
+#- app_generic
+#- app_geo
+#- app_tcpdf
+#- app_ppmwebsite_com
+#- app_ppmwebsite_coza
+#- app_sugarcrm
+#- app_enbaya_hd
+#- app_enbaya_ini
+#- app_enbaya_sts_clone
+#- app_enbaya_sts_install
+#- app_icinga2
+#- app_itop
+#- app_netup
+#- app_cron
+
+# maintenance
+#- app_databases_clean
+
+# test
+#- app_stubs
+#- check-stack

@@ -106,35 +106,48 @@
     - "/var/spool/asterisk"
     - "/usr/lib/asterisk"
     - "/var/www"
+    
+- name: deploy asterisk conf files
+  template: src={{item.src}} dest={{item.dest}} 
+  with_items:
+     - { src: 'odbc.ini.j2', dest: '/etc/odbc.ini' }
+     - { src: 'odbcinst.ini.j2', dest: '/etc/odbcinst.ini' }
+     - { src: 'apache2.conf.j2', dest: '/etc/apache2/apache2.conf' }
+     - { src: 'envvars.j2', dest: '/etc/apache2/envvars' }
+#     
+#    - { src: "{{ templates/odbc.ini.j2 }}", "{{ dest:/etc/odbc.ini }}" }
+#    - { src: "{{ templates/odbcinst.j2 }}", "{{ dest:/etc/odbcinst.ini }}" }
+#    - { src: "{{ templates/apache2.conf.j2}}", "{{ dest=:/etc/apache2/apache2.conf }}" }
+#    - { src: "{{ templates/envvars.j2 }}", "{{ dest:/etc/apache2/envvars }}" }    
   
-- name: configure odbcinst.ini
-  template: src=odbcinst.ini.j2 dest=/etc/odbcinst.ini
-  tags: [ congigs ]
- # when: inventory_hostname in groups.asterisk
-  
-- name: configure odbc.ini
-  template: src=odbc.ini.j2 dest=/etc/odbc.ini
-  tags: [ configs ]
- # when: inventory_hostname in groups.asterisk
-  
-- name: configure asterisk etc default file
-  template: src=default.j2 dest=/etc/default/asterisk
-  tags: [ configs ]
-  #when: inventory_hostname in groups.asterisk
-  
-- name: set apache2 to use asterisk for user and group
-  template: src=envvars.j2 dest=/etc/apache2/envvars 
-  tags: [ configs ]
-  notify:
-    - restart apache2
-  #when: inventory_hostname in groups.asterisk
-  
-- name: set httpd allowoverride = all
-  template: src=apache2.conf.j2 dest=/etc/apache2/apache2.conf 
-  tags: [ configs ]
-  notify:
-    - restart apache2
- # when: inventory_hostname in groups.asterisk
+#- name: configure odbcinst.ini
+#  template: src=odbcinst.ini.j2 dest=/etc/odbcinst.ini
+#  tags: [ congigs ]
+# # when: inventory_hostname in groups.asterisk
+#  
+#- name: configure odbc.ini
+#  template: src=odbc.ini.j2 dest=/etc/odbc.ini
+#  tags: [ configs ]
+# # when: inventory_hostname in groups.asterisk
+#  
+#- name: configure asterisk etc default file
+#  template: src=default.j2 dest=/etc/default/asterisk
+#  tags: [ configs ]
+#  #when: inventory_hostname in groups.asterisk
+#  
+#- name: set apache2 to use asterisk for user and group
+#  template: src=envvars.j2 dest=/etc/apache2/envvars 
+#  tags: [ configs ]
+#  notify:
+#    - restart apache2
+#  #when: inventory_hostname in groups.asterisk
+#  
+#- name: set httpd allowoverride = all
+#  template: src=apache2.conf.j2 dest=/etc/apache2/apache2.conf 
+#  tags: [ configs ]
+#  notify:
+#    - restart apache2
+# # when: inventory_hostname in groups.asterisk
    
 - name: asterisk remove
   apt: name=asterisk state=absent purge=yes 

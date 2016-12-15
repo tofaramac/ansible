@@ -1,0 +1,59 @@
+---
+# tasks file for autofs
+- name: install autofs
+  apt: name={{ item }} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - autofs
+    - cifs-utils
+  notify: restart autofs
+  when: inventory_hostname in groups.autofs
+  
+- name: stop autofs
+  service: name=autofs state=stopped
+  when: inventory_hostname in groups.autofs
+    
+- name: deploy autofs config files
+  template: src={{ item.src }} dest=/etc/{{ item.dest}} owner=root group=root 
+    mode={{ item.mode }}
+  with_items:
+    - {src: "autofs.conf.j2", dest: "autofs.conf", mode: "0644"}
+    - {src: "auto.master.j2", dest: "auto.master", mode: "0644"}
+    - {src: "auto.misc.j2", dest: "auto.misc", mode: "0644"}
+    - {src: "auto.net.j2", dest: "auto.net", mode: "0644"}
+    - {src: "auto.smb.j2", dest: "auto.smb", mode: "0644"}
+    - {src: "auto.nfs.j2", dest: "auto.nfs", mode: "0644"}
+  notify: restart autofs
+  when: inventory_hostname in groups.autofs
+  
+- name: create local folder /mnt/nfs/ for creating mounting points 
+  file: path={{ mountpoint }} state=directory mode=0755
+  when: inventory_hostname in groups.autofs
+
+- name: start autofs
+  service: name=autofs state=started
+  when: inventory_hostname in groups.autofs
+
+- name: check if remote folder for this host already exists in {{ mountpoint }}/{{ mntserver }}
+  stat: path="{{ mountpoint }}/{{ mntserver }}/{{ inventory_hostname }}"
+  register: remote_folder
+  when: inventory_hostname in groups.autofs
+
+- name: create remote folder in mounted point {{ mountpoint }}/{{ mntserver }} for {{ inventory_hostname }}
+  file: path={{ mountpoint }}/{{ mntserver }}/{{ inventory_hostname }} owner=www-data 
+    group=www-data mode=0755 state=directory
+  when: inventory_hostname in groups.autofs and remote_folder.stat.exists == False
+  
+- name: check autofs
+  service: name=autofs state=restarted enabled=true
+  when: inventory_hostname in groups.autofs
+
+###############################################################################
+##    remove package when not included in inventory file package section
+###############################################################################
+- name: remove when not designated to host
+  apt: name={{ item }} state=absent purge=yes 
+  with_items:
+    - autofs
+    - cifs-utils
+  when: inventory_hostname not in groups.autofs
+

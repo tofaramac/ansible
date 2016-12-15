@@ -1,0 +1,10 @@
+---
+# handlers file for autofs
+- name: start autofs
+  service: name=autofs state=started
+  
+- name: stop autofs
+  service: name=autofs state=stopped
+  
+- name: restart autofs
+  service: name=autofs state=restarted

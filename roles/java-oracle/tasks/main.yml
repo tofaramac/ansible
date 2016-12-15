@@ -1,0 +1,25 @@
+---
+# tasks file for oracle-java
+- name: pre-accept oracle java 8 license
+  debconf: name='oracle-java8-installer' 
+    question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+  when: inventory_hostname in groups.java_oracle
+
+- name: install oracle java 8
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+    - oracle-java8-installer
+    - ca-certificates
+    - oracle-java8-set-default
+  when: inventory_hostname in groups.java_oracle
+  
+###############################################################################
+##    remove package when not included in inventory file package section
+###############################################################################
+- name: remove when not designated to host
+  apt: name={{ item }} state=absent purge=yes 
+  with_items:
+    - oracle-java8-installer
+    - ca-certificates
+    - oracle-java8-set-default
+  when: inventory_hostname not in groups.java_oracle

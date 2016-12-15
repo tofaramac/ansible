@@ -22,6 +22,7 @@ ppm-jhb-wks-178 ansible_ssh_host=192.168.1.178
 ppm-jhb-wks-182 ansible_ssh_host=192.168.1.182
 ppm-jhb-wks-230 ansible_ssh_host=192.168.1.230
 ppm-jhb-infra-1 ansible_ssh_host=192.168.1.21
+wks-jhb-lin-16 ansible_ssh_host=192.168.20.67
 
 [ops_terraco:children]
 lan_kvm_host

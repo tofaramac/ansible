@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+
+# /etc/auto.nfs
+{{ mntserver }} -fstype={{ mnttype }} {{ mntserverip }}:{{ mnttarget }}

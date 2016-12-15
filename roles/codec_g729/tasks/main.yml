@@ -1,25 +1,32 @@
 ---
 # tasks file for codec_g729
-- name: asterisk | install core g729 sounds
-  unarchive:
-    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-core-sounds-en-g729-current.tar.gz'
-    dest: '/var/lib/asterisk/sounds'
-    copy: no
+- name: create a mount point for prd-jhb-voip-0
+  file: path=/mnt/nfs/prd-jhb-voip-0 state=directory mode=755
 
-- name: asterisk | install extra g729 sounds
-  unarchive:
-    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-g729-current.tar.gz'
-    dest: '/var/lib/asterisk/sounds'
-    copy: no
+- name: mount prd-jhb-voip-0 directory on /mnt/nfs/prd-jhb-voip-0
+  mount: 
+    name: /mnt/nfs/prd-jhb-voip-0 
+    src: "192.168.1.16:/volume1/prd/prd-jhb-voip-0"  
+    fstype: nfs 
+    opts: rw  
+    state: mounted
     
-- name: asterisk | install core wav sounds
-  unarchive:
-    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-core-sounds-en-wav-current.tar.gz'
-    dest: '/var/lib/asterisk/sounds'
-    copy: no
+- name: copy codec_g729a.so module
+  copy: src="{{ codec_dir }}/{{ item }}" dest={{ modules_dir }}
+  with_items: 
+    - codec_g729a.so      
+    
+#- name: asterisk | install codec g729 
+#  unarchive:
+#    src : 'http://downloads.digium.com/pub/telephony/codec_g729/asterisk-13.0/x86-64/codec_g729a-13.0_current-x86_64.tar.gz'
+#    dest: '/usr/src'
+#    copy: no
+#    
+#- name: copy codec_g729a.so 
+#  copy: src=/usr/src/codec_*/codec_g729a.so  dest=/usr/lib/asterisk/modules
 
-- name: asterisk | install extra wav sounds
-  unarchive:
-    src : 'http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-wav-current.tar.gz'
-    dest: '/var/lib/asterisk/sounds'
-    copy: no
+- name: load G.729 codec binary
+  command: 'asterisk -rx "{{ item }}"'
+  with_items:
+    - module load codec_g729a.so
+  ignore_errors: True

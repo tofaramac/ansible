@@ -1,0 +1,14 @@
+---
+# tasks file for java-default
+- name: default java install
+  apt: name=default-jre state=present update_cache=yes cache_valid_time=86400
+  when: inventory_hostname in groups.java_default
+  
+###############################################################################
+##    remove package when not included in inventory file package section
+###############################################################################
+- name: remove when not designated to host
+  apt: name={{ item }} state=absent purge=yes 
+  with_items:
+    - default-jre
+  when: inventory_hostname not in groups.java_default
